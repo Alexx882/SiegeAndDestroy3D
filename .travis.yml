@@ -33,7 +33,7 @@ script:
 
 addons:
   sonarcloud:
-    organization: "MEIN_KEY" # der key der organisation auf sonarcloud.io
+    organization: "se2gruppenbsp" # der key der organisation auf sonarcloud.io
     token:
       secure: $SONAR_TOKEN       # $SONAR_TOKEN -> Umgebungsvariable auf travis-ci.org
 
