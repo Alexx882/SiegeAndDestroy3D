@@ -1,6 +1,6 @@
 language: android
 jdk: oraclejdk8
-sudo: false
+sudo: required
 env:
   global:
     - ANDROID_API=android-24            # API-version für den Emulator (android-XX)
@@ -33,7 +33,7 @@ script:
 
 addons:
   sonarcloud:
-    organization: "se2gruppenbsp" # der key der organisation auf sonarcloud.io
+    organization: "MEIN_KEY" # der key der organisation auf sonarcloud.io
     token:
       secure: $SONAR_TOKEN       # $SONAR_TOKEN -> Umgebungsvariable auf travis-ci.org
 
