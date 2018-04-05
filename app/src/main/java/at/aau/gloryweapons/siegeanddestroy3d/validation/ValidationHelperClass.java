@@ -1,4 +1,4 @@
-package at.aau.gloryweapons.siegeanddestroy3d;
+package at.aau.gloryweapons.siegeanddestroy3d.validation;
 
 /**
  * Created by Alexander on 05.04.2018.
@@ -7,10 +7,7 @@ package at.aau.gloryweapons.siegeanddestroy3d;
 public class ValidationHelperClass {
 
     public static boolean isUserNameValid(String username) {
-        if (username == null || username.trim().isEmpty())
-            return false;
-        else
-            return true;
+        return !(username == null || username.trim().isEmpty());
     }
 
     public static boolean isServerIpValid(String ip) {

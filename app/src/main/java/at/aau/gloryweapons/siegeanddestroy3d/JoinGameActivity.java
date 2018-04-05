@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.net.Inet4Address;
+import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class JoinGameActivity extends AppCompatActivity {
 
