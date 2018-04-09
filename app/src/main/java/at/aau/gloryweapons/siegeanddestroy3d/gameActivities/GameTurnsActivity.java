@@ -1,17 +1,26 @@
 package at.aau.gloryweapons.siegeanddestroy3d.gameActivities;
 
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Layout;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import at.aau.gloryweapons.siegeanddestroy3d.R;
+import at.aau.gloryweapons.siegeanddestroy3d.gameModels.Game;
+import at.aau.gloryweapons.siegeanddestroy3d.gameModels.User;
 
 public class GameTurnsActivity extends AppCompatActivity {
     ImageView iv = null;
@@ -20,6 +29,8 @@ public class GameTurnsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enemy_turn);
+        //initializing game class. normally not in this activity...only for testing
+        Game game = new Game();
 
         int nRows = 9, nCols = 9;
         // set size for grid
@@ -41,6 +52,41 @@ public class GameTurnsActivity extends AppCompatActivity {
                 iv.setImageResource(R.drawable.ship_end);
             }
         });
+
+        //adding playerLabels to ConstraintLayout.
+        ConstraintLayout userLayout = findViewById(R.id.UserLayout);
+
+        for(int i =0; i<game.getUserList().size();i++)
+        {
+            //create textview + setText with Username + ontouchlistener
+            TextView v = new TextView (this);
+            v.setText(game.getUserByIndex(i).getName());
+            v.setTextSize(25);
+            v.setId(i);
+            // set the ontouchlistener; methode loads the field of the user
+            v.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    Log.i("fish",""+view.getId());
+                    // methodcall in controller like: changeGridToBattleAreaUser(int id) ...id of the view because the id of the view is the same as the position in the userList (ArrayList in Game)
+                    return false;
+                }
+            });
+            //set params for view
+            ConstraintLayout.LayoutParams viewParam = new ConstraintLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+
+            userLayout.addView(v,viewParam);
+
+           ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(userLayout);
+
+            int marginTop = 8+i*95;
+            constraintSet.connect(v.getId(), ConstraintSet.RIGHT, userLayout.getId(), ConstraintSet.RIGHT,250);
+            constraintSet.connect(v.getId(), ConstraintSet.TOP, userLayout.getId(), ConstraintSet.TOP,  marginTop);
+
+            constraintSet.applyTo(userLayout);
+        }
 
     }
 
