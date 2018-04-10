@@ -12,7 +12,13 @@ public class BattleAreaTile {
     }
 
     // initial type is water
-    public TileType Type = TileType.Water;
+    private TileType type = TileType.Water;
 
+    public TileType getType() {
+        return type;
+    }
 
+    public void setType(TileType type) {
+        this.type = type;
+    }
 }

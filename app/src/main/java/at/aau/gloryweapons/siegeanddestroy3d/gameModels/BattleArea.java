@@ -6,41 +6,42 @@ package at.aau.gloryweapons.siegeanddestroy3d.gameModels;
 
 public class BattleArea {
 
-    private int _playerId;
-    private int _nRows;
-    private int _nColumns;
-    private BattleAreaTile[][] _battleAreaTiles = new BattleAreaTile[0][0];
+    private int userId;
+    private int rows;
+    private int columns;
+    private BattleAreaTile[][] battleAreaTiles;
 
-    public BattleArea(int playerId, int size) {
-        this(playerId, size, size);
+    public BattleArea(int userId, int size) {
+        this(userId, size, size);
     }
 
     /**
      * Creates a new BattleArea with given playerId and dimensions. All tiles are water.
-     * @param playerId
+     *
+     * @param userId
      * @param nRows
      * @param nColumns
      */
-    public BattleArea(int playerId, int nRows, int nColumns) {
-        _playerId = playerId;
-        _nRows = nRows;
-        _nColumns = nColumns;
-        _battleAreaTiles = new BattleAreaTile[nRows][nColumns];
+    public BattleArea(int userId, int nRows, int nColumns) {
+        this.userId = userId;
+        this.rows = nRows;
+        this.columns = nColumns;
+        this.battleAreaTiles = new BattleAreaTile[nRows][nColumns];
     }
 
-    public int getPlayerId() {
-        return _playerId;
+    public int getUserId() {
+        return userId;
     }
 
     public int getRowNumber() {
-        return _nRows;
+        return rows;
     }
 
     public int getColumnNumber() {
-        return _nColumns;
+        return columns;
     }
 
     public BattleAreaTile[][] getBattleAreaTiles() {
-        return _battleAreaTiles;
+        return battleAreaTiles;
     }
 }
