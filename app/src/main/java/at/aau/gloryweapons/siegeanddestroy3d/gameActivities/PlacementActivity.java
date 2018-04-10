@@ -41,7 +41,7 @@ public class PlacementActivity extends AppCompatActivity {
         grid.removeAllViews();
 
         // place ship initially
-        _ships[_idxShipToPlace] = new BasicShip(GlobalGameSettings.getCurrent().getShipSizes()[_idxShipToPlace]);
+        _ships[_idxShipToPlace] = new BasicShip(GlobalGameSettings.getCurrent().getPlayerId(), GlobalGameSettings.getCurrent().getShipSizes()[_idxShipToPlace], true);
         placeShipOnPreviewGrid(grid, _ships[_idxShipToPlace], _placeHorizontal);
 
         // listen for ship rotation
@@ -64,25 +64,25 @@ public class PlacementActivity extends AppCompatActivity {
     private void placeShipOnPreviewGrid(GridLayout previewGrid, BasicShip ship, boolean horizontal) {
         if (horizontal) {
             previewGrid.setRowCount(1);
-            previewGrid.setColumnCount(ship.getSize());
+            previewGrid.setColumnCount(ship.getLength());
 
             int row = 0;
             // first and last is fixed
             addImageViewToGrid(previewGrid, R.drawable.ship_start, row, 0);
-            addImageViewToGrid(previewGrid, R.drawable.ship_end, row, ship.getSize() - 1);
+            addImageViewToGrid(previewGrid, R.drawable.ship_end, row, ship.getLength() - 1);
             // rest is dyn
-            for (int i = 1; i < ship.getSize() - 1; ++i)
+            for (int i = 1; i < ship.getLength() - 1; ++i)
                 addImageViewToGrid(previewGrid, R.drawable.ship_middle, row, i);
         } else { // vertical
-            previewGrid.setRowCount(ship.getSize());
+            previewGrid.setRowCount(ship.getLength());
             previewGrid.setColumnCount(1);
 
             int col = 0;
             // first and last is fixed
             addImageViewToGrid(previewGrid, R.drawable.ship_start, 0, col, false);
-            addImageViewToGrid(previewGrid, R.drawable.ship_end, ship.getSize() - 1, col, false);
+            addImageViewToGrid(previewGrid, R.drawable.ship_end, ship.getLength() - 1, col, false);
             // rest is dyn
-            for (int i = 1; i < ship.getSize() - 1; ++i)
+            for (int i = 1; i < ship.getLength() - 1; ++i)
                 addImageViewToGrid(previewGrid, R.drawable.ship_middle, i, col, false);
         }
     }
