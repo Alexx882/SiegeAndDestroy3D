@@ -4,15 +4,12 @@ public class User {
     private String id;
     private String ip;
     private String name;
-    private BattleArea area;
 
     public User(String uId, String uIp, String uName)
     {
         id=uId;
         ip=uIp;
         name=uName;
-        area=null;
-
     }
 
     public String getId() {
@@ -37,13 +34,5 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public BattleArea getArea() {
-        return area;
-    }
-
-    public void setArea(BattleArea area) {
-        this.area = area;
     }
 }
