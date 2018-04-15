@@ -9,9 +9,9 @@ public class GameSettings {
     //Test Constructor. Dient nur zum Testen der Positionierung von SpielerLabels
     public GameSettings() {
         userList = new ArrayList<User>();
-        User u1 = new User("user1.1", "user123.", "user1");
-        User u2 = new User("user2.1", "user213.", "user2");
-        User u3 = new User("user3.1", "user321.", "user3");
+        User u1 = new User(1, "user123.", "user1");
+        User u2 = new User(2, "user213.", "user2");
+        User u3 = new User(3, "user321.", "user3");
         hostIp = u1.getIp();
         userList.add(u1);
         userList.add(u2);
