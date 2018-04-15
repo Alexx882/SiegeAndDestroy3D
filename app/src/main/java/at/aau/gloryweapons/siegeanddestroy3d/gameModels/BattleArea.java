@@ -28,12 +28,10 @@ public class BattleArea {
         this.columns = nColumns;
         this.battleAreaTiles = new BattleAreaTile[nRows][nColumns];
 
-        //
-        for (int i = 0; i < battleAreaTiles.length; i++) {
-            for (int j = 0; j < battleAreaTiles.length; j++) {
-               battleAreaTiles[i][j] = new BattleAreaTile();
-            }
-        }
+        // init tiles with water
+        for (int i = 0; i < nRows; ++i)
+            for (int j = 0; j < nColumns; ++j)
+                this.battleAreaTiles[i][j] = new BattleAreaTile();
     }
 
     public int getUserId() {
@@ -50,5 +48,47 @@ public class BattleArea {
 
     public BattleAreaTile[][] getBattleAreaTiles() {
         return battleAreaTiles;
+    }
+
+    /**
+     * Places a ship on this BattleArea with given coordinates.
+     *
+     * @param shipToPlace The ship to place.
+     * @param row         The row for the start of the ship.
+     * @param col         The column for the start of the ship.
+     */
+    public void placeShip(BasicShip shipToPlace, int row, int col) throws IllegalArgumentException {
+        // TODO: check collision with other ships and board bounds
+
+        // place the ship by setting the tiles
+        for (int i = 0; i < shipToPlace.getLength(); ++i) {
+            // set tile on board
+            battleAreaTiles[row][col].setType(BattleAreaTile.TileType.ShipHealthy);
+            // assign tile to ship
+            shipToPlace.getTiles()[i] = battleAreaTiles[row][col];
+
+            // update coordinates for next tile
+            if (shipToPlace.isHorizontal())
+                ++col;
+            else
+                ++row;
+        }
+
+//        if (shipToPlace.isHorizontal()) {
+//            for (int i = 0; i < shipToPlace.getLength(); ++i) {
+//                // set tile on board
+//                battleAreaTiles[row][col + i].setType(BattleAreaTile.TileType.ShipHealthy);
+//                // assign tile to ship
+//                shipToPlace.getTiles()[i] = battleAreaTiles[row][col + i];
+//            }
+//
+//        } else {
+//            for (int i = 0; i < shipToPlace.getLength(); ++i) {
+//                // set tile on board
+//                battleAreaTiles[row + i][col].setType(BattleAreaTile.TileType.ShipHealthy);
+//                // assign tile to ship
+//                shipToPlace.getTiles()[i] = battleAreaTiles[row + i][col];
+//            }
+//        }
     }
 }
