@@ -1,5 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -8,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import at.aau.gloryweapons.siegeanddestroy3d.gameActivities.PlacementActivity;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class JoinGameActivity extends AppCompatActivity {
@@ -38,12 +40,20 @@ public class JoinGameActivity extends AppCompatActivity {
                     showLongToast("Server IP ist ungültig");
                     return;
                 }
+                else{
+                        Intent intent = new Intent (JoinGameActivity.this, PlacementActivity.class);
+                        startActivity(intent);
+
+                }
 
                 // everything is ok.
 
                 // TODO: connect to IP
+
             }
+
         });
+
     }
 
     /**

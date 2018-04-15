@@ -1,10 +1,15 @@
 package at.aau.gloryweapons.siegeanddestroy3d;
 
+import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.Formatter;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import at.aau.gloryweapons.siegeanddestroy3d.gameActivities.PlacementActivity;
 
 public class NewGameActivity extends AppCompatActivity {
 
@@ -18,8 +23,13 @@ public class NewGameActivity extends AppCompatActivity {
 
         TextView t = new TextView(this);
 
-        t=(TextView)findViewById(R.id.textViewIpHost);
+        t = (TextView) findViewById(R.id.textViewIpHost);
         t.setText(ip);
 
+        }
+
+    public void goToPlacementActivity (View view){
+        Intent intent = new Intent (NewGameActivity.this, PlacementActivity.class);
+        startActivity(intent);
     }
 }
