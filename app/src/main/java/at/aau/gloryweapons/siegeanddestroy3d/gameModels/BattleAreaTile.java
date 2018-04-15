@@ -6,13 +6,13 @@ package at.aau.gloryweapons.siegeanddestroy3d.gameModels;
 
 public class BattleAreaTile {
     public enum TileType {
-        Water,
-        ShipHealthy,
-        ShipDestroyed
+        WATER,
+        SHIP_HEALTHY,
+        SHIP_DESTROYED
     }
 
     // initial type is water
-    private TileType type = TileType.Water;
+    private TileType type = TileType.WATER;
 
     public TileType getType() {
         return type;
