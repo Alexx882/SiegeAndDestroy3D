@@ -27,6 +27,13 @@ public class BattleArea {
         this.rows = nRows;
         this.columns = nColumns;
         this.battleAreaTiles = new BattleAreaTile[nRows][nColumns];
+
+        //
+        for (int i = 0; i < battleAreaTiles.length; i++) {
+            for (int j = 0; j < battleAreaTiles.length; j++) {
+               battleAreaTiles[i][j] = new BattleAreaTile();
+            }
+        }
     }
 
     public int getUserId() {
