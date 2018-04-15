@@ -1,22 +1,23 @@
 package at.aau.gloryweapons.siegeanddestroy3d.gameModels;
 
 public class User {
-    private String id;
+    private int id;
     private String ip;
     private String name;
 
-    public User(String uId, String uIp, String uName)
+    public User(int uId, String uIp, String uName)
     {
         id=uId;
         ip=uIp;
         name=uName;
+        
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
