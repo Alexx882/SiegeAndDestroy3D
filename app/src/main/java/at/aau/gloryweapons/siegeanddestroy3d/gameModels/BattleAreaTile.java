@@ -8,7 +8,8 @@ public class BattleAreaTile {
     public enum TileType {
         Water,
         ShipHealthy,
-        ShipDestroyed
+        ShipDestroyed,
+        NoHit
     }
 
     // initial type is water
