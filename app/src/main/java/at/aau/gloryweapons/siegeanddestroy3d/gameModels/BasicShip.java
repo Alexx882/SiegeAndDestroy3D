@@ -29,6 +29,17 @@ public class BasicShip {
         return horizontal;
     }
 
+    public void setHorizontal(boolean horizontal) {
+        this.horizontal = horizontal;
+    }
+
+    /**
+     * Toggles the orientation from horizontal to vertical and vice versa.
+     */
+    public void toggleOrientation(){
+        this.horizontal = !this.horizontal;
+    }
+
     public BattleAreaTile[] getTiles() {
         return tiles;
     }

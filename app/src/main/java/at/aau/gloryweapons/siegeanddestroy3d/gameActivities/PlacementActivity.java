@@ -1,6 +1,5 @@
 package at.aau.gloryweapons.siegeanddestroy3d.gameActivities;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -14,111 +13,206 @@ import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
 import at.aau.gloryweapons.siegeanddestroy3d.gameModels.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.gameModels.BattleArea;
+import at.aau.gloryweapons.siegeanddestroy3d.gameViews.GameBoardImageView;
 
 public class PlacementActivity extends AppCompatActivity {
-    private int _idxShipToPlace = 0;
-    private boolean _placeHorizontal = true;
-    private BasicShip[] _ships = new BasicShip[0];
+    // visual and logical board
+    private GameBoardImageView[][] visualBoard = null;
+    private BattleArea playerBoard = null;
+
+    // placement as states
+    private BasicShip[] ships = null;
+    private int idxShipToPlace = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_placement);
 
-        _ships = new BasicShip[GlobalGameSettings.getCurrent().getNumberShips()];
+        int nRows = GlobalGameSettings.getCurrent().getNumberRows();
+        int nCols = GlobalGameSettings.getCurrent().getNumberColumns();
 
-        // inti everything as water
-        initBoardWithWater();
+        // init the visual board with water tiles
+        visualBoard = showEmptyBoard(nRows, nCols);
 
-        // start placement of first ship
-        _idxShipToPlace = 0;
-        _placeHorizontal = true;
+        // init the logical board with water
+        playerBoard = new BattleArea(GlobalGameSettings.getCurrent().getPlayerId(), nRows, nCols);
+
+        // let the user place the ships
+        placeShips();
+    }
+
+    private void placeShips() {
+        // 1. load/create all ships
+        // 2. display next ship in preview
+        // TODO 3. user places ship on board - ASYNC
+        // TODO 4. set ship logically and visually
+        // TODO 5. if another unplaced ship exists goto(2)
+        // TODO 6. send placed ships to server
+
+        // 1)
+        ships = new BasicShip[GlobalGameSettings.getCurrent().getNumberShips()];
+        for (int i = 0; i < ships.length; ++i)
+            ships[i] = new BasicShip(GlobalGameSettings.getCurrent().getPlayerId(),
+                    GlobalGameSettings.getCurrent().getShipSizes()[i],
+                    true);
+
+        // 2)
+        idxShipToPlace = 0;
         placeNextShip();
     }
 
     private void placeNextShip() {
-        GridLayout grid = findViewById(R.id.gridShipPreview);
-        grid.removeAllViews();
+        // 2)
+        placeShipOnPreviewGrid(ships[idxShipToPlace]);
 
-        // place ship initially
-        _ships[_idxShipToPlace] = new BasicShip(GlobalGameSettings.getCurrent().getPlayerId(), GlobalGameSettings.getCurrent().getShipSizes()[_idxShipToPlace], true);
-        placeShipOnPreviewGrid(grid, _ships[_idxShipToPlace], _placeHorizontal);
-
+        // 3)
         // listen for ship rotation
         Button rotLeft = findViewById(R.id.buttonRotateLeft);
         Button rotRight = findViewById(R.id.buttonRotateRight);
         View.OnClickListener rotateListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GridLayout grid = findViewById(R.id.gridShipPreview);
-                grid.removeAllViews();
-
-                _placeHorizontal = !_placeHorizontal;
-                placeShipOnPreviewGrid((GridLayout) findViewById(R.id.gridShipPreview), _ships[_idxShipToPlace], _placeHorizontal);
+                ships[idxShipToPlace].toggleOrientation();
+                placeShipOnPreviewGrid(ships[idxShipToPlace]);
             }
         };
         rotLeft.setOnClickListener(rotateListener);
         rotRight.setOnClickListener(rotateListener);
     }
 
-    private void placeShipOnPreviewGrid(GridLayout previewGrid, BasicShip ship, boolean horizontal) {
-        if (horizontal) {
+    /**
+     * Shows a ship on the preview grid.
+     *
+     * @param ship The ship to show.
+     */
+    private void placeShipOnPreviewGrid(BasicShip ship) {
+        if (ship == null)
+            throw new IllegalArgumentException("ship");
+
+        // prepare preview grid
+        GridLayout previewGrid = findViewById(R.id.gridShipPreview);
+        previewGrid.removeAllViews();
+
+        // place ship
+        int orientationInDegrees = ship.isHorizontal() ? 0 : 90;
+        if (ship.isHorizontal()) {
+            // place the ship horizontally
             previewGrid.setRowCount(1);
             previewGrid.setColumnCount(ship.getLength());
 
             int row = 0;
             // first and last is fixed
-            addImageViewToGrid(previewGrid, R.drawable.ship_start, row, 0);
-            addImageViewToGrid(previewGrid, R.drawable.ship_end, row, ship.getLength() - 1);
-            // rest is dyn
+            addImageToGrid(previewGrid, R.drawable.ship_start, row, 0, orientationInDegrees);
+            addImageToGrid(previewGrid, R.drawable.ship_end, row, ship.getLength() - 1, orientationInDegrees);
+            // rest is dynamic
             for (int i = 1; i < ship.getLength() - 1; ++i)
-                addImageViewToGrid(previewGrid, R.drawable.ship_middle, row, i);
-        } else { // vertical
+                addImageToGrid(previewGrid, R.drawable.ship_middle, row, i, orientationInDegrees);
+
+        } else {
+            // place the ship vertically
             previewGrid.setRowCount(ship.getLength());
             previewGrid.setColumnCount(1);
 
             int col = 0;
             // first and last is fixed
-            addImageViewToGrid(previewGrid, R.drawable.ship_start, 0, col, false);
-            addImageViewToGrid(previewGrid, R.drawable.ship_end, ship.getLength() - 1, col, false);
-            // rest is dyn
+            addImageToGrid(previewGrid, R.drawable.ship_start, 0, col, orientationInDegrees);
+            addImageToGrid(previewGrid, R.drawable.ship_end, ship.getLength() - 1, col, orientationInDegrees);
+            // rest is dynamic
             for (int i = 1; i < ship.getLength() - 1; ++i)
-                addImageViewToGrid(previewGrid, R.drawable.ship_middle, i, col, false);
+                addImageToGrid(previewGrid, R.drawable.ship_middle, i, col, orientationInDegrees);
         }
     }
 
-    private void initBoardWithWater() {
-        int nRows = GlobalGameSettings.getCurrent().getNumberRows();
-        int nCols = GlobalGameSettings.getCurrent().getNumberColumns();
+    private void uiTileClicked(int row, int col) {
+        Toast.makeText(this, row + " : " + col, Toast.LENGTH_LONG).show();
 
+        // 3)
+        // place the start of the ship where the user pressed the button
+        BasicShip shipToPlace = ships[idxShipToPlace];
+
+        // if the ship would reach outside the field, move it back in
+        if (shipToPlace.isHorizontal()) {
+            if (playerBoard.getRowNumber() < col + shipToPlace.getLength())
+                col = playerBoard.getRowNumber() - shipToPlace.getLength();
+        } else {
+            if (playerBoard.getColumnNumber() < row + shipToPlace.getLength())
+                row = playerBoard.getColumnNumber() - shipToPlace.getLength();
+        }
+
+        // place the board logically and visually
+        playerBoard.placeShip(shipToPlace, row, col);
+        placeShipOnVisualBoard(shipToPlace, row, col);
+
+    }
+
+    private void placeShipOnVisualBoard(BasicShip shipToPlace, int row, int col) {
+        // place the ship by setting the images
+        for (int i = 0; i < shipToPlace.getLength(); ++i) {
+            // select correct image resource for position
+            int imgResource;
+            if (i == 0)
+                imgResource = R.drawable.ship_start;
+            else if (i == shipToPlace.getLength() - 1)
+                imgResource = R.drawable.ship_end;
+            else
+                imgResource = R.drawable.ship_middle;
+
+            // set resource and rotate view
+            if (shipToPlace.isHorizontal()) {
+                visualBoard[row][col + i].setImageResource(imgResource);
+                visualBoard[row][col + i].setRotation(0);
+            } else {
+                visualBoard[row + i][col].setImageResource(imgResource);
+                visualBoard[row + i][col].setRotation(90);
+            }
+        }
+    }
+
+    /**
+     * Creates an empty board with only water and displays it.
+     *
+     * @param nRows
+     * @param nCols
+     * @return The ImageViews of the visual board.
+     */
+    private GameBoardImageView[][] showEmptyBoard(int nRows, int nCols) {
         GridLayout grid = findViewById(R.id.gridPlacementBoard);
         grid.setRowCount(nRows);
         grid.setColumnCount(nCols);
 
-        // init new board with water
-        BattleArea board = new BattleArea(GlobalGameSettings.getCurrent().getPlayerId(), nRows, nCols);
+        GameBoardImageView[][] visualBoard = new GameBoardImageView[nRows][nCols];
 
+        // set water
         for (int i = 0; i < nRows; ++i)
             for (int j = 0; j < nCols; ++j)
-                addImageViewToGrid(grid, R.drawable.water, i, j);
+                visualBoard[i][j] = addImageToGrid(grid, R.drawable.water, i, j, 0);
+
+        return visualBoard;
     }
 
-    private void addImageViewToGrid(GridLayout grid, int imageResource, int row, int col) {
-        // "default" value for parameter
-        addImageViewToGrid(grid, imageResource, row, col, true);
-    }
-
-    private void addImageViewToGrid(GridLayout grid, int imageResource, int row, int col, boolean horizontal) {
-        // create imageview
-        ImageView view = new ImageView(this);
+    /**
+     * Adds an image to the grid with provided coordinates either horizontally or vertically.
+     *
+     * @param grid          The grid to show the image.
+     * @param imageResource The image.
+     * @param row           The row of the grid to use.
+     * @param col           The column of the grid to use.
+     * @param orientation   The orientation of the image in degrees.
+     * @return The newly created ImageView.
+     */
+    private GameBoardImageView addImageToGrid(GridLayout grid, int imageResource, int row, int col, int orientation) {
+        // create image view and set image
+        GameBoardImageView view = new GameBoardImageView(this, row, col);
         view.setImageResource(imageResource);
-        if (!horizontal)
-            view.setRotation(90);
+        view.setRotation(orientation);
 
+        // add click listener for the view
         view.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-
+            public void onClick(View v) {
+                GameBoardImageView view = (GameBoardImageView) v;
+                uiTileClicked(view.getBoardRow(), view.getBoardCol());
             }
         });
 
@@ -135,7 +229,10 @@ public class PlacementActivity extends AppCompatActivity {
         // apply params
         view.setLayoutParams(param);
 
-        // add to grid
+        // add view to grid
         grid.addView(view);
+
+        // return the created view
+        return view;
     }
 }
