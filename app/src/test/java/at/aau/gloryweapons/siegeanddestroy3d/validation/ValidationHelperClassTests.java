@@ -45,4 +45,18 @@ public class ValidationHelperClassTests {
 
         Assert.assertEquals(false, ValidationHelperClass.isServerIpValid("Peter"));
     }
+
+    @Test
+    public void shots_accept() throws Exception {
+        Assert.assertEquals(true, ValidationHelperClass.validShots(1));
+        Assert.assertEquals(true, ValidationHelperClass.validShots(2));
+        Assert.assertEquals(true, ValidationHelperClass.validShots(3));
+        Assert.assertEquals(true, ValidationHelperClass.validShots(4));
+        Assert.assertEquals(true, ValidationHelperClass.validShots(5));
+    }
+
+    @Test
+    public void shots_decline() throws Exception {
+        Assert.assertEquals(false, ValidationHelperClass.validShots(null));
+    }
 }

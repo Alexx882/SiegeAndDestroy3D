@@ -22,18 +22,22 @@
             </intent-filter>
         </activity>
         <activity
+            android:label="@string/app_name"
             android:name=".JoinGameActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
+            android:label="@string/app_name"
             android:name=".NewGameActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
+            android:label="@string/app_name"
             android:name=".gameActivities.GameTurnsActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
+            android:label="@string/app_name"
             android:name=".gameActivities.PlacementActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
