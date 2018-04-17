@@ -1,6 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.validation;
 
-import android.text.Editable; /**
+/**
  * Created by Alexander on 05.04.2018.
  */
 
@@ -37,13 +37,13 @@ public class ValidationHelperClass {
         }
     }
 
-    public static boolean validShots(Integer s) {
+    public static boolean validShots(String s) {
         try {
-            if (s == null) {
+            if (s == null || s.isEmpty()) {
                 return false;
             }
-
-            if ((s < 0) || (s > 5)) {
+            int i = Integer.parseInt(s);
+            if (i <= 0) {
                 return false;
             }
 

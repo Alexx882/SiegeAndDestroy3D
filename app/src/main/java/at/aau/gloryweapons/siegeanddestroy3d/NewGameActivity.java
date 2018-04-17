@@ -49,8 +49,8 @@ public class NewGameActivity extends AppCompatActivity {
                 }
 
                 Editable shot = _editText.getText();
-                if (!ValidationHelperClass.validShots(shot != null ? shot.length() : null )) {
-                    showLongToast("Bitte geben Sie eine Zahl zwischen 1 und 5 ein");
+                if (!ValidationHelperClass.validShots(shot != null ? shot.toString(): null )) {
+                    showLongToast("Bitte geben Sie eine Zahl ein");
                     return;
 
                 } else {

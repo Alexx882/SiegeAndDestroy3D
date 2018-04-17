@@ -48,15 +48,23 @@ public class ValidationHelperClassTests {
 
     @Test
     public void shots_accept() throws Exception {
-        Assert.assertEquals(true, ValidationHelperClass.validShots(1));
-        Assert.assertEquals(true, ValidationHelperClass.validShots(2));
-        Assert.assertEquals(true, ValidationHelperClass.validShots(3));
-        Assert.assertEquals(true, ValidationHelperClass.validShots(4));
-        Assert.assertEquals(true, ValidationHelperClass.validShots(5));
+        Assert.assertEquals(true, ValidationHelperClass.validShots("1"));
+        Assert.assertEquals(true, ValidationHelperClass.validShots("2"));
+        Assert.assertEquals(true, ValidationHelperClass.validShots("3"));
+        Assert.assertEquals(true, ValidationHelperClass.validShots("4"));
+        Assert.assertEquals(true, ValidationHelperClass.validShots("5"));
+        Assert.assertEquals(true, ValidationHelperClass.validShots("6"));
+        Assert.assertEquals(true, ValidationHelperClass.validShots("7"));
+        Assert.assertEquals(true, ValidationHelperClass.validShots("8"));
+        Assert.assertEquals(true, ValidationHelperClass.validShots("9"));
+
     }
 
     @Test
     public void shots_decline() throws Exception {
+        Assert.assertEquals(false, ValidationHelperClass.validShots(""));
         Assert.assertEquals(false, ValidationHelperClass.validShots(null));
+        Assert.assertEquals(false, ValidationHelperClass.validShots("0"));
+        Assert.assertEquals(false, ValidationHelperClass.validShots("    "));
     }
 }
