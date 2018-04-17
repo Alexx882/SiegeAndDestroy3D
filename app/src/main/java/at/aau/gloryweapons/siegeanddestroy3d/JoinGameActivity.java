@@ -14,9 +14,9 @@ import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class JoinGameActivity extends AppCompatActivity {
 
-    private Button _btnJoinGame;
-    private EditText _txtUserName;
-    private EditText _txtServerIp;
+    private Button btnJoinGame;
+    private EditText txtUserName;
+    private EditText txtServerIp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,17 +25,17 @@ public class JoinGameActivity extends AppCompatActivity {
 
         loadUiElements();
 
-        _btnJoinGame.setOnClickListener(new View.OnClickListener() {
+        btnJoinGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Editable eUsername = _txtUserName.getText();
+                Editable eUsername = txtUserName.getText();
                 if (!ValidationHelperClass.isUserNameValid(eUsername != null ? eUsername.toString() : null)) {
                     showLongToast("Username ist ungültig");
                     return;
                 }
 
-                Editable eServerIp = _txtServerIp.getText();
+                Editable eServerIp = txtServerIp.getText();
                 if (!ValidationHelperClass.isServerIpValid(eServerIp != null ? eServerIp.toString() : null)) {
                     showLongToast("Server IP ist ungültig");
                     return;
@@ -60,9 +60,9 @@ public class JoinGameActivity extends AppCompatActivity {
      * Loads all UI Elements.
      */
     private void loadUiElements() {
-        _btnJoinGame = findViewById(R.id.buttonJoinGame);
-        _txtUserName = findViewById(R.id.editTextUserName);
-        _txtServerIp = findViewById(R.id.editTextServerIp);
+        btnJoinGame = findViewById(R.id.buttonJoinGame);
+        txtUserName = findViewById(R.id.editTextUserName);
+        txtServerIp = findViewById(R.id.editTextServerIp);
     }
 
 

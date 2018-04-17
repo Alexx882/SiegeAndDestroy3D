@@ -68,9 +68,8 @@ public class BattleArea {
         int shipLength = ship.getLength();
 
         // check for collision with border
-        if (isHorizontal && this.columns < colStart + shipLength)
-            return false;
-        else if (!isHorizontal && this.rows < rowStart + shipLength)
+        if ((isHorizontal && this.columns < colStart + shipLength)
+                || (!isHorizontal && this.rows < rowStart + shipLength))
             return false;
 
         return true;

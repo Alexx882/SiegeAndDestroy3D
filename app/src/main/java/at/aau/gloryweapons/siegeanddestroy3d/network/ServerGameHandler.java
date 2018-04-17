@@ -89,7 +89,7 @@ public class ServerGameHandler {
 
         for (int i = 0; i < battleArea.getBattleAreaTiles().length; i++) {
             for (int j = 0; j < battleArea.getBattleAreaTiles().length; j++) {
-                if (battleArea.getBattleAreaTiles()[i][j].getType() == BattleAreaTile.TileType.ShipHealthy){
+                if (battleArea.getBattleAreaTiles()[i][j].getType() == BattleAreaTile.TileType.SHIP_HEALTHY){
                     occupiedTiels += 1;
                 }
             }
@@ -132,15 +132,15 @@ public class ServerGameHandler {
             BattleAreaTile attackedTile = attackedArea.getBattleAreaTiles()[turn.getxCoordinates()][turn.getyCoordinates()];
 
             switch (attackedTile.getType()){
-                case Water:
-                    attackedTile.setType(BattleAreaTile.TileType.NoHit);
+                case WATER:
+                    attackedTile.setType(BattleAreaTile.TileType.NO_HIT);
                     turn.setType(Turn.TurnType.NO_HIT);
                     break;
-                case ShipHealthy:
-                    attackedTile.setType(BattleAreaTile.TileType.ShipDestroyed);
+                case SHIP_HEALTHY:
+                    attackedTile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
                     turn.setType(Turn.TurnType.HIT);
                     break;
-                case ShipDestroyed:
+                case SHIP_DESTROYED:
                     turn.setType(Turn.TurnType.HIT);
                     break;
                 default:
@@ -216,7 +216,7 @@ public class ServerGameHandler {
 
             for (int i = 0; i < area.getBattleAreaTiles().length ; i++) {
                 for (int j = 0; j < area.getBattleAreaTiles().length; j++) {
-                    if (area.getBattleAreaTiles()[i][j].getType() == BattleAreaTile.TileType.ShipHealthy){
+                    if (area.getBattleAreaTiles()[i][j].getType() == BattleAreaTile.TileType.SHIP_HEALTHY){
                         return true;
                     }
                 }
