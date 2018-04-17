@@ -1,4 +1,4 @@
-package at.aau.gloryweapons.siegeanddestroy3d.gameActivities;
+package at.aau.gloryweapons.siegeanddestroy3d.game.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,9 +10,9 @@ import android.widget.Toast;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
-import at.aau.gloryweapons.siegeanddestroy3d.gameModels.BasicShip;
-import at.aau.gloryweapons.siegeanddestroy3d.gameModels.BattleArea;
-import at.aau.gloryweapons.siegeanddestroy3d.gameViews.GameBoardImageView;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
+import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
 
 public class PlacementActivity extends AppCompatActivity {
     // visual and logical board

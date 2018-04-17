@@ -1,4 +1,4 @@
-package at.aau.gloryweapons.siegeanddestroy3d.gameModels;
+package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
 import org.junit.Assert;
 import org.junit.Before;

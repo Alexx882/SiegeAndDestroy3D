@@ -1,16 +1,12 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
-import at.aau.gloryweapons.siegeanddestroy3d.gameModels.BattleArea;
-import at.aau.gloryweapons.siegeanddestroy3d.gameModels.BattleAreaTile;
-import at.aau.gloryweapons.siegeanddestroy3d.gameModels.User;
-
-import static org.junit.Assert.*;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
 public class ServerGameHandlerTest {
 

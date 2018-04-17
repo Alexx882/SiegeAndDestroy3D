@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
-import at.aau.gloryweapons.siegeanddestroy3d.gameModels.BattleArea;
-import at.aau.gloryweapons.siegeanddestroy3d.gameModels.BattleAreaTile;
-import at.aau.gloryweapons.siegeanddestroy3d.gameModels.User;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
 
 public class ServerGameHandler {

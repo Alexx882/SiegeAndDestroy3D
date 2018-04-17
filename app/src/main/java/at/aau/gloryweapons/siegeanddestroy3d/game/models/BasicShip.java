@@ -1,4 +1,4 @@
-package at.aau.gloryweapons.siegeanddestroy3d.gameModels;
+package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
 /**
  * Created by Alexander on 05.04.2018.

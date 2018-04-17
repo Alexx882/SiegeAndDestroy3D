@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    tools:context="at.aau.gloryweapons.siegeanddestroy3d.gameActivities.GameTurnsActivity">
+    tools:context="at.aau.gloryweapons.siegeanddestroy3d.game.activities.GameTurnsActivity">
 
     <GridLayout
         android:id="@+id/gridPlacementBoard"
