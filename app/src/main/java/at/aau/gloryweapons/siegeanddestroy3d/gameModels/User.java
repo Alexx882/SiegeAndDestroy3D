@@ -10,7 +10,7 @@ public class User {
         id=uId;
         ip=uIp;
         name=uName;
-        
+
     }
 
     public int getId() {

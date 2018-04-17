@@ -103,19 +103,22 @@ public class ServerGameHandler {
     }
 
     private boolean userExists(int id){
-        for (User user: users) {
-            if(user.getId() == id){
-                return true;
+        if(users != null) {
+            for (User user : users) {
+                if (user.getId() == id) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     private BattleArea getBattleAreaByUserId(int id){
-
-        for (BattleArea battleArea: battleAreas) {
-            if (battleArea.getUserId() == id){
-                return battleArea;
+        if (battleAreas != null) {
+            for (BattleArea battleArea : battleAreas) {
+                if (battleArea.getUserId() == id) {
+                    return battleArea;
+                }
             }
         }
         return null;
@@ -123,7 +126,7 @@ public class ServerGameHandler {
 
 
     private void checkAndProcessShot(Turn turn){
-        if (userExists(turn.getAttacksUserID())){
+        if ((getBattleAreaByUserId(turn.getAttacksUserID()) != null) &&userExists(turn.getAttacksUserID())){
 
             BattleArea attackedArea = getBattleAreaByUserId(turn.getAttacksUserID());
             BattleAreaTile attackedTile = attackedArea.getBattleAreaTiles()[turn.getxCoordinates()][turn.getyCoordinates()];
@@ -151,7 +154,7 @@ public class ServerGameHandler {
 
         //send turn back
         response(turn);
-        if (isAlive(getUserById(turn.getAttacksUserID()))){
+        if (getUserById(turn.getAttacksUserID()) != null && isAlive(getUserById(turn.getAttacksUserID()))){
             nextUser();
         }else {
             Instruction instructionToall = new Instruction(Instruction.InstructionType.USER_DEAD);
