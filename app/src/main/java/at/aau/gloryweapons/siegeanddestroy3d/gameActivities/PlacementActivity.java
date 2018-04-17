@@ -6,7 +6,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
@@ -23,6 +22,11 @@ public class PlacementActivity extends AppCompatActivity {
     // placement as states
     private BasicShip[] ships = null;
     private int idxShipToPlace = 0;
+    private boolean placementInProgress = false;
+
+    // btns
+    Button btnRotateLeft;
+    Button btnRotateRight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,56 +47,62 @@ public class PlacementActivity extends AppCompatActivity {
     }
 
     private void placeShips() {
-        // 1. load/create all ships
-        // 2. display next ship in preview
-        // TODO 3. user places ship on board - ASYNC
-        // TODO 4. set ship logically and visually
-        // TODO 5. if another unplaced ship exists goto(2)
-        // TODO 6. send placed ships to server
+        placementInProgress = true;
+        /*
+        Process:
+        1. load/create all ships
+        2. display next ship in preview
+        3. user places ship on board - ASYNC
+        4. set ship logically and visually
+        5. if another unplaced ship exists goto(2)
+        6. send placed ships to server
+        */
 
-        // 1)
+        // (1) load/create all ships
         ships = new BasicShip[GlobalGameSettings.getCurrent().getNumberShips()];
         for (int i = 0; i < ships.length; ++i)
             ships[i] = new BasicShip(GlobalGameSettings.getCurrent().getPlayerId(),
                     GlobalGameSettings.getCurrent().getShipSizes()[i],
                     true);
 
-        // 2)
+        // (2) display first ship in preview
         idxShipToPlace = 0;
-        placeNextShip();
-    }
+        prepareNextShipPlacement();
 
-    private void placeNextShip() {
-        // 2)
-        placeShipOnPreviewGrid(ships[idxShipToPlace]);
-
-        // 3)
-        // listen for ship rotation
-        Button rotLeft = findViewById(R.id.buttonRotateLeft);
-        Button rotRight = findViewById(R.id.buttonRotateRight);
+        btnRotateLeft = findViewById(R.id.buttonRotateLeft);
+        btnRotateRight = findViewById(R.id.buttonRotateRight);
+        // (3) listen for ship rotation
         View.OnClickListener rotateListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ships[idxShipToPlace].toggleOrientation();
-                placeShipOnPreviewGrid(ships[idxShipToPlace]);
+                if (placementInProgress) {
+                    ships[idxShipToPlace].toggleOrientation();
+                    placeShipOnPreviewGrid(ships[idxShipToPlace]);
+                }
             }
         };
-        rotLeft.setOnClickListener(rotateListener);
-        rotRight.setOnClickListener(rotateListener);
+        btnRotateLeft.setOnClickListener(rotateListener);
+        btnRotateRight.setOnClickListener(rotateListener);
+    }
+
+    private void prepareNextShipPlacement() {
+        // (2) display next ship in preview
+        placeShipOnPreviewGrid(ships[idxShipToPlace]);
     }
 
     /**
      * Shows a ship on the preview grid.
      *
-     * @param ship The ship to show.
+     * @param ship The ship to show. Null clears the grid.
      */
     private void placeShipOnPreviewGrid(BasicShip ship) {
-        if (ship == null)
-            throw new IllegalArgumentException("ship");
-
         // prepare preview grid
         GridLayout previewGrid = findViewById(R.id.gridShipPreview);
         previewGrid.removeAllViews();
+
+        // return if the method was called to clear the grid
+        if (ship == null)
+            return;
 
         // place ship
         int orientationInDegrees = ship.isHorizontal() ? 0 : 90;
@@ -124,28 +134,59 @@ public class PlacementActivity extends AppCompatActivity {
         }
     }
 
-    private void uiTileClicked(int row, int col) {
-        Toast.makeText(this, row + " : " + col, Toast.LENGTH_LONG).show();
+    /**
+     * Used to handle taps from the user.
+     *
+     * @param row
+     * @param col
+     */
+    private void uiTileTapped(int row, int col) {
+        if (!placementInProgress)
+            return;
 
-        // 3)
-        // place the start of the ship where the user pressed the button
+        // (3) user wants to place ship
         BasicShip shipToPlace = ships[idxShipToPlace];
 
-        // if the ship would reach outside the field, move it back in
-        if (shipToPlace.isHorizontal()) {
-            if (playerBoard.getRowNumber() < col + shipToPlace.getLength())
-                col = playerBoard.getRowNumber() - shipToPlace.getLength();
-        } else {
-            if (playerBoard.getColumnNumber() < row + shipToPlace.getLength())
-                row = playerBoard.getColumnNumber() - shipToPlace.getLength();
+        // check input
+        String msg = null;
+        if (!playerBoard.isShipInBattleArea(shipToPlace, row, col))
+            msg = "Bitte das Schiff vollständig ins Spielfeld setzen.";
+        else if (!playerBoard.isShipPositionAvailable(shipToPlace, row, col))
+            msg = "Bitte das Schiff nicht mit anderen Schiffen überlappen.";
+
+        if (msg != null) {
+            showToast(msg);
+            return;
         }
 
-        // place the board logically and visually
+        // (4) place ship logically and visually
         playerBoard.placeShip(shipToPlace, row, col);
         placeShipOnVisualBoard(shipToPlace, row, col);
 
+        // (5) prepare placing the next ship
+        if (++idxShipToPlace < ships.length) {
+            prepareNextShipPlacement();
+        } else {
+            finishShipPlacement();
+        }
     }
 
+    private void finishShipPlacement() {
+        placementInProgress = false;
+        btnRotateLeft.setClickable(false);
+        btnRotateRight.setClickable(false);
+        placeShipOnPreviewGrid(null);
+
+        // TODO (6) send ships to server
+    }
+
+    /**
+     * Shows the ship on the views which are located on the gridPlacementBoard.
+     *
+     * @param shipToPlace
+     * @param row
+     * @param col
+     */
     private void placeShipOnVisualBoard(BasicShip shipToPlace, int row, int col) {
         // place the ship by setting the images
         for (int i = 0; i < shipToPlace.getLength(); ++i) {
@@ -212,7 +253,7 @@ public class PlacementActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 GameBoardImageView view = (GameBoardImageView) v;
-                uiTileClicked(view.getBoardRow(), view.getBoardCol());
+                uiTileTapped(view.getBoardRow(), view.getBoardCol());
             }
         });
 
@@ -234,5 +275,9 @@ public class PlacementActivity extends AppCompatActivity {
 
         // return the created view
         return view;
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

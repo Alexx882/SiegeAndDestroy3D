@@ -51,44 +51,96 @@ public class BattleArea {
     }
 
     /**
+     * Checks if the ship is inside this BattleArea.
+     *
+     * @param ship     The ship to check.
+     * @param rowStart The row of the start of the ship.
+     * @param colStart The column of the start of the ship.
+     * @return True, if the ship is completely inside this BattleArea.
+     */
+    public boolean isShipInBattleArea(BasicShip ship, int rowStart, int colStart) {
+        if (ship == null
+                || rowStart < 0 || rowStart > this.rows
+                || colStart < 0 || colStart > this.columns)
+            return false;
+
+        boolean isHorizontal = ship.isHorizontal();
+        int shipLength = ship.getLength();
+
+        // check for collision with border
+        if (isHorizontal && this.columns < colStart + shipLength)
+            return false;
+        else if (!isHorizontal && this.rows < rowStart + shipLength)
+            return false;
+
+        return true;
+    }
+
+    /**
+     * Checks if the desired position of the ship is available, ie. if there is no other ship on some tile.
+     *
+     * @param ship     The ship to check the position for.
+     * @param rowStart The row of the start of the ship.
+     * @param colStart The column of the start of the ship.
+     * @return True, if every needed tile is water.
+     */
+    public boolean isShipPositionAvailable(BasicShip ship, int rowStart, int colStart) {
+        if (!isShipInBattleArea(ship, rowStart, colStart))
+            return false;
+
+        boolean isHorizontal = ship.isHorizontal();
+        int shipLength = ship.getLength();
+
+        // check for collision with other ships, more specifically their tiles
+        for (int i = 0; i < shipLength; ++i) {
+            if (battleAreaTiles[rowStart][colStart].getType() != BattleAreaTile.TileType.WATER)
+                return false;
+
+            if (isHorizontal)
+                ++colStart;
+            else
+                ++rowStart;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if the ship can be placed at the given position.
+     *
+     * @param shipToPlace The ship to check.
+     * @param rowToPlace  The row of the start of the ship.
+     * @param colToPlace  The column of the start of the ship.
+     * @return True, if the ship is inside this BattleArea and every tile for the ship is currently water.
+     */
+    public boolean canShipBePlaced(BasicShip shipToPlace, int rowToPlace, int colToPlace) {
+        return isShipInBattleArea(shipToPlace, rowToPlace, colToPlace)
+                && isShipPositionAvailable(shipToPlace, rowToPlace, colToPlace);
+    }
+
+    /**
      * Places a ship on this BattleArea with given coordinates.
      *
      * @param shipToPlace The ship to place.
-     * @param row         The row for the start of the ship.
-     * @param col         The column for the start of the ship.
+     * @param rowToPlace  The row for the start of the ship.
+     * @param colToPlace  The column for the start of the ship.
      */
-    public void placeShip(BasicShip shipToPlace, int row, int col) throws IllegalArgumentException {
-        // TODO: check collision with other ships and board bounds
+    public void placeShip(BasicShip shipToPlace, int rowToPlace, int colToPlace) throws IllegalArgumentException {
+        if (!canShipBePlaced(shipToPlace, rowToPlace, colToPlace))
+            throw new IllegalArgumentException("Not a valid configuration. Check BattleArea.canShipBePlaced() first.");
 
         // place the ship by setting the tiles
         for (int i = 0; i < shipToPlace.getLength(); ++i) {
             // set tile on board
-            battleAreaTiles[row][col].setType(BattleAreaTile.TileType.ShipHealthy);
-            // assign tile to ship
-            shipToPlace.getTiles()[i] = battleAreaTiles[row][col];
+            battleAreaTiles[rowToPlace][colToPlace].setType(BattleAreaTile.TileType.SHIP_HEALTHY);
+            // assign tile to the ship
+            shipToPlace.getTiles()[i] = battleAreaTiles[rowToPlace][colToPlace];
 
             // update coordinates for next tile
             if (shipToPlace.isHorizontal())
-                ++col;
+                ++colToPlace;
             else
-                ++row;
+                ++rowToPlace;
         }
-
-//        if (shipToPlace.isHorizontal()) {
-//            for (int i = 0; i < shipToPlace.getLength(); ++i) {
-//                // set tile on board
-//                battleAreaTiles[row][col + i].setType(BattleAreaTile.TileType.ShipHealthy);
-//                // assign tile to ship
-//                shipToPlace.getTiles()[i] = battleAreaTiles[row][col + i];
-//            }
-//
-//        } else {
-//            for (int i = 0; i < shipToPlace.getLength(); ++i) {
-//                // set tile on board
-//                battleAreaTiles[row + i][col].setType(BattleAreaTile.TileType.ShipHealthy);
-//                // assign tile to ship
-//                shipToPlace.getTiles()[i] = battleAreaTiles[row + i][col];
-//            }
-//        }
     }
 }
