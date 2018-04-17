@@ -8,11 +8,16 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.Toast;
 
+import java.util.Arrays;
+
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 
 public class PlacementActivity extends AppCompatActivity {
     // visual and logical board
@@ -55,7 +60,8 @@ public class PlacementActivity extends AppCompatActivity {
         3. user places ship on board - ASYNC
         4. set ship logically and visually
         5. if another unplaced ship exists goto(2)
-        6. send placed ships to server
+        6. check if user is satisfied with placement configuration
+        7. send placed ships to server
         */
 
         // (1) load/create all ships
@@ -177,7 +183,11 @@ public class PlacementActivity extends AppCompatActivity {
         btnRotateRight.setClickable(false);
         placeShipOnPreviewGrid(null);
 
-        // TODO (6) send ships to server
+        // TODO (6) let user accept the config or restart placement
+
+        // (7) send ships to server
+        NetworkCommunicator comm = new DummyNetworkCommunicator();
+        comm.sendGameConfigurationToServer(null, playerBoard, Arrays.asList(ships), null); // TODO
     }
 
     /**
