@@ -1,4 +1,4 @@
-package at.aau.gloryweapons.siegeanddestroy3d.gameViews;
+package at.aau.gloryweapons.siegeanddestroy3d.game.views;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

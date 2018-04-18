@@ -1,4 +1,4 @@
-package at.aau.gloryweapons.siegeanddestroy3d.gameModels;
+package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
 public class User {
     private int id;

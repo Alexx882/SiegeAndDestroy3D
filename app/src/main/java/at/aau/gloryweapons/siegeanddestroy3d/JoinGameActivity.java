@@ -9,14 +9,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import at.aau.gloryweapons.siegeanddestroy3d.gameActivities.PlacementActivity;
+import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class JoinGameActivity extends AppCompatActivity {
 
-    private Button _btnJoinGame;
-    private EditText _txtUserName;
-    private EditText _txtServerIp;
+    private Button btnJoinGame;
+    private EditText txtUserName;
+    private EditText txtServerIp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,46 +29,65 @@ public class JoinGameActivity extends AppCompatActivity {
 
         loadUiElements();
 
-        _btnJoinGame.setOnClickListener(new View.OnClickListener() {
+        btnJoinGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Editable eUsername = _txtUserName.getText();
-                if (!ValidationHelperClass.isUserNameValid(eUsername != null ? eUsername.toString() : null)) {
+                Editable eUsername = txtUserName.getText();
+                String username = eUsername != null ? eUsername.toString() : null;
+                if (!ValidationHelperClass.isUserNameValid(username)) {
                     showLongToast("Username ist ungültig");
                     return;
                 }
 
-                Editable eServerIp = _txtServerIp.getText();
-                if (!ValidationHelperClass.isServerIpValid(eServerIp != null ? eServerIp.toString() : null)) {
+                Editable eServerIp = txtServerIp.getText();
+                String hostIp = eServerIp != null ? eServerIp.toString() : null;
+                if (!ValidationHelperClass.isServerIpValid(hostIp)) {
                     showLongToast("Server IP ist ungültig");
                     return;
                 }
-                else{
-                        Intent intent = new Intent (JoinGameActivity.this, PlacementActivity.class);
-                        startActivity(intent);
 
-                }
+                // disable button now
+                Button btn = (Button) view;
+                // TODO show user that the app is still working ("connecting to server" or something)
+                btn.setClickable(false);
 
-                // everything is ok.
-
-                // TODO: connect to IP
-
+                // connect to server and check name
+                connectToServer(hostIp, username);
             }
 
         });
 
     }
 
+    private void connectToServer(String hostIp, String username) {
+        // send name to server and hope that it isn't taken
+        NetworkCommunicator comm = new DummyNetworkCommunicator();
+        comm.sendNameToServer(username, new CallbackObject<User>() {
+            @Override
+            public void callback(User param) {
+                if (param == null) {
+                    // name is already taken
+                    showLongToast("Name ist bereits vergeben.");
+                    btnJoinGame.setClickable(true);
+                    return;
+                }
+
+                // TODO save user object and host IP
+                Intent intent = new Intent(JoinGameActivity.this, PlacementActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
     /**
      * Loads all UI Elements.
      */
     private void loadUiElements() {
-        _btnJoinGame = findViewById(R.id.buttonJoinGame);
-        _txtUserName = findViewById(R.id.editTextUserName);
-        _txtServerIp = findViewById(R.id.editTextServerIp);
+        btnJoinGame = findViewById(R.id.buttonJoinGame);
+        txtUserName = findViewById(R.id.editTextUserName);
+        txtServerIp = findViewById(R.id.editTextServerIp);
     }
-
 
     private void showLongToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();

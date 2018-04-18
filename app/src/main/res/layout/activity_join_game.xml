@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/textView"
         android:layout_width="144dp"
-        android:layout_height="23dp"
+        android:layout_height="29dp"
         android:layout_marginStart="60dp"
         android:layout_marginTop="24dp"
         android:text="Server IP:"
@@ -67,6 +67,19 @@
         android:layout_marginStart="60dp"
         android:text="Spiel beitreten"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewError"
+        android:layout_width="460dp"
+        android:layout_height="29dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="60dp"
+        android:layout_marginStart="60dp"
+        android:textSize="20sp"
+        android:textColor="@android:color/holo_red_light"
+        app:layout_constraintBottom_toTopOf="@+id/buttonJoinGame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

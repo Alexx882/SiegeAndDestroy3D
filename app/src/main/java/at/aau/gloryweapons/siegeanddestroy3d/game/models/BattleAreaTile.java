@@ -1,19 +1,15 @@
-package at.aau.gloryweapons.siegeanddestroy3d.gameModels;
+package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
 /**
  * Created by Alexander on 05.04.2018.
  */
 
 public class BattleAreaTile {
-   // TODO: merge enums with all occurences (convention is UPPERCASE)
     public enum TileType {
         WATER,
         SHIP_HEALTHY,
         SHIP_DESTROYED,
-        Water,
-        ShipHealthy,
-        ShipDestroyed,
-        NoHit
+        NO_HIT
     }
 
     // initial type is water
