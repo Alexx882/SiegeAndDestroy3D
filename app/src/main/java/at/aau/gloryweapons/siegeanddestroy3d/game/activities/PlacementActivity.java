@@ -225,7 +225,7 @@ public class PlacementActivity extends AppCompatActivity {
     }
 
     /**
-     * Creates an empty board with only water and displays it.
+     * Creates an empty board with only water and displays it on the placement grid.
      *
      * @param nRows
      * @param nCols
@@ -240,25 +240,24 @@ public class PlacementActivity extends AppCompatActivity {
 
         // set water
         for (int i = 0; i < nRows; ++i)
-            for (int j = 0; j < nCols; ++j)
+            for (int j = 0; j < nCols; ++j) {
                 visBoard[i][j] = addImageToGrid(grid, R.drawable.water, i, j, 0);
+
+                // add click listener for the view
+                visBoard[i][j].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        GameBoardImageView view = (GameBoardImageView) v;
+                        uiTileTapped(view.getBoardRow(), view.getBoardCol());
+                    }
+                });
+            }
 
         return visBoard;
     }
 
     private GameBoardImageView addImageToGrid(GridLayout grid, int imageResource, int row, int col, int orientation) {
-        GameBoardImageView view = gridRenderer.addImageToGrid(grid, imageResource, row, col, orientation);
-
-        // add click listener for the view
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GameBoardImageView view = (GameBoardImageView) v;
-                uiTileTapped(view.getBoardRow(), view.getBoardCol());
-            }
-        });
-
-        return view;
+        return gridRenderer.addImageToGrid(grid, imageResource, row, col, orientation);
     }
 
     private void showToast(String message) {
