@@ -17,12 +17,13 @@ public class WelcomePageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome_page);
 
-        Button SpielStarten = (Button) findViewById(R.id.Starten);
+        Button SpielStarten = (Button) findViewById(R.id.Beitreten);
 
         SpielStarten.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(WelcomePageActivity.this, NewGameActivity.class));
+              
             }
         });
 
