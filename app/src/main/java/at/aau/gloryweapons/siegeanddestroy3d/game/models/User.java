@@ -1,6 +1,9 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable{
+    private static final long serialVersionUID = 17802657802356L;
     private int id;
     private String ip;
     private String name;

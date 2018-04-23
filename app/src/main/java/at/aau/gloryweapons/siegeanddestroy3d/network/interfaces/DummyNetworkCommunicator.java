@@ -6,16 +6,19 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
-import at.aau.gloryweapons.siegeanddestroy3d.network.Instruction;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 
 /**
  * Simple dummy implementation for the network communicator.
  */
 public class DummyNetworkCommunicator implements NetworkCommunicator {
+
+    private User user;
+
     @Override
-    public void sendNameToServer(String name, CallbackObject<User> callback) {
+    public void sendNameToServer(User user, CallbackObject<User> callback) {
         // simulate sending
-        Thread t = new Thread(new ServerMessageSimulator(name, callback));
+        Thread t = new Thread(new ServerMessageSimulator(user.getName(), callback));
         t.start();
     }
 
@@ -25,8 +28,15 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
     }
 
     @Override
-    public void receiveServerMessages(CallbackObject<Instruction> callback) {
+    public void receiveServerMessages(CallbackObject<InstructionDTO> callback) {
 
+    }
+
+    @Override
+    public void getUserId(CallbackObject<User> callback) {
+        int id = (1000 + (int) (Math.random() * (1000000)));
+        this.user = new User(id,null,null);
+        return ;
     }
 
     /**

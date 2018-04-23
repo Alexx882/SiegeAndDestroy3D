@@ -1,9 +1,12 @@
-package at.aau.gloryweapons.siegeanddestroy3d.network;
+package at.aau.gloryweapons.siegeanddestroy3d.network.dto;
+
+import java.io.Serializable;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
-public class Turn {
+public class TurnDTO implements Serializable{
 
+    private static final long serialVersionUID = 1459083456079L;
     private TurnType type;
     private User user;
     private int attacksUserID;
@@ -18,7 +21,7 @@ public class Turn {
         ERROR
     }
 
-    public Turn(TurnType type, User user){
+    public TurnDTO(TurnType type, User user){
         this.type = type;
         this.user = user;
     }
