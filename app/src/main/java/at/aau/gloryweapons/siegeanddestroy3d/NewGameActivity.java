@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
+import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.ServerGameHandlerWifi;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class NewGameActivity extends AppCompatActivity {
@@ -27,10 +28,16 @@ public class NewGameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_game);
 
+        //init Server
+        //ServerGameHandler.getInstance().initSimpleSocketServer();
+        ServerGameHandlerWifi serverGameHandlerWifi = ServerGameHandlerWifi.getInstance();
+        serverGameHandlerWifi.initServerGameHandler(this);
+
+
         loadUiElements();
 
-        WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+        final WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        final String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
 
         TextView t = new TextView(this);
 
@@ -49,7 +56,7 @@ public class NewGameActivity extends AppCompatActivity {
                 }
 
                 Editable shot = _editText.getText();
-                if (!ValidationHelperClass.validShots(shot != null ? shot.toString(): null )) {
+                if (!ValidationHelperClass.validShots(shot != null ? shot.toString() : null)) {
                     showLongToast("Bitte geben Sie eine Zahl ein");
                     return;
 
@@ -63,6 +70,7 @@ public class NewGameActivity extends AppCompatActivity {
         });
 
     }
+
     private void loadUiElements() {
         _buttonHostGame = findViewById(R.id.buttonHostGame);
         _editTextPlayerName = findViewById(R.id.editTextPlayerName);
