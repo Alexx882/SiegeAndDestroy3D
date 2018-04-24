@@ -3,6 +3,7 @@
     package="at.aau.gloryweapons.siegeanddestroy3d">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.hardware.sensor.proximity" />
 
     <application
         android:allowBackup="true"
@@ -22,25 +23,32 @@
             </intent-filter>
         </activity>
         <activity
-            android:label="@string/app_name"
             android:name=".JoinGameActivity"
+            android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
-            android:label="@string/app_name"
             android:name=".NewGameActivity"
+            android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
+            android:name=".gameActivities.GameTurnsActivity"
             android:label="@string/app_name"
-            android:name=".game.activities.GameTurnsActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
+            android:name=".gameActivities.PlacementActivity"
             android:label="@string/app_name"
-            android:name=".game.activities.PlacementActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".sensors.ProximitySensorActivity"
+            android:screenOrientation="landscape"/>
+        <activity android:name=".sensors.TestSensorActivity"
+            android:screenOrientation="landscape"/>
+        <activity android:name=".sensors.AccelerometerSensorActivity"
+            android:screenOrientation="landscape">
+            ></activity>
     </application>
 
 </manifest>
