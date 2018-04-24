@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import at.aau.gloryweapons.siegeanddestroy3d.gameActivities.PlacementActivity;
+import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class NewGameActivity extends AppCompatActivity {

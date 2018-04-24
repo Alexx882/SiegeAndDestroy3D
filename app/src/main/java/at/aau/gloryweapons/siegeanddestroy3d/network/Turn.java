@@ -1,6 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network;
 
-import at.aau.gloryweapons.siegeanddestroy3d.gameModels.User;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
 public class Turn {
 

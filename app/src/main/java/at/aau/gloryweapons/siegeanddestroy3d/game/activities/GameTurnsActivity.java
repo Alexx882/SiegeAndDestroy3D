@@ -1,4 +1,4 @@
-package at.aau.gloryweapons.siegeanddestroy3d.gameActivities;
+package at.aau.gloryweapons.siegeanddestroy3d.game.activities;
 
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import at.aau.gloryweapons.siegeanddestroy3d.R;
-import at.aau.gloryweapons.siegeanddestroy3d.gameModels.GameSettings;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameSettings;
 
 public class GameTurnsActivity extends AppCompatActivity {
     ImageView iv = null;

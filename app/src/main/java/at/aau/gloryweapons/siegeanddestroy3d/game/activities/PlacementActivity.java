@@ -1,20 +1,26 @@
-package at.aau.gloryweapons.siegeanddestroy3d.gameActivities;
+package at.aau.gloryweapons.siegeanddestroy3d.game.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.Toast;
 
+import java.util.Arrays;
+
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
-import at.aau.gloryweapons.siegeanddestroy3d.gameModels.BasicShip;
-import at.aau.gloryweapons.siegeanddestroy3d.gameModels.BattleArea;
-import at.aau.gloryweapons.siegeanddestroy3d.gameViews.GameBoardImageView;
+import at.aau.gloryweapons.siegeanddestroy3d.game.activities.renderer.BoardRenderer;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
+import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 
 public class PlacementActivity extends AppCompatActivity {
+    private BoardRenderer gridRenderer;
+
     // visual and logical board
     private GameBoardImageView[][] visualBoard = null;
     private BattleArea playerBoard = null;
@@ -32,6 +38,9 @@ public class PlacementActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_placement);
+
+        // init the renderer
+        gridRenderer = new BoardRenderer(this);
 
         int nRows = GlobalGameSettings.getCurrent().getNumberRows();
         int nCols = GlobalGameSettings.getCurrent().getNumberColumns();
@@ -55,7 +64,8 @@ public class PlacementActivity extends AppCompatActivity {
         3. user places ship on board - ASYNC
         4. set ship logically and visually
         5. if another unplaced ship exists goto(2)
-        6. send placed ships to server
+        6. check if user is satisfied with placement configuration
+        7. send placed ships to server
         */
 
         // (1) load/create all ships
@@ -177,7 +187,11 @@ public class PlacementActivity extends AppCompatActivity {
         btnRotateRight.setClickable(false);
         placeShipOnPreviewGrid(null);
 
-        // TODO (6) send ships to server
+        // TODO (6) let user accept the config or restart placement
+
+        // (7) send ships to server
+        NetworkCommunicator comm = new DummyNetworkCommunicator();
+        comm.sendGameConfigurationToServer(null, playerBoard, Arrays.asList(ships), null); // TODO
     }
 
     /**
@@ -222,31 +236,18 @@ public class PlacementActivity extends AppCompatActivity {
         grid.setRowCount(nRows);
         grid.setColumnCount(nCols);
 
-        GameBoardImageView[][] visualBoard = new GameBoardImageView[nRows][nCols];
+        GameBoardImageView[][] visBoard = new GameBoardImageView[nRows][nCols];
 
         // set water
         for (int i = 0; i < nRows; ++i)
             for (int j = 0; j < nCols; ++j)
-                visualBoard[i][j] = addImageToGrid(grid, R.drawable.water, i, j, 0);
+                visBoard[i][j] = addImageToGrid(grid, R.drawable.water, i, j, 0);
 
-        return visualBoard;
+        return visBoard;
     }
 
-    /**
-     * Adds an image to the grid with provided coordinates either horizontally or vertically.
-     *
-     * @param grid          The grid to show the image.
-     * @param imageResource The image.
-     * @param row           The row of the grid to use.
-     * @param col           The column of the grid to use.
-     * @param orientation   The orientation of the image in degrees.
-     * @return The newly created ImageView.
-     */
     private GameBoardImageView addImageToGrid(GridLayout grid, int imageResource, int row, int col, int orientation) {
-        // create image view and set image
-        GameBoardImageView view = new GameBoardImageView(this, row, col);
-        view.setImageResource(imageResource);
-        view.setRotation(orientation);
+        GameBoardImageView view = gridRenderer.addImageToGrid(grid, imageResource, row, col, orientation);
 
         // add click listener for the view
         view.setOnClickListener(new View.OnClickListener() {
@@ -257,23 +258,6 @@ public class PlacementActivity extends AppCompatActivity {
             }
         });
 
-        // create params for grid
-        GridLayout.LayoutParams param = new GridLayout.LayoutParams();
-        param.height = GridLayout.LayoutParams.WRAP_CONTENT;
-        param.width = GridLayout.LayoutParams.WRAP_CONTENT;
-        param.topMargin = 5;
-        param.rightMargin = 5;
-        param.setGravity(Gravity.CENTER);
-        param.rowSpec = GridLayout.spec(row);
-        param.columnSpec = GridLayout.spec(col);
-
-        // apply params
-        view.setLayoutParams(param);
-
-        // add view to grid
-        grid.addView(view);
-
-        // return the created view
         return view;
     }
 
