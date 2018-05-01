@@ -1,9 +1,15 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
-public class User {
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+
+import java.io.Serializable;
+
+@JsonObject
+public class User{
     private int id;
     private String ip;
     private String name;
+
 
     public User(int uId, String uIp, String uName)
     {
@@ -11,6 +17,9 @@ public class User {
         ip=uIp;
         name=uName;
 
+    }
+
+    public User(){
     }
 
     public int getId() {
