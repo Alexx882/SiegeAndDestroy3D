@@ -16,9 +16,9 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
     private User user;
 
     @Override
-    public void sendNameToServer(User user, CallbackObject<User> callback) {
+    public void sendNameToServer(String username, CallbackObject<User> callback) {
         // simulate sending
-        Thread t = new Thread(new ServerMessageSimulator(user.getName(), callback));
+        Thread t = new Thread(new ServerMessageSimulator(username, callback));
         t.start();
     }
 

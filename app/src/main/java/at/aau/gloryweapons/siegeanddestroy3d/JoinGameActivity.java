@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,23 +27,13 @@ public class JoinGameActivity extends AppCompatActivity {
     private TextView txtServerIPHeader;
     private SalutDevice salutDevice;
     private ClientGameHandlerWifi clientGameHandlerWifi;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_game);
         loadUiElements();
-
-        //init wifi direct
-        clientGameHandlerWifi = ClientGameHandlerWifi.getInstance();
-        clientGameHandlerWifi.initClientGameHandler(this, new CallbackObject<SalutDevice>() {
-            @Override
-            public void callback(SalutDevice param) {
-                salutDevice = param;
-                txtServer.setText("Server: " + param.deviceName + " " + param.readableName);
-                btnJoinGame.setText("Spiel " + param.deviceName + " beitreten");
-            }
-        });
 
 
         btnJoinGame.setOnClickListener(new View.OnClickListener() {
@@ -69,11 +58,25 @@ public class JoinGameActivity extends AppCompatActivity {
                 // disable button now
                 Button btn = (Button) view;
                 // TODO show user that the app is still working ("connecting to server" or something)
-                btn.setClickable(false);
+                // btn.setClickable(false);
 
-                // connect to server and check name
-                //connectToServer(hostIp, username);
-                connectToServer(null, username);
+                if (clientGameHandlerWifi == null) {
+                    registerHost();
+                } else {
+                    if (user == null) {
+                        clientGameHandlerWifi.sendNameToServer(username, new CallbackObject<User>() {
+                            @Override
+                            public void callback(User param) {
+                                if (param != null) {
+                                    startPlacement();
+                                } else {
+                                    showLongToast("Username schon vergeben!");
+                                    return;
+                                }
+                            }
+                        });
+                    }
+                }
 
 
             }
@@ -82,22 +85,23 @@ public class JoinGameActivity extends AppCompatActivity {
 
     }
 
-    private void connectToServer(String hostIp, String username) {
-        // send name to server and hope that it isn't taken
-        //NetworkCommunicator comm = new DummyNetworkCommunicator();
-
-        //register to server
-        clientGameHandlerWifi.registerToHost(salutDevice, username);
-        clientGameHandlerWifi.sendNameToServer(new User(0, null, username), new CallbackObject<User>() {
+    private void registerHost() {
+        //init wifi direct
+        this.clientGameHandlerWifi = ClientGameHandlerWifi.getInstance();
+        this.clientGameHandlerWifi.initClientGameHandler(this, new CallbackObject<SalutDevice>() {
             @Override
-            public void callback(User param) {
-                if (param == null) {
-                    showLongToast("Name ist bereits vergeben.");
-                    btnJoinGame.setClickable(true);
-                    return;
-                }
+            public void callback(SalutDevice param) {
+                salutDevice = param;
+                txtServer.setVisibility(View.VISIBLE);
+                txtServer.setText("Verbindung zum Server: " + param.deviceName + " " + param.readableName + "hergestellt!");
+                btnJoinGame.setText("Namen übeprüfen");
             }
         });
+
+    }
+
+
+    private void startPlacement() {
 
         // TODO save user object and host IP
         Intent intent = new Intent(JoinGameActivity.this, PlacementActivity.class);
@@ -118,9 +122,18 @@ public class JoinGameActivity extends AppCompatActivity {
         //no use with wifi direct
         txtServerIp.setVisibility(View.INVISIBLE);
         txtServerIPHeader.setVisibility(View.INVISIBLE);
+        txtServer.setVisibility(View.GONE);
     }
 
     private void showLongToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (clientGameHandlerWifi != null) {
+            clientGameHandlerWifi.resetNetwork();
+        }
+        super.onBackPressed();
     }
 }

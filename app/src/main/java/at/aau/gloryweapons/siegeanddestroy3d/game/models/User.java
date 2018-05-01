@@ -1,12 +1,15 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+
 import java.io.Serializable;
 
-public class User implements Serializable{
-    private static final long serialVersionUID = 17802657802356L;
+@JsonObject
+public class User{
     private int id;
     private String ip;
     private String name;
+
 
     public User(int uId, String uIp, String uName)
     {
@@ -14,6 +17,9 @@ public class User implements Serializable{
         ip=uIp;
         name=uName;
 
+    }
+
+    public User(){
     }
 
     public int getId() {

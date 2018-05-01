@@ -38,8 +38,11 @@ public class GlobalGameSettings {
         return _shipSizes;
     }
 
+    //Network settings
     private final String SERVICE_NAME = "sAd3D";
     private final int port = 16661;
+
+    private boolean isServer;
 
     private static GlobalGameSettings _current = null;
 
@@ -56,5 +59,13 @@ public class GlobalGameSettings {
 
     public int getPort() {
         return port;
+    }
+
+    public boolean isServer() {
+        return isServer;
+    }
+
+    public void setServer(boolean server) {
+        isServer = server;
     }
 }

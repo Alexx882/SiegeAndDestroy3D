@@ -21,9 +21,6 @@ public class WelcomePageActivity extends AppCompatActivity {
 
         Button SpielStarten = (Button) findViewById(R.id.Starten);
 
-        //reset wifi direct
-        WifiDirectHelper.getInstance().resetWifiDirect();
-
         SpielStarten.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

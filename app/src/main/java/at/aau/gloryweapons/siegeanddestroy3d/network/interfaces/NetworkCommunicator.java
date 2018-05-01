@@ -16,10 +16,10 @@ public interface NetworkCommunicator {
     /**
      * Sends a name to the server asynchronously and responds with the complete User if the name is valid.
      *
-     * @param user     The name to use for the user.
+     * @param username     The name to use for the user.
      * @param callback The callback which is called to return the User object. Null, if the name is not valid in the context.
      */
-    public void sendNameToServer(User user, CallbackObject<User> callback);
+    public void sendNameToServer(String username, CallbackObject<User> callback);
 
     /**
      * Sends the whole game configuration for a user to the server asynchronously. The server responds with the complete configuration for the game.

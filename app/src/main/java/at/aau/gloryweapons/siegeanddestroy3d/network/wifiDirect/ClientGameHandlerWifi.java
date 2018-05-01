@@ -1,6 +1,7 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect;
 
 import android.app.Activity;
+import android.os.Build;
 import android.util.Log;
 
 import com.peak.salut.Callbacks.SalutCallback;
@@ -12,6 +13,7 @@ import com.peak.salut.SalutDevice;
 import com.peak.salut.SalutServiceData;
 
 import java.util.List;
+import java.util.UUID;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
@@ -19,6 +21,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 
@@ -33,6 +36,7 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
     private Salut network;
     private static ClientGameHandlerWifi instance;
     private CallbackObject<SalutDevice> salutDeviceCallbackObject;
+    private String thisDeviceName;
 
 
     public static ClientGameHandlerWifi getInstance() {
@@ -43,6 +47,14 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
     }
 
     public void initClientGameHandler(final Activity activity, CallbackObject<SalutDevice> showServer) {
+
+        thisDeviceName = UUID.randomUUID().toString();
+
+        //reset server mode
+        if (ServerGameHandlerWifi.getInstance().getNetwork() != null && ServerGameHandlerWifi.getInstance().getNetwork().isRunningAsHost) {
+           // ServerGameHandlerWifi.getInstance().resetNetwork();
+        }
+
         this.salutDeviceCallbackObject = showServer;
 
         SalutDataCallback salutDataCallback = new SalutDataCallback() {
@@ -52,31 +64,33 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
             }
         };
         this.dataReceiver = new SalutDataReceiver(activity, salutDataCallback);
-        this.serviceData = new SalutServiceData(GlobalGameSettings.getCurrent().getSERVICE_NAME(), GlobalGameSettings.getCurrent().getPort(), "client");
+        this.serviceData = new SalutServiceData(GlobalGameSettings.getCurrent().getSERVICE_NAME(), GlobalGameSettings.getCurrent().getPort(), thisDeviceName);
+
+        GlobalGameSettings.getCurrent().setServer(false);
 
         startSalut();
     }
 
     private void startSalut() {
-        network = new Salut(dataReceiver, serviceData, new SalutCallback() {
+        this.network = new Salut(dataReceiver, serviceData, new SalutCallback() {
             @Override
             public void call() {
                 Log.e(this.getClass().getName(), "Sorry, but this device does not support WiFi Direct.");
             }
         });
 
-        network.discoverNetworkServices(new SalutDeviceCallback() {
+        this.network.discoverNetworkServices(new SalutDeviceCallback() {
             @Override
             public void call(SalutDevice device) {
                 Log.d(this.getClass().getName(), "A device has connected with the name " + device.deviceName);
-                //registerToHost(device);
+                registerToHost(device);
                 salutDeviceCallbackObject.callback(device);
             }
         }, true);
     }
 
-    public void registerToHost(SalutDevice device, String userName) {
-        network.registerWithHost(device, new SalutCallback() {
+    public void registerToHost(SalutDevice device) {
+        this.network.registerWithHost(device, new SalutCallback() {
             @Override
             public void call() {
                 Log.d(this.getClass().getName(), "We're now registered.");
@@ -90,7 +104,9 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
     }
 
     public void sendToServer(Object o) {
-        network.sendToHost(o, new SalutCallback() {
+
+        Log.i(this.getClass().getName(), "send request to host: " + o.getClass().getName());
+        this.network.sendToHost(o, new SalutCallback() {
             @Override
             public void call() {
                 Log.e(this.getClass().getName(), "salut failure - Message cannot be sent!");
@@ -104,17 +120,22 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
     }
 
     public void resetNetwork() {
-        if (network != null && network.isConnectedToAnotherDevice) {
-            network.unregisterClient(true);
-            network.stopNetworkService(true);
-            network.stopServiceDiscovery(true);
+        if (this.network != null) {
+            this.network.unregisterClient(true);
         }
     }
 
+    public Salut getNetwork(){
+        return this.network;
+    }
+
     @Override
-    public void sendNameToServer(User user, CallbackObject<User> callback) {
+    public void sendNameToServer(String username, CallbackObject<User> callback) {
         userCallbackObject = callback;
-        //sendToServer(user);
+        UserNameRequestDTO userNameRequestDTO = new UserNameRequestDTO();
+        userNameRequestDTO.setCheckUsername(username);
+        userNameRequestDTO.setDeviceName(thisDeviceName);
+        sendToServer(userNameRequestDTO);
     }
 
     @Override
