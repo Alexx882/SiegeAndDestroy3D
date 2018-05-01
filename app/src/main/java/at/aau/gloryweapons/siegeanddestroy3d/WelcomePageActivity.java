@@ -6,13 +6,19 @@ import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
 
+
 import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.WifiDirectHelper;
+import at.aau.gloryweapons.siegeanddestroy3d.sensors.AccelerometerSensorActivity;
+import at.aau.gloryweapons.siegeanddestroy3d.sensors.ProximitySensorActivity;
+
 
 
 public class WelcomePageActivity extends AppCompatActivity {
 
     Button SpielStarten;
     Button SpielBeitreten;
+    Button proximityTest;
+    Button accelerometerTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +40,24 @@ public class WelcomePageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(WelcomePageActivity.this, JoinGameActivity.class));
+            }
+        });
+
+        Button proximityTest = (Button) findViewById(R.id.proximityTest);
+
+        proximityTest.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(WelcomePageActivity.this, ProximitySensorActivity.class));
+            }
+        });
+
+        Button accelerometerTest = (Button) findViewById(R.id.accelerometerTest);
+
+        accelerometerTest.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(WelcomePageActivity.this, AccelerometerSensorActivity.class));
             }
         });
     }

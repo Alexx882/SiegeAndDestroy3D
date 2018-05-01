@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import at.aau.gloryweapons.siegeanddestroy3d.R;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameSettings;
 
 public class GameTurnsActivity extends AppCompatActivity {
@@ -23,8 +24,8 @@ public class GameTurnsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enemy_turn);
-        //initializing gameSettings class. normally not in this activity...only for testing
-        GameSettings gameSettings = new GameSettings();
+        // receiving and saving the game configuration
+        GameSettings gameSettings = (GameConfiguration)getIntent().getSerializableExtra(GameConfiguration.INTENT_KEYWORD);
 
         int nRows = 9, nCols = 9;
         // set size for grid
