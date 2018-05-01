@@ -1,5 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.activities;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,10 +12,14 @@ import java.util.Arrays;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
+import at.aau.gloryweapons.siegeanddestroy3d.WelcomePageActivity;
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.renderer.BoardRenderer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 
@@ -31,8 +36,9 @@ public class PlacementActivity extends AppCompatActivity {
     private boolean placementInProgress = false;
 
     // btns
-    Button btnRotateLeft;
-    Button btnRotateRight;
+    Button btnRotateShip;
+    Button btnReady;
+    Button btnRestartPlacement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,21 +48,44 @@ public class PlacementActivity extends AppCompatActivity {
         // init the renderer
         gridRenderer = new BoardRenderer(this);
 
+        // init the buttons
+        btnRotateShip = findViewById(R.id.buttonRotateShip);
+        btnReady = findViewById(R.id.buttonReady);
+        btnRestartPlacement = findViewById(R.id.buttonRestartPlacement);
+
+        // let the user place the ships
+        initShipPlacementProcess();
+    }
+
+    /**
+     * Switches from this activity to the GameTurnsActivity
+     * @param gameConfig
+     */
+    private void switchToGameActivity(GameConfiguration gameConfig){
+        Intent switchActivityIntent = new Intent(this, GameTurnsActivity.class);
+        switchActivityIntent.putExtra(GameConfiguration.INTENT_KEYWORD, gameConfig);
+        startActivity(switchActivityIntent);
+
+        // remove this activity from the history stack - user shouldnt be able to get back to placement
+        this.finish();
+    }
+
+    /**
+     * Inits the ship placement process and starts with the first ship.
+     */
+    private void initShipPlacementProcess() {
         int nRows = GlobalGameSettings.getCurrent().getNumberRows();
         int nCols = GlobalGameSettings.getCurrent().getNumberColumns();
 
         // init the visual board with water tiles
         visualBoard = showEmptyBoard(nRows, nCols);
 
-        // init the logical board with water
+        // init the logical board with water tiles
         playerBoard = new BattleArea(GlobalGameSettings.getCurrent().getPlayerId(), nRows, nCols);
 
-        // let the user place the ships
-        placeShips();
-    }
-
-    private void placeShips() {
         placementInProgress = true;
+        updateButtonVisibility(true);
+
         /*
         Process:
         1. load/create all ships
@@ -68,7 +97,7 @@ public class PlacementActivity extends AppCompatActivity {
         7. send placed ships to server
         */
 
-        // (1) load/create all ships
+        // (1) create all ships
         ships = new BasicShip[GlobalGameSettings.getCurrent().getNumberShips()];
         for (int i = 0; i < ships.length; ++i)
             ships[i] = new BasicShip(GlobalGameSettings.getCurrent().getPlayerId(),
@@ -79,10 +108,8 @@ public class PlacementActivity extends AppCompatActivity {
         idxShipToPlace = 0;
         prepareNextShipPlacement();
 
-        btnRotateLeft = findViewById(R.id.buttonRotateLeft);
-        btnRotateRight = findViewById(R.id.buttonRotateRight);
         // (3) listen for ship rotation
-        View.OnClickListener rotateListener = new View.OnClickListener() {
+        btnRotateShip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (placementInProgress) {
@@ -90,9 +117,16 @@ public class PlacementActivity extends AppCompatActivity {
                     placeShipOnPreviewGrid(ships[idxShipToPlace]);
                 }
             }
-        };
-        btnRotateLeft.setOnClickListener(rotateListener);
-        btnRotateRight.setOnClickListener(rotateListener);
+        });
+
+        // (6) restart the placement process if the user is not satisfied.
+        btnRestartPlacement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // (6) restart the placement process if the user is not satisfied.
+                initShipPlacementProcess();
+            }
+        });
     }
 
     private void prepareNextShipPlacement() {
@@ -146,6 +180,7 @@ public class PlacementActivity extends AppCompatActivity {
 
     /**
      * Used to handle taps from the user.
+     * The method places the ship and starts initialization for the next ship placement or finishes up if the last ship was placed.
      *
      * @param row
      * @param col
@@ -174,7 +209,8 @@ public class PlacementActivity extends AppCompatActivity {
         placeShipOnVisualBoard(shipToPlace, row, col);
 
         // (5) prepare placing the next ship
-        if (++idxShipToPlace < ships.length) {
+        ++idxShipToPlace;
+        if (idxShipToPlace < ships.length) {
             prepareNextShipPlacement();
         } else {
             finishShipPlacement();
@@ -183,15 +219,47 @@ public class PlacementActivity extends AppCompatActivity {
 
     private void finishShipPlacement() {
         placementInProgress = false;
-        btnRotateLeft.setClickable(false);
-        btnRotateRight.setClickable(false);
+        // update the layout to indicate the placement process is complete
+        updateButtonVisibility(false);
         placeShipOnPreviewGrid(null);
 
-        // TODO (6) let user accept the config or restart placement
-
         // (7) send ships to server
+        btnReady.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // diable ui interactions
+                btnRotateShip.setEnabled(false);
+                btnRestartPlacement.setEnabled(false);
+                btnReady.setEnabled(false);
+
+                sendConfigurationToServer();
+            }
+        });
+    }
+
+    private void sendConfigurationToServer() {
         NetworkCommunicator comm = new DummyNetworkCommunicator();
-        comm.sendGameConfigurationToServer(null, playerBoard, Arrays.asList(ships), null); // TODO
+        CallbackObject<GameConfiguration> callback = new CallbackObject<GameConfiguration>() {
+            @Override
+            public void callback(GameConfiguration param) {
+                switchToGameActivity(param);
+            }
+        };
+
+        comm.sendGameConfigurationToServer(null, playerBoard, Arrays.asList(ships), callback);
+    }
+
+    /**
+     * Updates the visibility of the buttons. Depending on the parameter the buttons are either shown or hidden.
+     *
+     * @param placementActive Indicates if the placement process is currently active.
+     */
+    private void updateButtonVisibility(boolean placementActive) {
+        int placementButtonsVisibility = placementActive ? View.VISIBLE : View.INVISIBLE;
+        btnRotateShip.setVisibility(placementButtonsVisibility);
+
+        int finishButtonsVisibility = !placementActive ? View.VISIBLE : View.INVISIBLE;
+        btnReady.setVisibility(finishButtonsVisibility);
     }
 
     /**
@@ -225,7 +293,7 @@ public class PlacementActivity extends AppCompatActivity {
     }
 
     /**
-     * Creates an empty board with only water and displays it.
+     * Creates an empty board with only water and displays it on the placement grid.
      *
      * @param nRows
      * @param nCols
@@ -233,6 +301,7 @@ public class PlacementActivity extends AppCompatActivity {
      */
     private GameBoardImageView[][] showEmptyBoard(int nRows, int nCols) {
         GridLayout grid = findViewById(R.id.gridPlacementBoard);
+        grid.removeAllViews();
         grid.setRowCount(nRows);
         grid.setColumnCount(nCols);
 
@@ -240,25 +309,24 @@ public class PlacementActivity extends AppCompatActivity {
 
         // set water
         for (int i = 0; i < nRows; ++i)
-            for (int j = 0; j < nCols; ++j)
+            for (int j = 0; j < nCols; ++j) {
                 visBoard[i][j] = addImageToGrid(grid, R.drawable.water, i, j, 0);
+
+                // add click listener for the view
+                visBoard[i][j].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        GameBoardImageView view = (GameBoardImageView) v;
+                        uiTileTapped(view.getBoardRow(), view.getBoardCol());
+                    }
+                });
+            }
 
         return visBoard;
     }
 
     private GameBoardImageView addImageToGrid(GridLayout grid, int imageResource, int row, int col, int orientation) {
-        GameBoardImageView view = gridRenderer.addImageToGrid(grid, imageResource, row, col, orientation);
-
-        // add click listener for the view
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GameBoardImageView view = (GameBoardImageView) v;
-                uiTileTapped(view.getBoardRow(), view.getBoardCol());
-            }
-        });
-
-        return view;
+        return gridRenderer.addImageToGrid(grid, imageResource, row, col, orientation);
     }
 
     private void showToast(String message) {
