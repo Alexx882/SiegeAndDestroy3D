@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
 import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.ServerGameHandlerWifi;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
@@ -32,8 +34,7 @@ public class NewGameActivity extends AppCompatActivity {
     private List<String> usersList;
     private ArrayAdapter<String> adapter;
 
-    private ServerGameHandlerWifi serverGameHandlerWifi;
-
+    private NetworkCommunicatorServer serverGameHandlerWifi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,8 @@ public class NewGameActivity extends AppCompatActivity {
                 } else {
                     Intent intent = new Intent(NewGameActivity.this, PlacementActivity.class);
                     startActivity(intent);
+
+                    NewGameActivity.this.finish();
                 }
 
             }

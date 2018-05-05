@@ -225,15 +225,18 @@ public class BattleAreaTests {
 
         BattleAreaTile[][] tiles = area.getBattleAreaTiles();
         Assert.assertTrue(tiles[1][0].getType() == BattleAreaTile.TileType.WATER);
-        Assert.assertTrue(tiles[1][1].getType() == BattleAreaTile.TileType.SHIP_HEALTHY);
-        Assert.assertTrue(tiles[1][2].getType() == BattleAreaTile.TileType.SHIP_HEALTHY);
+        Assert.assertTrue(tiles[1][1].getType() == BattleAreaTile.TileType.SHIP_START);
+        Assert.assertTrue(tiles[1][1].isHorizontal());
+        Assert.assertTrue(tiles[1][2].getType() == BattleAreaTile.TileType.SHIP_END);
+        Assert.assertTrue(tiles[1][2].isHorizontal());
         Assert.assertTrue(tiles[1][3].getType() == BattleAreaTile.TileType.WATER);
 
         // must result in exactly 2 tiles which are not water anymore
         int cnt = 0;
         for (int i = 0; i < area.getRowNumber(); ++i)
             for (int j = 0; j < area.getColumnNumber(); ++j)
-                if (tiles[i][j].getType() == BattleAreaTile.TileType.SHIP_HEALTHY)
+                if (tiles[i][j].getType() == BattleAreaTile.TileType.SHIP_START
+                        || tiles[i][j].getType() == BattleAreaTile.TileType.SHIP_END)
                     ++cnt;
         Assert.assertEquals(2, cnt);
 
@@ -250,15 +253,18 @@ public class BattleAreaTests {
 
         BattleAreaTile[][] tiles = area.getBattleAreaTiles();
         Assert.assertTrue(tiles[0][1].getType() == BattleAreaTile.TileType.WATER);
-        Assert.assertTrue(tiles[1][1].getType() == BattleAreaTile.TileType.SHIP_HEALTHY);
-        Assert.assertTrue(tiles[2][1].getType() == BattleAreaTile.TileType.SHIP_HEALTHY);
+        Assert.assertTrue(tiles[1][1].getType() == BattleAreaTile.TileType.SHIP_START);
+        Assert.assertTrue(!tiles[1][1].isHorizontal());
+        Assert.assertTrue(tiles[2][1].getType() == BattleAreaTile.TileType.SHIP_END);
+        Assert.assertTrue(!tiles[2][1].isHorizontal());
         Assert.assertTrue(tiles[3][1].getType() == BattleAreaTile.TileType.WATER);
 
         // must result in exactly 2 tiles which are not water anymore
         int cnt = 0;
         for (int i = 0; i < area.getRowNumber(); ++i)
             for (int j = 0; j < area.getColumnNumber(); ++j)
-                if (tiles[i][j].getType() == BattleAreaTile.TileType.SHIP_HEALTHY)
+                if (tiles[i][j].getType() == BattleAreaTile.TileType.SHIP_START
+                        || tiles[i][j].getType() == BattleAreaTile.TileType.SHIP_END)
                     ++cnt;
         Assert.assertEquals(2, cnt);
 

@@ -1,7 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect;
 
 import android.app.Activity;
-import android.os.Build;
 import android.util.Log;
 
 import com.peak.salut.Callbacks.SalutCallback;
@@ -21,6 +20,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
@@ -52,7 +52,7 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
 
         //reset server mode
         if (ServerGameHandlerWifi.getInstance().getNetwork() != null && ServerGameHandlerWifi.getInstance().getNetwork().isRunningAsHost) {
-           // ServerGameHandlerWifi.getInstance().resetNetwork();
+            // ServerGameHandlerWifi.getInstance().resetNetwork();
         }
 
         this.salutDeviceCallbackObject = showServer;
@@ -64,7 +64,7 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
             }
         };
         this.dataReceiver = new SalutDataReceiver(activity, salutDataCallback);
-        this.serviceData = new SalutServiceData(GlobalGameSettings.getCurrent().getSERVICE_NAME(), GlobalGameSettings.getCurrent().getPort(), thisDeviceName);
+        this.serviceData = new SalutServiceData(GlobalGameSettings.getCurrent().getServiceName(), GlobalGameSettings.getCurrent().getPort(), thisDeviceName);
 
         GlobalGameSettings.getCurrent().setServer(false);
 
@@ -125,7 +125,7 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
         }
     }
 
-    public Salut getNetwork(){
+    public Salut getNetwork() {
         return this.network;
     }
 
@@ -151,5 +151,12 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
     @Override
     public void getUserId(CallbackObject<User> callback) {
 
+    }
+
+    @Override
+    public TurnDTO sendShotOnEnemyToServer(User user, int col, int row) {
+        TurnDTO t = new TurnDTO(TurnDTO.TurnType.HIT, user);
+
+        return t;
     }
 }

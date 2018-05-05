@@ -17,7 +17,7 @@ public class AccelerometerSensorActivity extends AppCompatActivity implements Se
     private SensorManager sensorManager;
     private Sensor accelerometercheatSensor;
     private float[] mGravity;
-    private  float mAccel;
+    private float mAccel;
     private float mAccelCurrent;
     private float mAccelLast;
 
@@ -38,25 +38,26 @@ public class AccelerometerSensorActivity extends AppCompatActivity implements Se
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             mGravity = event.values.clone();
-            // reagiert vorerst nur beim schütteln
+            // reagiert bei schütteln
             float x = mGravity[0];
             float y = mGravity[1];
             float z = mGravity[2];
             mAccelLast = mAccelCurrent;
-            mAccelCurrent = (float) Math.sqrt(x*x + y*y + z*z);
+            mAccelCurrent = (float) Math.sqrt(x * x + y * y + z * z);
             float delta = mAccelCurrent - mAccelLast;
-            mAccel = mAccel * 0.456547f + delta;
+            mAccel = mAccel * 0.9f + delta;
 
-            if(mAccel > 3){ //mAccel
+            if (mAccel > 3) { //mAccel
                 setContentView(R.layout.activity_accelerometer_sensor);
-            }else {
+            } else {
                 setContentView(R.layout.activity_placement);
             }
         }
 
     }
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
@@ -67,6 +68,7 @@ public class AccelerometerSensorActivity extends AppCompatActivity implements Se
         super.onPause();
         sensorManager.unregisterListener(this);
     }
+
     @Override
     protected void onResume() {
         super.onResume();

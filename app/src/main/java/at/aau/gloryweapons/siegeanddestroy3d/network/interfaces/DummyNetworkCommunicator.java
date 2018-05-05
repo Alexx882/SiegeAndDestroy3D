@@ -1,5 +1,9 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.interfaces;
 
+import android.app.Activity;
+
+import com.peak.salut.SalutDevice;
+
 import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
@@ -7,6 +11,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 
 /**
  * Simple dummy implementation for the network communicator.
@@ -37,8 +42,22 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
     @Override
     public void getUserId(CallbackObject<User> callback) {
         int id = (1000 + (int) (Math.random() * (1000000)));
-        this.user = new User(id,null,null);
-        return ;
+        this.user = new User(id, null, null);
+        return;
+    }
+
+    @Override
+    public void initClientGameHandler(Activity activity, CallbackObject<SalutDevice> showServer) {
+        SalutDevice dev = new SalutDevice();
+        dev.deviceName = "HandyX";
+        dev.readableName = "UserY";
+
+        showServer.callback(dev);
+    }
+
+    @Override
+    public void resetNetwork() {
+        // just return
     }
 
     /**
@@ -83,8 +102,18 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
                 // ignore
             }
 
-            callback.callback(new GameConfiguration());
+            callback.callback(new GameConfiguration(true));
         }
+    }
+
+    /**
+     * @param user
+     * @param col
+     * @param row
+     * @return
+     */
+    public TurnDTO sendShotOnEnemyToServer(User user, int col, int row) {
+        return null;
     }
 }
 

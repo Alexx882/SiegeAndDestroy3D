@@ -6,22 +6,22 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Arrays;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
-import at.aau.gloryweapons.siegeanddestroy3d.WelcomePageActivity;
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.renderer.BoardRenderer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.ClientGameHandlerWifi;
 
 public class PlacementActivity extends AppCompatActivity {
     private BoardRenderer gridRenderer;
@@ -35,10 +35,11 @@ public class PlacementActivity extends AppCompatActivity {
     private int idxShipToPlace = 0;
     private boolean placementInProgress = false;
 
-    // btns
+    // ui elements
     Button btnRotateShip;
     Button btnReady;
     Button btnRestartPlacement;
+    TextView txtInformation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +49,11 @@ public class PlacementActivity extends AppCompatActivity {
         // init the renderer
         gridRenderer = new BoardRenderer(this);
 
-        // init the buttons
+        // init the ui elements
         btnRotateShip = findViewById(R.id.buttonRotateShip);
         btnReady = findViewById(R.id.buttonReady);
         btnRestartPlacement = findViewById(R.id.buttonRestartPlacement);
+        txtInformation = findViewById(R.id.textViewInformation);
 
         // let the user place the ships
         initShipPlacementProcess();
@@ -228,9 +230,10 @@ public class PlacementActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // diable ui interactions
-                btnRotateShip.setEnabled(false);
-                btnRestartPlacement.setEnabled(false);
-                btnReady.setEnabled(false);
+                btnRotateShip.setVisibility(View.GONE);
+                btnRestartPlacement.setVisibility(View.GONE);
+                btnReady.setVisibility(View.GONE);
+                txtInformation.setText("Warten auf Mitspieler...");
 
                 sendConfigurationToServer();
             }
