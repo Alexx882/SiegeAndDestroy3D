@@ -54,8 +54,10 @@ public interface NetworkCommunicator {
     // thanks Android for not supporting static in Interfaces.
 
     public void initClientGameHandler(final Activity activity, CallbackObject<SalutDevice> showServer);
-
-    public void resetConnection();
+    /**
+     * Stop network and disable wifi direct
+     */
+    public void resetNetwork();
 
     /**
      * @param user
@@ -64,4 +66,5 @@ public interface NetworkCommunicator {
      * @return
      */
     public TurnDTO sendShotOnEnemyToServer(User user, int col, int row);
+
 }

@@ -56,7 +56,7 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
     }
 
     @Override
-    public void resetConnection() {
+    public void resetNetwork() {
         // just return
     }
 
