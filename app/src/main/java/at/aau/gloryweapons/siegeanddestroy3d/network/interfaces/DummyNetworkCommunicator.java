@@ -11,6 +11,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 
 /**
  * Simple dummy implementation for the network communicator.
@@ -103,6 +104,16 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
 
             callback.callback(new GameConfiguration());
         }
+    }
+
+    /**
+     * @param user
+     * @param col
+     * @param row
+     * @return
+     */
+    public TurnDTO sendShotOnEnemyToServer(User user, int col, int row) {
+        return null;
     }
 }
 

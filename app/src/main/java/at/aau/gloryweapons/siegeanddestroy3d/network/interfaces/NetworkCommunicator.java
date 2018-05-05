@@ -12,6 +12,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 
 /**
  * The Interface for a Object used to communicate with the server.
@@ -55,4 +56,12 @@ public interface NetworkCommunicator {
     public void initClientGameHandler(final Activity activity, CallbackObject<SalutDevice> showServer);
 
     public void resetConnection();
+
+    /**
+     * @param user
+     * @param col
+     * @param row
+     * @return
+     */
+    public TurnDTO sendShotOnEnemyToServer(User user, int col, int row);
 }

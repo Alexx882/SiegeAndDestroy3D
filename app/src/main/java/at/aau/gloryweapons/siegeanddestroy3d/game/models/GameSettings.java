@@ -2,8 +2,11 @@ package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
 import java.util.ArrayList;
 
-public class GameSettings {
+import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
+
+public class GameSettings{
     private String hostIp;
+    private int myId;
     private ArrayList<User> userList;
 
     //Test Constructor. Dient nur zum Testen der Positionierung von SpielerLabels
@@ -18,10 +21,11 @@ public class GameSettings {
         userList.add(u3);
     }
 
-    public GameSettings(User host) {
+    public GameSettings(User host, int id) {
         userList = new ArrayList<User>();
         hostIp = host.getIp();
         userList.add(host);
+        myId = id;
     }
 
     public String getHostIp() {
@@ -42,5 +46,9 @@ public class GameSettings {
 
     public User getUserByIndex(int i) {
         return userList.get(i);
+    }
+
+    public int getMyId() {
+        return myId;
     }
 }
