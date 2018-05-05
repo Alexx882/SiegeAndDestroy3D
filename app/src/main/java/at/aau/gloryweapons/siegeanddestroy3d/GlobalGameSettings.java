@@ -1,17 +1,28 @@
 package at.aau.gloryweapons.siegeanddestroy3d;
 
+import java.io.Serializable;
+
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+
 /**
  * Created by Alexander on 05.04.2018.
  */
 
-public class GlobalGameSettings {
+public class GlobalGameSettings implements Serializable {
+    private User localUser;
+
     private GlobalGameSettings() {
     }
 
-    private int _playerId = 100; // TODO: assign playerId
+    public void setLocalUser(User user) {
+        if (user == null)
+            throw new IllegalArgumentException("user");
+
+        this.localUser = user;
+    }
 
     public int getPlayerId() {
-        return _playerId;
+        return localUser.getId();
     }
 
     private int _nRows = 9; // TODO: assign #rows
@@ -51,6 +62,14 @@ public class GlobalGameSettings {
             _current = new GlobalGameSettings();
 
         return _current;
+    }
+
+    public static void setCurrent(GlobalGameSettings settings) {
+        // TODO REWORK! this is just for testing until integration with models.GameSettings is finished
+        if (settings == null)
+            throw new IllegalArgumentException("settings");
+
+        _current = settings;
     }
 
     public String getSERVICE_NAME() {

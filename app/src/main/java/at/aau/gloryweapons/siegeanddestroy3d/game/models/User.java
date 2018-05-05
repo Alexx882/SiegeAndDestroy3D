@@ -5,21 +5,19 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 import java.io.Serializable;
 
 @JsonObject
-public class User{
+public class User implements Serializable {
     private int id;
     private String ip;
     private String name;
 
 
-    public User(int uId, String uIp, String uName)
-    {
-        id=uId;
-        ip=uIp;
-        name=uName;
-
+    public User(int uId, String uIp, String uName) {
+        id = uId;
+        ip = uIp;
+        name = uName;
     }
 
-    public User(){
+    public User() {
     }
 
     public int getId() {

@@ -7,17 +7,6 @@
     tools:context="at.aau.gloryweapons.siegeanddestroy3d.JoinGameActivity">
 
     <TextView
-        android:id="@+id/textView_server_ip_header"
-        android:layout_width="144dp"
-        android:layout_height="29dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="24dp"
-        android:text="Server IP:"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-    <TextView
         android:id="@+id/textView2"
         android:layout_width="156dp"
         android:layout_height="29dp"
@@ -43,21 +32,6 @@
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editTextServerIp"
-        android:layout_width="303dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="60dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="4dp"
-        android:ems="10"
-        android:hint="127.0.0.1"
-        android:inputType="textPersonName"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/editTextUserName" />
-
     <Button
         android:id="@+id/buttonJoinGame"
         android:layout_width="460dp"
@@ -77,20 +51,23 @@
         android:layout_marginBottom="20dp"
         android:layout_marginEnd="60dp"
         android:layout_marginStart="60dp"
-        android:textSize="20sp"
         android:textColor="@android:color/holo_red_light"
+        android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/buttonJoinGame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textView_show_server"
-        android:layout_width="wrap_content"
+        android:id="@+id/textViewServer"
+        android:layout_width="457dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="60dp"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="20dp"
-        android:text="Server"
+        android:layout_marginTop="8dp"
         android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/textViewError"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 </android.support.constraint.ConstraintLayout>

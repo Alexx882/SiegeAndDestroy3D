@@ -52,7 +52,7 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
 
         //reset server mode
         if (ServerGameHandlerWifi.getInstance().getNetwork() != null && ServerGameHandlerWifi.getInstance().getNetwork().isRunningAsHost) {
-           // ServerGameHandlerWifi.getInstance().resetNetwork();
+            // ServerGameHandlerWifi.getInstance().resetNetwork();
         }
 
         this.salutDeviceCallbackObject = showServer;
@@ -119,13 +119,18 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
         Log.i(this.getClass().getName(), ">>>" + object.getClass().getName());
     }
 
+    @Override
+    public void resetConnection() {
+        this.resetNetwork();
+    }
+
     public void resetNetwork() {
         if (this.network != null) {
             this.network.unregisterClient(true);
         }
     }
 
-    public Salut getNetwork(){
+    public Salut getNetwork() {
         return this.network;
     }
 
