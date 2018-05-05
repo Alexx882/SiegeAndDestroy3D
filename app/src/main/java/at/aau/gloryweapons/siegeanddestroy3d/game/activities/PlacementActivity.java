@@ -12,12 +12,10 @@ import java.util.Arrays;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
-import at.aau.gloryweapons.siegeanddestroy3d.WelcomePageActivity;
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.renderer.BoardRenderer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;

@@ -5,7 +5,6 @@ import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -19,15 +18,14 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.GameController;
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.renderer.BoardRenderer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameSettings;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
 
 public class GameTurnsActivity extends AppCompatActivity {
     ImageView iv = null;
-    GameSettings gameSettings = null;
+    GameConfiguration gameSettings = null;
     GameController controller = null;
     private BoardRenderer board = null;
     User actualUser = null;
@@ -41,7 +39,7 @@ public class GameTurnsActivity extends AppCompatActivity {
 
         // receiving and saving the game configuration
         //final GameSettings gameSettings = (GameConfiguration) getIntent().getSerializableExtra(GameConfiguration.INTENT_KEYWORD);
-        gameSettings = new GameSettings();
+        gameSettings = new GameConfiguration(true);
         board = new BoardRenderer(this);
         controller = new GameController();
 

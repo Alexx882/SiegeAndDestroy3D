@@ -15,12 +15,10 @@ import com.peak.salut.SalutServiceData;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
 
@@ -68,7 +66,7 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
         };
 
         this.dataReceiver = new SalutDataReceiver(activity, salutDataCallback);
-        this.serviceData = new SalutServiceData(GlobalGameSettings.getCurrent().getSERVICE_NAME(), GlobalGameSettings.getCurrent().getPort(), "server");
+        this.serviceData = new SalutServiceData(GlobalGameSettings.getCurrent().getServiceName(), GlobalGameSettings.getCurrent().getPort(), "server");
 
         GlobalGameSettings.getCurrent().setServer(true);
 

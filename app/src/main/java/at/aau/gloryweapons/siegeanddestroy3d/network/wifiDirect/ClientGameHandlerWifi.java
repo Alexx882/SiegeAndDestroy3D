@@ -1,7 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect;
 
 import android.app.Activity;
-import android.os.Build;
 import android.util.Log;
 
 import com.peak.salut.Callbacks.SalutCallback;
@@ -65,7 +64,7 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
             }
         };
         this.dataReceiver = new SalutDataReceiver(activity, salutDataCallback);
-        this.serviceData = new SalutServiceData(GlobalGameSettings.getCurrent().getSERVICE_NAME(), GlobalGameSettings.getCurrent().getPort(), thisDeviceName);
+        this.serviceData = new SalutServiceData(GlobalGameSettings.getCurrent().getServiceName(), GlobalGameSettings.getCurrent().getPort(), thisDeviceName);
 
         GlobalGameSettings.getCurrent().setServer(false);
 
