@@ -119,11 +119,6 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
         Log.i(this.getClass().getName(), ">>>" + object.getClass().getName());
     }
 
-    @Override
-    public void resetConnection() {
-        this.resetNetwork();
-    }
-
     public void resetNetwork() {
         if (this.network != null) {
             this.network.unregisterClient(true);

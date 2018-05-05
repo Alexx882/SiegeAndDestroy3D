@@ -20,9 +20,11 @@ import java.util.Map;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
 
-public class ServerGameHandlerWifi {
+public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
 
     private SalutDataCallback callback;
     private Activity activity;

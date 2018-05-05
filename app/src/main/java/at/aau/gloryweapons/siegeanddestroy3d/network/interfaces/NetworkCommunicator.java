@@ -54,5 +54,8 @@ public interface NetworkCommunicator {
 
     public void initClientGameHandler(final Activity activity, CallbackObject<SalutDevice> showServer);
 
-    public void resetConnection();
+    /**
+     * Stop network and disable wifi direct
+     */
+    public void resetNetwork();
 }

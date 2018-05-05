@@ -164,7 +164,7 @@ public class JoinGameActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (clientCommunicator != null) {
-            clientCommunicator.resetConnection();
+            clientCommunicator.resetNetwork();
         }
         super.onBackPressed();
     }
