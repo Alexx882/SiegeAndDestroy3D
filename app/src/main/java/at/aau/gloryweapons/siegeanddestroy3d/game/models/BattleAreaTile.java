@@ -13,11 +13,10 @@ public class BattleAreaTile implements Serializable {
         SHIP_MIDDLE,
         SHIP_END,
         SHIP_DESTROYED,
-        NO_HIT,
-        SHIP_HEALTHY //todo delte it
+        NO_HIT
     }
 
-    private int orientation;
+    private boolean isHorizontal = true;
     // initial type is water
     private TileType type = TileType.WATER;
 
@@ -29,11 +28,11 @@ public class BattleAreaTile implements Serializable {
         this.type = type;
     }
 
-    public int getOrientation() {
-        return orientation;
+    public boolean isHorizontal() {
+        return this.isHorizontal;
     }
 
-    public void setOrientation(int orientation) {
-        this.orientation = orientation;
+    public void setHorizontal(boolean horizontal) {
+        this.isHorizontal = horizontal;
     }
 }
