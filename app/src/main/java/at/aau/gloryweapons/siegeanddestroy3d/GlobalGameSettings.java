@@ -25,6 +25,7 @@ public class GlobalGameSettings implements Serializable {
     private boolean isServer;
 
     private GlobalGameSettings() {
+        localUser = new User(1, "1.1.1.1", "ale");
     }
 
     public void setLocalUser(User user) {

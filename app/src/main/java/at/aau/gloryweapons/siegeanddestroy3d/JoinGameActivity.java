@@ -42,11 +42,11 @@ public class JoinGameActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // new click, disable error information
                 txtError.setVisibility(View.GONE);
-                btnJoinGame.setClickable(false);
+                // disable button
+                btnJoinGame.setEnabled(false);
 
                 if (!connectedToServer) {
-                    // disable button
-                    btnJoinGame.setText("Connecting");
+                    btnJoinGame.setText("Verbinden...");
                     // init server connection
                     connectToServer();
 
@@ -55,8 +55,8 @@ public class JoinGameActivity extends AppCompatActivity {
                     Editable eUsername = txtUserName.getText();
                     String username = eUsername != null ? eUsername.toString() : null;
                     if (!ValidationHelperClass.isUserNameValid(username)) {
-                        showError("Username ist ungültig");
-                        btnJoinGame.setClickable(true);
+                        showError("Username ist ungültig.");
+                        btnJoinGame.setEnabled(true);
                         return;
                     }
 
@@ -76,7 +76,7 @@ public class JoinGameActivity extends AppCompatActivity {
                             } else {
                                 // name invalid
                                 showError("Username nicht verfügbar!");
-                                btnJoinGame.setClickable(true);
+                                btnJoinGame.setEnabled(true);
                             }
                         }
                     });
@@ -104,7 +104,7 @@ public class JoinGameActivity extends AppCompatActivity {
                     // connecting finished
 
                     // re-enable button
-                    btnJoinGame.setClickable(true);
+                    btnJoinGame.setEnabled(true);
                     btnJoinGame.setText("Name überprüfen");
 
                     // show server name
@@ -122,7 +122,7 @@ public class JoinGameActivity extends AppCompatActivity {
             showError("Verbindung fehlgeschlagen");
 
             // enable button again
-            btnJoinGame.setClickable(true);
+            btnJoinGame.setEnabled(true);
             btnJoinGame.setText("Erneut versuchen");
         }
     }
@@ -140,7 +140,6 @@ public class JoinGameActivity extends AppCompatActivity {
     private void startPlacementActivity() {
         // start placement activity and provide the game settings
         Intent switchActivityIntent = new Intent(this, PlacementActivity.class);
-        switchActivityIntent.putExtra(GameConfiguration.INTENT_KEYWORD, GlobalGameSettings.getCurrent());
         startActivity(switchActivityIntent);
 
         // remove this activity from the stack (back means WelcomePage)

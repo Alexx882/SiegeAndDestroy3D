@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Arrays;
@@ -34,10 +35,11 @@ public class PlacementActivity extends AppCompatActivity {
     private int idxShipToPlace = 0;
     private boolean placementInProgress = false;
 
-    // btns
+    // ui elements
     Button btnRotateShip;
     Button btnReady;
     Button btnRestartPlacement;
+    TextView txtInformation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +49,11 @@ public class PlacementActivity extends AppCompatActivity {
         // init the renderer
         gridRenderer = new BoardRenderer(this);
 
-        // init the buttons
+        // init the ui elements
         btnRotateShip = findViewById(R.id.buttonRotateShip);
         btnReady = findViewById(R.id.buttonReady);
         btnRestartPlacement = findViewById(R.id.buttonRestartPlacement);
+        txtInformation = findViewById(R.id.textViewInformation);
 
         // let the user place the ships
         initShipPlacementProcess();
@@ -227,9 +230,10 @@ public class PlacementActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // diable ui interactions
-                btnRotateShip.setEnabled(false);
-                btnRestartPlacement.setEnabled(false);
-                btnReady.setEnabled(false);
+                btnRotateShip.setVisibility(View.GONE);
+                btnRestartPlacement.setVisibility(View.GONE);
+                btnReady.setVisibility(View.GONE);
+                txtInformation.setText("Warten auf Mitspieler...");
 
                 sendConfigurationToServer();
             }

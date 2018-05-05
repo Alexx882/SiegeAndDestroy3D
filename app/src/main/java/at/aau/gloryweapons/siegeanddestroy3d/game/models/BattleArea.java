@@ -136,15 +136,26 @@ public class BattleArea implements Serializable {
         if (!canShipBePlaced(shipToPlace, rowToPlace, colToPlace))
             throw new IllegalArgumentException("Not a valid configuration. Check BattleArea.canShipBePlaced() first.");
 
+        boolean horizontalPlacement = shipToPlace.isHorizontal();
+
         // place the ship by setting the tiles
         for (int i = 0; i < shipToPlace.getLength(); ++i) {
+            BattleAreaTile currentTile = battleAreaTiles[rowToPlace][colToPlace];
+
             // set tile on board
-            battleAreaTiles[rowToPlace][colToPlace].setType(BattleAreaTile.TileType.SHIP_HEALTHY);
+            if (i == 0)
+                currentTile.setType(BattleAreaTile.TileType.SHIP_START);
+            else if (i == shipToPlace.getLength() - 1)
+                currentTile.setType(BattleAreaTile.TileType.SHIP_END);
+            else
+                currentTile.setType(BattleAreaTile.TileType.SHIP_MIDDLE);
+            currentTile.setHorizontal(horizontalPlacement);
+
             // assign tile to the ship
-            shipToPlace.getTiles()[i] = battleAreaTiles[rowToPlace][colToPlace];
+            shipToPlace.getTiles()[i] = currentTile;
 
             // update coordinates for next tile
-            if (shipToPlace.isHorizontal())
+            if (horizontalPlacement)
                 ++colToPlace;
             else
                 ++rowToPlace;

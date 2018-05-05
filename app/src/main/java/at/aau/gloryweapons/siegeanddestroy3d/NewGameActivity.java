@@ -81,6 +81,8 @@ public class NewGameActivity extends AppCompatActivity {
                 } else {
                     Intent intent = new Intent(NewGameActivity.this, PlacementActivity.class);
                     startActivity(intent);
+
+                    NewGameActivity.this.finish();
                 }
 
             }
