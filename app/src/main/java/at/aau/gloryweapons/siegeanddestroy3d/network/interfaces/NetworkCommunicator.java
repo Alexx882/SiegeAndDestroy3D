@@ -6,9 +6,8 @@ import java.util.List;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
-import at.aau.gloryweapons.siegeanddestroy3d.network.Instruction;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 
 /**
  * The Interface for a Object used to communicate with the server.
@@ -17,10 +16,10 @@ public interface NetworkCommunicator {
     /**
      * Sends a name to the server asynchronously and responds with the complete User if the name is valid.
      *
-     * @param name     The name to use for the user.
+     * @param username     The name to use for the user.
      * @param callback The callback which is called to return the User object. Null, if the name is not valid in the context.
      */
-    public void sendNameToServer(String name, CallbackObject<User> callback);
+    public void sendNameToServer(String username, CallbackObject<User> callback);
 
     /**
      * Sends the whole game configuration for a user to the server asynchronously. The server responds with the complete configuration for the game.
@@ -38,6 +37,13 @@ public interface NetworkCommunicator {
      *
      * @param callback
      */
-    public void receiveServerMessages(CallbackObject<Instruction> callback);
+    public void receiveServerMessages(CallbackObject<InstructionDTO> callback);
+
+    /**
+     * sends a request for the user id
+     *
+     * @param callback The callback which is called to return the User object. ip and name are NULL
+     */
+    public void getUserId(CallbackObject<User> callback);
 
 }
