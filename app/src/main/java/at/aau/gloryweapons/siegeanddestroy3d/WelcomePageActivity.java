@@ -6,8 +6,10 @@ import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
 
+
 import at.aau.gloryweapons.siegeanddestroy3d.sensors.AccelerometerSensorActivity;
 import at.aau.gloryweapons.siegeanddestroy3d.sensors.ProximitySensorActivity;
+
 
 
 public class WelcomePageActivity extends AppCompatActivity {
@@ -24,7 +26,7 @@ public class WelcomePageActivity extends AppCompatActivity {
 
         Button SpielStarten = (Button) findViewById(R.id.Starten);
 
-        SpielStarten.setOnClickListener(new View.OnClickListener(){
+        SpielStarten.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(WelcomePageActivity.this, NewGameActivity.class));
@@ -33,7 +35,7 @@ public class WelcomePageActivity extends AppCompatActivity {
 
         Button SpielBeitreten = (Button) findViewById(R.id.Beitreten);
 
-        SpielBeitreten.setOnClickListener(new View.OnClickListener(){
+        SpielBeitreten.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(WelcomePageActivity.this, JoinGameActivity.class));

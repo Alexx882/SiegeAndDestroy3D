@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="429dp"
+        android:layout_width="170dp"
         android:layout_height="35dp"
         android:layout_marginStart="84dp"
         android:layout_marginTop="28dp"
@@ -48,8 +48,8 @@
 
     <TextView
         android:id="@+id/textViewIpHost"
-        android:layout_width="425dp"
-        android:layout_height="18dp"
+        android:layout_width="170dp"
+        android:layout_height="16dp"
         android:layout_marginStart="52dp"
         android:layout_marginTop="96dp"
         app:layout_constraintStart_toEndOf="@+id/textView2"
@@ -99,4 +99,27 @@
         android:onClick="goToPlacementActivity"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+        android:id="@+id/listViewUser"
+        android:layout_width="232dp"
+        android:layout_height="300dp"
+        tools:layout_editor_absoluteX="352dp"
+        tools:layout_editor_absoluteY="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="350dp"
+        android:layout_marginTop="28dp"/>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/users"
+        tools:layout_editor_absoluteX="350dp"
+        tools:layout_editor_absoluteY="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="350dp"
+        android:layout_marginTop="20dp"/>
 </android.support.constraint.ConstraintLayout>

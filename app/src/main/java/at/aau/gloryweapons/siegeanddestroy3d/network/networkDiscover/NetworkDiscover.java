@@ -1,4 +1,4 @@
-package at.aau.gloryweapons.siegeanddestroy3d.network;
+package at.aau.gloryweapons.siegeanddestroy3d.network.networkDiscover;
 
 import android.content.Context;
 import android.net.nsd.NsdManager;

@@ -28,14 +28,21 @@ public class GlobalGameSettings {
 
     private int _nShips = 4; // TODO
 
-    public int getNumberShips(){
+    public int getNumberShips() {
         return _nShips;
     }
 
     private int[] _shipSizes = {3, 4, 2, 4}; // TODO
-    public int[] getShipSizes(){
+
+    public int[] getShipSizes() {
         return _shipSizes;
     }
+
+    //Network settings
+    private final String SERVICE_NAME = "sAd3D";
+    private final int port = 16661;
+
+    private boolean isServer;
 
     private static GlobalGameSettings _current = null;
 
@@ -44,5 +51,21 @@ public class GlobalGameSettings {
             _current = new GlobalGameSettings();
 
         return _current;
+    }
+
+    public String getSERVICE_NAME() {
+        return SERVICE_NAME;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public boolean isServer() {
+        return isServer;
+    }
+
+    public void setServer(boolean server) {
+        isServer = server;
     }
 }

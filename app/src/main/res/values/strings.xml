@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SiegeAndDestroy3D</string>
+
+    <string name="users">Spieler</string>
 </resources>
