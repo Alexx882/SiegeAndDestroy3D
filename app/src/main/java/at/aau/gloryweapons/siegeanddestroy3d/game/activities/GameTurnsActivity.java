@@ -11,7 +11,9 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.GameController;
@@ -38,23 +40,26 @@ public class GameTurnsActivity extends AppCompatActivity {
 
 
         // receiving and saving the game configuration
-        gameSettings = (GameConfiguration) getIntent().getSerializableExtra(GameConfiguration.INTENT_KEYWORD);
+        gameSettings = new GameConfiguration(true);
         board = new BoardRenderer(this);
         controller = new GameController();
 
-        int nRows = 9, nCols = 9;
+        final int nRows = 9, nCols = 9;
         //todo is needed but not working at the moment....no serverShit available
-  /*      for(User u :gameSettings.getUserList())
-        {
-            if(u.getId()==gameSettings.getMyId())
-            {
-                actualUser=u;
+        for (User u : gameSettings.getUserList()) {
+            if (u.getId() == GlobalGameSettings.getCurrent().getPlayerId()) {
+                actualUser = u;
             }
         }
-*/
-        //  visualBoard=initBoard(nRows, nCols);
-        BattleArea area = new BattleArea(1, 9, 9);
-        visualBoard = loadBattleArea(area, nRows, nCols);
+
+        //gets the BattleArea of the Client.
+        for (BattleArea area : gameSettings.getBattleAreaList()) {
+            if (area.getUserId() == actualUser.getId()) {
+                //  visualBoard=initBoard(nRows, nCols);
+                visualBoard = loadBattleArea(area, nRows, nCols);
+            }
+        }
+
 
         Button button = findViewById(R.id.buttonUpadteWater);
         button.setOnClickListener(new View.OnClickListener() {
@@ -73,14 +78,19 @@ public class GameTurnsActivity extends AppCompatActivity {
             v.setText(gameSettings.getUserByIndex(i).getName());
             v.setTextSize(25);
             v.setId(i);
-            // set the ontouchlistener; methode loads the field of the user
+            // set the ontouchlistener; methode loads the field of the selected User
             v.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     Log.i("fish", "" + view.getId());
                     actualUser = gameSettings.getUserByIndex(view.getId());
                     // methodcall in controller like: changeGridToBattleAreaUser(int id) ...id of the view because the id of the view is the same as the position in the userList (ArrayList in GameSettings)
-                    loadArea(view.getId());
+                    for (BattleArea area : gameSettings.getBattleAreaList()) {
+                        if (area.getUserId() == gameSettings.getUserByIndex(view.getId()).getId()) {
+                            loadBattleArea(area, nRows, nCols);
+                        }
+                    }
+
                     return false;
                 }
             });
@@ -110,42 +120,14 @@ public class GameTurnsActivity extends AppCompatActivity {
         return view;
     }
 
-    private void loadArea(int id) {
-        User u = gameSettings.getUserByIndex(id);
-                   /* BattleArea a;
-                    for (BattleArea area : serverListOfAreas) {
-                        if(area.getUserId() == u.getId()) {
-
-                            printArea(area);
-                            break;
-                        }
-                    }*/
-    }
-
-    /*   private GameBoardImageView[][] initBoard(int nRows, int nCols)
-       {
-           GridLayout grid = findViewById(R.id.gridEnemyTurnBoard);
-           grid.setRowCount(nRows);
-           grid.setColumnCount(nCols);
-
-           GameBoardImageView[][] gView = null;
-
-           for (int i = 0; i < nRows; ++i) {
-               for (int j = 0; j < nCols; ++j) {
-                   gView[i][j] = gridRenderer.addImageToGrid(grid, R.drawable.water, i, j, 0);
-                   gView[i][j].setOnClickListener(new View.OnClickListener() {
-                       @Override
-                       public void onClick(View view) {
-                           GameBoardImageView v = (GameBoardImageView) view;
-                           Log.i("fish", "" + v.getBoardCol() + v.getBoardRow());
-                           //shotOnEnemy
-                           controller.shotOnEnemy(gameSettings, actualUser, v.getBoardCol(), v.getBoardRow());
-                       }
-                   });
-               }
-           }
-           return gView;
-       }*/
+    /**
+     * loads the battleAreas and sets the OnClickListener.
+     *
+     * @param area
+     * @param nRows
+     * @param nCols
+     * @return
+     */
     private GameBoardImageView[][] loadBattleArea(BattleArea area, int nRows, int nCols) {
         final GridLayout grid = findViewById(R.id.gridEnemyTurnBoard);
         grid.removeAllViews();
@@ -177,18 +159,24 @@ public class GameTurnsActivity extends AppCompatActivity {
                     case SHIP_DESTROYED:
                         gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_destroyed, i, j, 0);
                         break;
+                    default:
+                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_start, i, j, 90);
+                        break;
                 }
 
+                //OnClickListener for the GridLayout. Calls the method shotOnEnemy in the GameController
                 gView[i][j].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         GameBoardImageView v = (GameBoardImageView) view;
                         Log.i("fish", "" + v.getBoardCol() + v.getBoardRow());
-                        //shotOnEnemy
-                        // todo actualUser = gameSettings.getUserByIndex(v.getId());
-                        int drawable = getTheRightTile(controller.shotOnEnemy(gameSettings, actualUser, v.getBoardCol(), v.getBoardRow()));
-
-                        gView[v.getBoardRow()][v.getBoardCol()].setImageResource(drawable);
+                        //controlls the returnvalue of controller.shotOnEnemy
+                        if (controller.shotOnEnemy(gameSettings, actualUser, v.getBoardCol(), v.getBoardRow()) == null) {
+                            Toast.makeText(GameTurnsActivity.this, "Nice try", Toast.LENGTH_SHORT).show();
+                        } else {
+                            int drawable = getTheRightTile(controller.shotOnEnemy(gameSettings, actualUser, v.getBoardCol(), v.getBoardRow()));
+                            gView[v.getBoardRow()][v.getBoardCol()].setImageResource(drawable);
+                        }
                     }
                 });
             }
@@ -196,6 +184,12 @@ public class GameTurnsActivity extends AppCompatActivity {
         return gView;
     }
 
+    /**
+     * returns the int Value of the selected Tile
+     *
+     * @param tile
+     * @return
+     */
     private int getTheRightTile(BattleAreaTile.TileType tile) {
         int drawable = -1;
 
@@ -216,7 +210,7 @@ public class GameTurnsActivity extends AppCompatActivity {
                 drawable = R.drawable.ship_end;
                 break;
             case SHIP_DESTROYED:
-                drawable = R.drawable.ship_destroyed;
+                drawable = R.drawable.ship_start;
                 break;
         }
         return drawable;

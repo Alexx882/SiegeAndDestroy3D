@@ -25,13 +25,14 @@ public class GlobalGameSettings implements Serializable {
     private boolean isServer;
 
     private GlobalGameSettings() {
+        localUser=new User(1,"12","Patrick");
     }
 
     public void setLocalUser(User user) {
-        if (user == null)
+        /*if (user == null)
             throw new IllegalArgumentException("user");
 
-        this.localUser = user;
+        this.localUser = user;*/
     }
 
     public int getPlayerId() {

@@ -1,5 +1,7 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game;
 
+import android.widget.Toast;
+
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
@@ -12,6 +14,15 @@ public class GameController {
 
     private NetworkCommunicator communicator = new ClientGameHandlerWifi();
 
+    /**
+     * returns if hit or no hit
+     *
+     * @param game
+     * @param enemy
+     * @param col
+     * @param row
+     * @return
+     */
     public BattleAreaTile.TileType shotOnEnemy(GameConfiguration game, User enemy, int col, int row) {
         BattleAreaTile.TileType tile = null;
         if (enemy.getId() != GlobalGameSettings.getCurrent().getPlayerId()) {
@@ -27,7 +38,8 @@ public class GameController {
             }
 
         } else {
-            //not your turn
+            return null;
+
         }
         return tile;
     }
