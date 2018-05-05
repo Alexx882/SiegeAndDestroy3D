@@ -38,8 +38,7 @@ public class GameTurnsActivity extends AppCompatActivity {
 
 
         // receiving and saving the game configuration
-        //final GameSettings gameSettings = (GameConfiguration) getIntent().getSerializableExtra(GameConfiguration.INTENT_KEYWORD);
-        gameSettings = new GameConfiguration(true);
+        gameSettings = (GameConfiguration) getIntent().getSerializableExtra(GameConfiguration.INTENT_KEYWORD);
         board = new BoardRenderer(this);
         controller = new GameController();
 

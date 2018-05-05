@@ -20,6 +20,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.ClientGameHandlerWifi;
 
 public class PlacementActivity extends AppCompatActivity {
     private BoardRenderer gridRenderer;

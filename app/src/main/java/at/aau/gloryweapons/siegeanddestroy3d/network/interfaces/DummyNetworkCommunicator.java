@@ -102,7 +102,7 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
                 // ignore
             }
 
-            callback.callback(new GameConfiguration());
+            callback.callback(new GameConfiguration(true));
         }
     }
 

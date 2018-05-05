@@ -1,16 +1,24 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
+import java.io.Serializable;
+
 /**
  * Created by Alexander on 05.04.2018.
  */
 
-public class BattleArea {
+public class BattleArea implements Serializable {
 
     private int userId;
     private int rows;
     private int columns;
     private BattleAreaTile[][] battleAreaTiles;
 
+    /**
+     * Creates a new BattleArea with given playerId and dimensions. All tiles are water.
+     *
+     * @param userId
+     * @param size
+     */
     public BattleArea(int userId, int size) {
         this(userId, size, size);
     }

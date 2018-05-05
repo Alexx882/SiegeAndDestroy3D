@@ -1,10 +1,12 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
+import java.io.Serializable;
+
 /**
  * Created by Alexander on 05.04.2018.
  */
 
-public class BattleAreaTile {
+public class BattleAreaTile implements Serializable {
     public enum TileType {
         WATER,
         SHIP_START,
