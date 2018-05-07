@@ -1,12 +1,17 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
-import java.io.Serializable;
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.TileTypeConverter;
 
 /**
  * Created by Alexander on 05.04.2018.
  */
 
-public class BattleAreaTile implements Serializable {
+public class BattleAreaTile {
+
+
     public enum TileType {
         WATER,
         SHIP_START,
@@ -16,7 +21,8 @@ public class BattleAreaTile implements Serializable {
         NO_HIT
     }
 
-    private boolean isHorizontal = true;
+    private boolean horizontal = true;
+
     // initial type is water
     private TileType type = TileType.WATER;
 
@@ -29,10 +35,10 @@ public class BattleAreaTile implements Serializable {
     }
 
     public boolean isHorizontal() {
-        return this.isHorizontal;
+        return horizontal;
     }
 
     public void setHorizontal(boolean horizontal) {
-        this.isHorizontal = horizontal;
+        this.horizontal = horizontal;
     }
 }

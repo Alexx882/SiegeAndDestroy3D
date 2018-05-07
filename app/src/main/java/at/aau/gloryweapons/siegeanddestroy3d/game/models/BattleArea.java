@@ -1,13 +1,15 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonIgnore;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+
 import java.io.Serializable;
 
 /**
  * Created by Alexander on 05.04.2018.
  */
-
 public class BattleArea implements Serializable {
-
     private int userId;
     private int rows;
     private int columns;
@@ -56,6 +58,30 @@ public class BattleArea implements Serializable {
 
     public BattleAreaTile[][] getBattleAreaTiles() {
         return battleAreaTiles;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public void setRows(int rows) {
+        this.rows = rows;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
+    public void setColumns(int columns) {
+        this.columns = columns;
+    }
+
+    public void setBattleAreaTiles(BattleAreaTile[][] battleAreaTiles) {
+        this.battleAreaTiles = battleAreaTiles;
     }
 
     /**

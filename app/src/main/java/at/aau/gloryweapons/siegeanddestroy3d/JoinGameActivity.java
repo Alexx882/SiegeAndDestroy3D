@@ -13,11 +13,11 @@ import android.widget.TextView;
 import com.peak.salut.SalutDevice;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ClientGameHandlerAsyncCommunication;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
-import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.ClientGameHandlerWifi;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
@@ -27,6 +27,7 @@ public class JoinGameActivity extends AppCompatActivity {
     private EditText txtUserName;
     private TextView txtServer;
     private TextView txtError;
+    private EditText txtIp;
 
     private NetworkCommunicator clientCommunicator;
     private boolean connectedToServer = false;
@@ -48,7 +49,8 @@ public class JoinGameActivity extends AppCompatActivity {
                 if (!connectedToServer) {
                     btnJoinGame.setText("Verbinden...");
                     // init server connection
-                    connectToServer();
+                    // connectToServer();
+                    connectAsyncServer();
 
                 } else {
                     // basic check for username on client side
@@ -85,6 +87,52 @@ public class JoinGameActivity extends AppCompatActivity {
 
         });
     }
+
+    /**
+     * With this method AndroidAsync is selected as connection
+     */
+    private void connectAsyncServer() {
+        //init singelton
+        clientCommunicator = ClientGameHandlerAsyncCommunication.getInstance();
+
+        //get ip
+        String ip = txtIp.getText().toString();
+
+        //init connection
+        clientCommunicator.initClientGameHandler(ip, this, new CallbackObject<HandshakeDTO>() {
+            @Override
+            public void callback(HandshakeDTO param) {
+
+                //If the connection is successful, a username request is sent to the server.
+                if (param.isConnectionEstablished()) {
+
+                    //send username request
+                    clientCommunicator.sendNameToServer(new String(txtUserName.getText().toString()), new CallbackObject<User>() {
+                        @Override
+                        public void callback(User param) {
+                            Log.v(this.getClass().getName(), "user object received..." + param.getName());
+
+                            //Username not available
+                            if (param == null) {
+                                showError("Username nicht verfügbar!");
+                                btnJoinGame.setEnabled(true);
+                            } else {
+                                // name ok
+                                // save name and things
+                                GlobalGameSettings.getCurrent().setLocalUser(param);
+
+                                // move on to placement
+                                startPlacementActivity();
+                            }
+                        }
+                    });
+                }else {
+                    //TODO show Connection failed
+                }
+            }
+        });
+    }
+
 
     /**
      * Connects to a server and re-enables the button for the name check.
@@ -154,6 +202,8 @@ public class JoinGameActivity extends AppCompatActivity {
         txtUserName = findViewById(R.id.editTextUserName);
         txtServer = findViewById(R.id.textViewServer);
         txtError = findViewById(R.id.textViewError);
+
+        txtIp = findViewById(R.id.editTextHostIpAddress);
 
         // disable info on start
         txtServer.setVisibility(View.GONE);

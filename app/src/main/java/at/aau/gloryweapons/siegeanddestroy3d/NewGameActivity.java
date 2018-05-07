@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.format.Formatter;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ClientData;
+import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ServerGameHandlerAsyncCommunication;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
-import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.ServerGameHandlerWifi;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class NewGameActivity extends AppCompatActivity {
@@ -34,7 +33,9 @@ public class NewGameActivity extends AppCompatActivity {
     private List<String> usersList;
     private ArrayAdapter<String> adapter;
 
-    private NetworkCommunicatorServer serverGameHandlerWifi;
+   // private NetworkCommunicatorServer serverGameHandlerWifi;
+    private NetworkCommunicatorServer serverGameHandlerAsyncComm;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class NewGameActivity extends AppCompatActivity {
 
         //init Server
         //ServerGameHandler.getInstance().initSimpleSocketServer();
+        /*
         this.serverGameHandlerWifi = ServerGameHandlerWifi.getInstance();
         serverGameHandlerWifi.initServerGameHandler(this, new UserCallBack() {
             @Override
@@ -50,6 +52,15 @@ public class NewGameActivity extends AppCompatActivity {
                 listViewUpdater(users);
             }
         });
+        */
+        serverGameHandlerAsyncComm = ServerGameHandlerAsyncCommunication.getInstance();
+        serverGameHandlerAsyncComm.initServerGameHandler(this, new UserCallBack() {
+            @Override
+            public void callback(List<String> param) {
+                listViewUpdater(param);
+            }
+        });
+
 
 
         loadUiElements();
@@ -121,9 +132,9 @@ public class NewGameActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (serverGameHandlerWifi != null){
+      /*  if (serverGameHandlerWifi != null){
            serverGameHandlerWifi.resetNetwork();
-        }
+        }*/
         super.onBackPressed();
     }
 }

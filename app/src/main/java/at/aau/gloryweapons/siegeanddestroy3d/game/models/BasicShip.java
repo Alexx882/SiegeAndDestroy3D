@@ -1,12 +1,14 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+
 import java.io.Serializable;
 
 /**
  * Created by Alexander on 05.04.2018.
  */
-
-public class BasicShip implements Serializable {
+public class BasicShip {
     private int userId = -1;
     private int length = 0;
     private BattleAreaTile[] tiles;
@@ -44,5 +46,17 @@ public class BasicShip implements Serializable {
 
     public BattleAreaTile[] getTiles() {
         return tiles;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public void setTiles(BattleAreaTile[] tiles) {
+        this.tiles = tiles;
     }
 }
