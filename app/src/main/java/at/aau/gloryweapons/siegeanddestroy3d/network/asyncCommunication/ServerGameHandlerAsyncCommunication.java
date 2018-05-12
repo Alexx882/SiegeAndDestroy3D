@@ -224,13 +224,21 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         serverController.addDataToGameConfig(gameConfigRequestDto.getUser(),
                 gameConfigRequestDto.getBattleArea(),
                 gameConfigRequestDto.getPlacedShips(),
-                new CallbackObject<GameConfiguration>() {
+                new UserCallbackObject<GameConfiguration>(getClientDataByUser(gameConfigRequestDto.getUser())) {
                     @Override
                     public void callback(GameConfiguration gameConfig) {
-                        // send the complete gameConfig back to all clients
-                        sendToAllClients(gameConfig);
+//                        // send the complete gameConfig back to the client
+                        sendToClient(clientData, gameConfig);
                     }
-                });
+                }
+//                new CallbackObject<GameConfiguration>() {
+//                    @Override
+//                    public void callback(GameConfiguration gameConfig) {
+//                        // send the complete gameConfig back to all clients
+//                        sendToAllClients(gameConfig);
+//                    }
+//                }
+        );
     }
 
     /**
@@ -242,6 +250,15 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     private ClientData getClientDataByID(String id) {
         for (ClientData clientData : socketList) {
             if (clientData.getId().equals(id)) {
+                return clientData;
+            }
+        }
+        return null;
+    }
+
+    private ClientData getClientDataByUser(User user) {
+        for (ClientData clientData : socketList) {
+            if (clientData.getUser().equals(user)) {
                 return clientData;
             }
         }
@@ -341,5 +358,13 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     @Override
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
 
+    }
+
+    private abstract class UserCallbackObject<T> implements CallbackObject<T>{
+        protected ClientData clientData;
+
+        public  UserCallbackObject(ClientData clientData){
+
+        }
     }
 }
