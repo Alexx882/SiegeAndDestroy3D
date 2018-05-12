@@ -6,8 +6,8 @@ public interface NetworkCommunicatorServer {
     /**
      * Initialization of the server
      *
-     * @param activity      current activity
-     * @param userCallBack  a callback for the representation of the clients
+     * @param activity     current activity
+     * @param userCallBack a callback for the representation of the clients
      */
     public void initServerGameHandler(final Activity activity, UserCallBack userCallBack);
 
@@ -17,8 +17,14 @@ public interface NetworkCommunicatorServer {
     public void resetNetwork();
 
     /**
+     * @param shotCount
+     */
+    public void sendShotCountToServer(int shotCount);
+
+     /**
      * Returns the number of currently connected players.
      * @return
      */
     public int getNumberOfConnectedPlayers();
+
 }

@@ -113,6 +113,14 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     }
 
     /**
+     * @param shotCount
+     */
+    @Override
+    public void sendShotCountToServer(int shotCount) {
+
+    }
+
+    /**
      * Displays the existing user names in the UI
      */
     private void usernameListToUI() {
@@ -153,6 +161,8 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
                     handleHandshakeDto((HandshakeDTO) receivedObject, socket);
                 } else if (receivedObject instanceof UserNameRequestDTO) {
                     handleUserNameRequest((UserNameRequestDTO) receivedObject);
+                } else if (receivedObject instanceof TurnDTO) {
+                    handleTurnDTO((TurnDTO) receivedObject);
                 } else if (receivedObject instanceof GameConfigurationRequestDTO) {
                     handleGameConfigRequest((GameConfigurationRequestDTO) receivedObject);
                 } else {
@@ -279,6 +289,11 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         }
     }
 
+    private void handleTurnDTO(TurnDTO hitType) {
+
+
+    }
+
     @Override
     public int getNumberOfConnectedPlayers() {
         return socketList.size();
@@ -322,7 +337,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     }
 
     @Override
-    public TurnDTO sendShotOnEnemyToServer(User user, int col, int row) {
-        return null;
+    public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
+
     }
 }

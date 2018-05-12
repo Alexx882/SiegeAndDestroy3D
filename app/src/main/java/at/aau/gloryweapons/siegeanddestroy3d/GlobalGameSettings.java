@@ -25,6 +25,9 @@ public class GlobalGameSettings implements Serializable {
     private final int port = 61616;
     private boolean isServer;
 
+    //actualUser
+    private User actualUser = null;
+
     private GlobalGameSettings() {
         localUser = new User(1, "12", "Patrick");
     }
@@ -82,6 +85,14 @@ public class GlobalGameSettings implements Serializable {
 
     public void setServer(boolean server) {
         isServer = server;
+    }
+
+    public User getActualUser() {
+        return actualUser;
+    }
+
+    public void setActualUser(User actualUser) {
+        this.actualUser = actualUser;
     }
 
     private static GlobalGameSettings _current = null;
