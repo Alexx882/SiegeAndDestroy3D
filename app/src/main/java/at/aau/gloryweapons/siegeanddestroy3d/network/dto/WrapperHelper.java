@@ -6,10 +6,11 @@ import com.bluelinelabs.logansquare.LoganSquare;
 
 import java.io.IOException;
 
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
 /**
- *Objects are automatically packed into a wrapper class and converted
+ * Objects are automatically packed into a wrapper class and converted
  * into a json object. When converting a json string into an object,
  * the "target" class must be implemented in the "jsonToObject(String wrapperJson)" method.
  * Otherwise the json string cannot be converted into an object.
@@ -26,9 +27,8 @@ public class WrapperHelper {
     }
 
     /**
-     *
-     * @param wrapperJson   String
-     * @return              Object
+     * @param wrapperJson String
+     * @return Object
      */
     public Object jsonToObject(String wrapperJson) {
         //json to wrapper object
@@ -54,6 +54,9 @@ public class WrapperHelper {
                 case "GameConfigurationRequestDTO":
                     GameConfigurationRequestDTO gameConfigDTO = LoganSquare.parse(dtoWrapper.getJsonObject(), GameConfigurationRequestDTO.class);
                     return gameConfigDTO;
+                case "GameConfiguration":
+                    GameConfiguration gameConfig = LoganSquare.parse(dtoWrapper.getJsonObject(), GameConfiguration.class);
+                    return gameConfig;
                 default:
                     Log.e(this.getClass().getName(), "class name does not exist");
                     break;
@@ -68,6 +71,7 @@ public class WrapperHelper {
     /**
      * Objects are automatically packed into a wrapper class and
      * converted into a json object.
+     *
      * @param object
      * @return
      */

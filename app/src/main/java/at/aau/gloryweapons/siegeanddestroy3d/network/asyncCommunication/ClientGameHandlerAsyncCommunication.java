@@ -172,7 +172,7 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
                     handleHandshake((HandshakeDTO) receivedObject);
                 } else if (receivedObject instanceof UserNameResponseDTO) {
                     handleUserResponse((UserNameResponseDTO) receivedObject);
-                }else if (receivedObject instanceof GameConfiguration) {
+                } else if (receivedObject instanceof GameConfiguration) {
                     handleGameConfigResponse((GameConfiguration) receivedObject);
                 }
 
