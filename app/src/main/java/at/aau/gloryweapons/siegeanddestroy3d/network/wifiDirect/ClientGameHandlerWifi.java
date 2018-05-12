@@ -165,8 +165,4 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
 
         return t;
     }
-    @Override
-    public void sendShotCountToServer(int shot){
-        //todo muss noch gemacht werden
-    }
 }

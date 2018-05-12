@@ -100,6 +100,14 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     }
 
     /**
+     * @param shotCount
+     */
+    @Override
+    public void sendShotCountToServer(int shotCount) {
+
+    }
+
+    /**
      * Displays the existing user names in the UI
      */
     private void usernameListToUI() {
@@ -219,8 +227,8 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
      * To do this, changes must be made in the class WrapperHelper
      * so that the string can be converted back into an object.
      *
-     * @param clientData        ClientData Object
-     * @param object            Object - Must be implemented in the WrapperHelper class to be converted again
+     * @param clientData ClientData Object
+     * @param object     Object - Must be implemented in the WrapperHelper class to be converted again
      */
     private void sendToClient(ClientData clientData, Object object) {
         Log.i(this.getClass().getName(), "try to write message...");
@@ -246,6 +254,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
      * converted into a json string. The object must be implemented
      * in the class WrapperHelper, otherwise an error occurs when
      * creating json to object.
+     *
      * @param object
      */
     private void sendToAllClients(Object object) {

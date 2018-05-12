@@ -122,12 +122,6 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
         return null;
     }
 
-    /**
-     * @param shot
-     */
-    public void sendShotCountToServer(int shot) {
-        //todo muss noch gemacht werden
-    }
 }
 
 

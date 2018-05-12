@@ -34,11 +34,8 @@ public class NewGameActivity extends AppCompatActivity {
     private List<String> usersList;
     private ArrayAdapter<String> adapter;
 
-   // private NetworkCommunicatorServer serverGameHandlerWifi;
+    // private NetworkCommunicatorServer serverGameHandlerWifi;
     private NetworkCommunicatorServer serverGameHandlerAsyncComm;
-
-
-    private NetworkCommunicator clientCommunicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +60,6 @@ public class NewGameActivity extends AppCompatActivity {
                 listViewUpdater(param);
             }
         });
-
 
 
         loadUiElements();
@@ -94,7 +90,7 @@ public class NewGameActivity extends AppCompatActivity {
 
                 } else {
 
-                    clientCommunicator.sendShotCountToServer(Integer.parseInt(shot.toString()));
+                    serverGameHandlerAsyncComm.sendShotCountToServer(Integer.parseInt(shot.toString()));
                     Intent intent = new Intent(NewGameActivity.this, PlacementActivity.class);
                     startActivity(intent);
 
@@ -120,17 +116,17 @@ public class NewGameActivity extends AppCompatActivity {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
 
-    private void initAdapter(){
+    private void initAdapter() {
         usersList = new ArrayList<>();
-        adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,android.R.id.text1,usersList);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, usersList);
 
         userListView.setAdapter(adapter);
     }
 
-    private void listViewUpdater(List<String> usersList){
+    private void listViewUpdater(List<String> usersList) {
         this.usersList.clear();
         this.usersList.addAll(usersList);
-        if (adapter != null){
+        if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
     }

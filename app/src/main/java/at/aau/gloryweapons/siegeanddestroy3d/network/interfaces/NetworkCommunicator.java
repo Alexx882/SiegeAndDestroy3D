@@ -71,11 +71,4 @@ public interface NetworkCommunicator {
      */
     public TurnDTO sendShotOnEnemyToServer(User user, int col, int row);
 
-    /**
-     * send the shotCount to the server
-     *
-     * @param shot
-     */
-    public void sendShotCountToServer(int shot);
-
 }

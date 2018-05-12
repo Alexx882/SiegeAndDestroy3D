@@ -89,6 +89,11 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
     }
 
     @Override
+    public void sendShotCountToServer(int shot) {
+
+    }
+
+    @Override
     public void initClientGameHandler(String ip, Activity activity, CallbackObject<HandshakeDTO> isConnected) {
         Log.i(this.getClass().getName(), "init client game handler async connection...");
         Log.i(this.getClass().getName(), "try to connect to " + ip);
