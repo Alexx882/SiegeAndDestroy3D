@@ -1,13 +1,15 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
 
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameConfiguration implements Serializable {
     public static final String INTENT_KEYWORD = "Config";
-
     private List<User> userList;
     private List<BattleArea> battleAreaList;
 

@@ -11,6 +11,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 
@@ -52,6 +53,8 @@ public interface NetworkCommunicator {
     public void getUserId(CallbackObject<User> callback);
 
     // thanks Android for not supporting static in Interfaces.
+
+    public void initClientGameHandler(String ip, final Activity activity, CallbackObject<HandshakeDTO> isConnected);
 
     public void initClientGameHandler(final Activity activity, CallbackObject<SalutDevice> showServer);
     /**
