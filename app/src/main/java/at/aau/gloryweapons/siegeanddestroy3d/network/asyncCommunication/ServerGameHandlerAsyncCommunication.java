@@ -14,6 +14,7 @@ import com.koushikdutta.async.Util;
 import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.callback.DataCallback;
 import com.koushikdutta.async.callback.ListenCallback;
+import com.peak.salut.SalutDevice;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -21,16 +22,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
+import at.aau.gloryweapons.siegeanddestroy3d.server.ServerController;
 
 import static android.content.Context.WIFI_SERVICE;
 
-public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorServer {
+public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorServer, NetworkCommunicator {
     //instance
     private static ServerGameHandlerAsyncCommunication instance;
 
@@ -43,6 +53,12 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     private Activity activity;
 
     private WrapperHelper wrapperHelper;
+
+    private ServerController serverController;
+
+    private ServerGameHandlerAsyncCommunication() {
+        serverController = new ServerController();
+    }
 
     public static ServerGameHandlerAsyncCommunication getInstance() {
         if (instance == null) {
@@ -94,11 +110,6 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         });
     }
 
-    @Override
-    public void resetNetwork() {
-
-    }
-
     /**
      * Displays the existing user names in the UI
      */
@@ -121,7 +132,6 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     }
 
-
     private void handleConnection(final AsyncSocket socket) {
         Log.i(this.getClass().getName(), "socket connection started...");
         socket.setDataCallback(new DataCallback() {
@@ -140,6 +150,8 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
                     handleHandshakeDto((HandshakeDTO) receivedObject, socket);
                 } else if (receivedObject instanceof UserNameRequestDTO) {
                     handleUserNameRequest((UserNameRequestDTO) receivedObject);
+                } else if (receivedObject instanceof GameConfigurationRequestDTO) {
+                    handleGameConfigRequest((GameConfigurationRequestDTO) receivedObject);
                 } else {
                     Log.e(this.getClass().getName(), "cannot cast class");
                 }
@@ -182,6 +194,18 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         }
     }
 
+    private void handleGameConfigRequest(GameConfigurationRequestDTO gameConfigRequestDto) {
+        serverController.addDataToGameConfig(gameConfigRequestDto.getUser(),
+                gameConfigRequestDto.getBattleArea(),
+                gameConfigRequestDto.getPlacedShips(),
+                new CallbackObject<GameConfiguration>() {
+                    @Override
+                    public void callback(GameConfiguration gameConfig) {
+                        // send the complete gameConfig back to all clients
+                        sendToAllClients(gameConfig);
+                    }
+                });
+    }
 
     /**
      * Returns the ClientData object by id
@@ -219,8 +243,8 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
      * To do this, changes must be made in the class WrapperHelper
      * so that the string can be converted back into an object.
      *
-     * @param clientData        ClientData Object
-     * @param object            Object - Must be implemented in the WrapperHelper class to be converted again
+     * @param clientData ClientData Object
+     * @param object     Object - Must be implemented in the WrapperHelper class to be converted again
      */
     private void sendToClient(ClientData clientData, Object object) {
         Log.i(this.getClass().getName(), "try to write message...");
@@ -246,6 +270,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
      * converted into a json string. The object must be implemented
      * in the class WrapperHelper, otherwise an error occurs when
      * creating json to object.
+     *
      * @param object
      */
     private void sendToAllClients(Object object) {
@@ -255,5 +280,50 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         }
     }
 
+    @Override
+    public int getNumberOfConnectedPlayers() {
+        return socketList.size();
+    }
 
+    // Network-Client methods
+
+    @Override
+    public void sendNameToServer(String username, CallbackObject<User> callback) {
+        // not needed on server
+    }
+
+    @Override
+    public void sendGameConfigurationToServer(User user, BattleArea userBoard, List<BasicShip> placedShips, CallbackObject<GameConfiguration> callback) {
+        // TODO
+    }
+
+    @Override
+    public void receiveServerMessages(CallbackObject<InstructionDTO> callback) {
+
+    }
+
+    @Override
+    public void getUserId(CallbackObject<User> callback) {
+        // not needed on server
+    }
+
+    @Override
+    public void initClientGameHandler(String ip, Activity activity, CallbackObject<HandshakeDTO> isConnected) {
+        // not needed on server
+    }
+
+    @Override
+    public void initClientGameHandler(Activity activity, CallbackObject<SalutDevice> showServer) {
+        // not needed on server
+    }
+
+    @Override
+    public void resetNetwork() {
+
+    }
+
+    @Override
+    public TurnDTO sendShotOnEnemyToServer(User user, int col, int row) {
+        return null;
+    }
 }
