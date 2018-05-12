@@ -121,6 +121,13 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
     public TurnDTO sendShotOnEnemyToServer(User user, int col, int row) {
         return null;
     }
+
+    /**
+     * @param shot
+     */
+    public void sendShotCountToServer(int shot) {
+        //todo muss noch gemacht werden
+    }
 }
 
 

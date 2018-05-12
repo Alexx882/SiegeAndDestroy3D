@@ -57,6 +57,7 @@ public interface NetworkCommunicator {
     public void initClientGameHandler(String ip, final Activity activity, CallbackObject<HandshakeDTO> isConnected);
 
     public void initClientGameHandler(final Activity activity, CallbackObject<SalutDevice> showServer);
+
     /**
      * Stop network and disable wifi direct
      */
@@ -69,5 +70,12 @@ public interface NetworkCommunicator {
      * @return
      */
     public TurnDTO sendShotOnEnemyToServer(User user, int col, int row);
+
+    /**
+     * send the shotCount to the server
+     *
+     * @param shot
+     */
+    public void sendShotCountToServer(int shot);
 
 }

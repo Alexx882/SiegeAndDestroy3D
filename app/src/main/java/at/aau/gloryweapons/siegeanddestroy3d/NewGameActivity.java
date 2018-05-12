@@ -20,6 +20,7 @@ import java.util.List;
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
 import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ClientData;
 import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ServerGameHandlerAsyncCommunication;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
@@ -36,6 +37,8 @@ public class NewGameActivity extends AppCompatActivity {
    // private NetworkCommunicatorServer serverGameHandlerWifi;
     private NetworkCommunicatorServer serverGameHandlerAsyncComm;
 
+
+    private NetworkCommunicator clientCommunicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +93,8 @@ public class NewGameActivity extends AppCompatActivity {
                     return;
 
                 } else {
+
+                    clientCommunicator.sendShotCountToServer(Integer.parseInt(shot.toString()));
                     Intent intent = new Intent(NewGameActivity.this, PlacementActivity.class);
                     startActivity(intent);
 
