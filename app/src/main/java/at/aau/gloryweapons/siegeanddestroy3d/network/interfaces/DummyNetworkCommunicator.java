@@ -10,6 +10,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 
@@ -44,6 +45,11 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
         int id = (1000 + (int) (Math.random() * (1000000)));
         this.user = new User(id, null, null);
         return;
+    }
+
+    @Override
+    public void initClientGameHandler(String ip, Activity activity, CallbackObject<HandshakeDTO> isConnected) {
+
     }
 
     @Override

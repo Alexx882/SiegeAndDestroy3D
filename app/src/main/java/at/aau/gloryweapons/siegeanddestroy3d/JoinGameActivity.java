@@ -13,11 +13,11 @@ import android.widget.TextView;
 import com.peak.salut.SalutDevice;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ClientGameHandlerAsyncCommunication;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
-import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.ClientGameHandlerWifi;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
@@ -27,6 +27,7 @@ public class JoinGameActivity extends AppCompatActivity {
     private EditText txtUserName;
     private TextView txtServer;
     private TextView txtError;
+    private EditText txtIp;
 
     private NetworkCommunicator clientCommunicator;
     private boolean connectedToServer = false;
@@ -94,24 +95,30 @@ public class JoinGameActivity extends AppCompatActivity {
             throw new IllegalStateException("Please dont try to connect twice");
 
         // init with singleton
-        this.clientCommunicator = new DummyNetworkCommunicator();
+        this.clientCommunicator = ClientGameHandlerAsyncCommunication.getInstance();
+
+        String ip = txtIp.getText().toString();
 
         try {
             // init wifi direct
-            this.clientCommunicator.initClientGameHandler(this, new CallbackObject<SalutDevice>() {
+            this.clientCommunicator.initClientGameHandler(ip, this, new CallbackObject<HandshakeDTO>() {
                 @Override
-                public void callback(SalutDevice param) {
+                public void callback(final HandshakeDTO param) {
                     // connecting finished
+                    JoinGameActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // re-enable button
+                            btnJoinGame.setEnabled(true);
+                            btnJoinGame.setText("Name überprüfen");
 
-                    // re-enable button
-                    btnJoinGame.setEnabled(true);
-                    btnJoinGame.setText("Name überprüfen");
+                            // show server name
+                            txtServer.setVisibility(View.VISIBLE);
+                            txtServer.setText("Verbindung zum Server: " + param.getId() + " hergestellt!");
 
-                    // show server name
-                    txtServer.setVisibility(View.VISIBLE);
-                    txtServer.setText("Verbindung zum Server: " + param.deviceName + " " + param.readableName + " hergestellt!");
-
-                    connectedToServer = true;
+                            connectedToServer = true;
+                        }
+                    });
                 }
             });
         } catch (Exception e) {
@@ -154,6 +161,8 @@ public class JoinGameActivity extends AppCompatActivity {
         txtUserName = findViewById(R.id.editTextUserName);
         txtServer = findViewById(R.id.textViewServer);
         txtError = findViewById(R.id.textViewError);
+
+        txtIp = findViewById(R.id.editTextHostIpAddress);
 
         // disable info on start
         txtServer.setVisibility(View.GONE);
