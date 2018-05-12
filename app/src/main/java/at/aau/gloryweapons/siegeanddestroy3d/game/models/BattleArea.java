@@ -35,6 +35,9 @@ public class BattleArea implements Serializable {
      * @return      List<BattleAreaTile[]>
      */
     public List<BattleAreaTile[]> getForJsonBattleAreaTiles() {
+        if (battleAreaTiles == null){
+            forJsonBattleAreaTiles = new ArrayList<>();
+        }
         if (forJsonBattleAreaTiles == null){
             forJsonBattleAreaTiles = new ArrayList<>();
         }else {
@@ -51,6 +54,9 @@ public class BattleArea implements Serializable {
      * Hack for LoganSquare JSON
      */
     public void setForJsonBattleAreaTiles(List<BattleAreaTile[]> forJsonBattleAreaTiles) {
+        if (battleAreaTiles == null){
+            battleAreaTiles = new BattleAreaTile[rows][columns];
+        }
         this.forJsonBattleAreaTiles = forJsonBattleAreaTiles;
         for (int i = 0; i < battleAreaTiles.length; i++) {
             battleAreaTiles[i] = forJsonBattleAreaTiles.get(i);
