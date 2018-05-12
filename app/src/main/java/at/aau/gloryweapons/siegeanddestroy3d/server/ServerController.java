@@ -18,7 +18,13 @@ public class ServerController {
     private AtomicInteger id = new AtomicInteger(1);
     private ArrayList<String> names = new ArrayList<>();
 
-    public User checkName(String name) {
+    /**
+     * Checks if the name for an user is available.
+     *
+     * @param name The name to check
+     * @return User object if the name is available.
+     */
+    public synchronized User checkName(String name) {
         //check name
         if (ValidationHelperClass.isUserNameValid(name)) {
 
