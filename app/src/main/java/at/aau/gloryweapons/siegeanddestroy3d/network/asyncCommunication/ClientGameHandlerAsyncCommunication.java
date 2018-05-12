@@ -21,6 +21,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
@@ -37,9 +38,16 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
     //callbacks
     private CallbackObject<HandshakeDTO> isConnected;
     private CallbackObject<User> userNameCallback;
+
     private CallbackObject<TurnDTO> shotHit;
+    private CallbackObject<GameConfiguration> gameConfigCallback;
+
 
     private static ClientGameHandlerAsyncCommunication instance;
+
+    private ClientGameHandlerAsyncCommunication() {
+
+    }
 
     public static ClientGameHandlerAsyncCommunication getInstance() {
         if (instance == null) {
@@ -61,7 +69,14 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
 
     @Override
     public void sendGameConfigurationToServer(User user, BattleArea userBoard, List<BasicShip> placedShips, CallbackObject<GameConfiguration> callback) {
+        gameConfigCallback = callback;
 
+        GameConfigurationRequestDTO request = new GameConfigurationRequestDTO();
+        request.setUser(user);
+        request.setBattleArea(userBoard);
+        request.setPlacedShips(placedShips);
+
+        sendToServer(request);
     }
 
     @Override
@@ -153,6 +168,8 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
                     handleHandshake((HandshakeDTO) receivedObject);
                 } else if (receivedObject instanceof User) {
                     handleUserResponse((User) receivedObject);
+                } else if (receivedObject instanceof GameConfiguration) {
+                    handleGameConfigResponse((GameConfiguration) receivedObject);
                 }
 
             }
@@ -167,6 +184,11 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
         Log.v(this.getClass().getName(), "handshake: " + handshakeDTO.isConnectionEstablished());
         isConnected.callback(handshakeDTO);
     }
+
+    private void handleGameConfigResponse(GameConfiguration gameConfig) {
+        gameConfigCallback.callback(gameConfig);
+    }
+
 
     private void sendToServer(Object object) {
         String json = wrapperHelper.ObjectToWrappedJson(object);

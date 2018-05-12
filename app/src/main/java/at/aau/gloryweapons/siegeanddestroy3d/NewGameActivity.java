@@ -89,8 +89,14 @@ public class NewGameActivity extends AppCompatActivity {
                     return;
 
                 } else {
+  
+                  // start placement for server  
+                     serverGameHandlerAsyncComm.sendShotCountToServer(Integer.parseInt(shot.toString()));
+                  
+                     GlobalGameSettings.getCurrent()
+                            // connected clients + this host
+                            .setNumberPlayers(serverGameHandlerAsyncComm.getNumberOfConnectedPlayers() + 1);
 
-                    serverGameHandlerAsyncComm.sendShotCountToServer(Integer.parseInt(shot.toString()));
                     Intent intent = new Intent(NewGameActivity.this, PlacementActivity.class);
                     startActivity(intent);
 

@@ -20,4 +20,11 @@ public interface NetworkCommunicatorServer {
      * @param shotCount
      */
     public void sendShotCountToServer(int shotCount);
+
+     /**
+     * Returns the number of currently connected players.
+     * @return
+     */
+    public int getNumberOfConnectedPlayers();
+
 }

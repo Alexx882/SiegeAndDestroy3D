@@ -1,9 +1,15 @@
 package at.aau.gloryweapons.siegeanddestroy3d.server;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 
@@ -41,6 +47,30 @@ public class ServerController {
         return id.getAndAdd(1);
     }
 
+
+    private GameConfiguration gameConfig;
+    private List<User> users = new ArrayList<>(4);
+    private List<BattleArea> battleAreas = new ArrayList<>(4);
+    private List<CallbackObject<GameConfiguration>> callbacks =new ArrayList<>(4);
+
+    public void addDataToGameConfig(User user, BattleArea battleArea,
+                                    List<BasicShip> placedShips, CallbackObject<GameConfiguration> callback) {
+        // prepare data for config
+        users.add(user);
+        battleAreas.add(battleArea);
+        callbacks.add(callback);
+
+        if (users.size() == GlobalGameSettings.getCurrent().getNumberPlayers()) {
+            // all players finished placement
+            gameConfig = new GameConfiguration();
+            gameConfig.setUserList(users);
+            gameConfig.setBattleAreaList(battleAreas);
+
+            for (CallbackObject<GameConfiguration> cb : callbacks)
+                if(callback != null)
+                    callback.callback(gameConfig);
+        }
+    }
 
 }
 

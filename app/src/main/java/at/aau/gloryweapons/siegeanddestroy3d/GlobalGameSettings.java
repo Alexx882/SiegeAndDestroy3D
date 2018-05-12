@@ -10,6 +10,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
 public class GlobalGameSettings implements Serializable {
     private User localUser;
+    private int numberPlayers;
 
     // fixed size of rows and cols
     private int numberRows = 9;
@@ -40,6 +41,18 @@ public class GlobalGameSettings implements Serializable {
 
     public int getPlayerId() {
         return localUser.getId();
+    }
+
+    public User getLocalUser() {
+        return this.localUser;
+    }
+
+    public int getNumberPlayers() {
+        return numberPlayers;
+    }
+
+    public void setNumberPlayers(int numberPlayers) {
+        this.numberPlayers = numberPlayers;
     }
 
     public int getNumberRows() {
