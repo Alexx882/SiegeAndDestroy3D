@@ -49,8 +49,7 @@ public class JoinGameActivity extends AppCompatActivity {
                 if (!connectedToServer) {
                     btnJoinGame.setText("Verbinden...");
                     // init server connection
-                    // connectToServer();
-                    connectAsyncServer();
+                    connectToServer();
 
                 } else {
                     // basic check for username on client side
@@ -89,52 +88,6 @@ public class JoinGameActivity extends AppCompatActivity {
     }
 
     /**
-     * With this method AndroidAsync is selected as connection
-     */
-    private void connectAsyncServer() {
-        //init singelton
-        clientCommunicator = ClientGameHandlerAsyncCommunication.getInstance();
-
-        //get ip
-        String ip = txtIp.getText().toString();
-
-        //init connection
-        clientCommunicator.initClientGameHandler(ip, this, new CallbackObject<HandshakeDTO>() {
-            @Override
-            public void callback(HandshakeDTO param) {
-
-                //If the connection is successful, a username request is sent to the server.
-                if (param.isConnectionEstablished()) {
-
-                    //send username request
-                    clientCommunicator.sendNameToServer(new String(txtUserName.getText().toString()), new CallbackObject<User>() {
-                        @Override
-                        public void callback(User param) {
-                            Log.v(this.getClass().getName(), "user object received..." + param.getName());
-
-                            //Username not available
-                            if (param == null) {
-                                showError("Username nicht verfügbar!");
-                                btnJoinGame.setEnabled(true);
-                            } else {
-                                // name ok
-                                // save name and things
-                                GlobalGameSettings.getCurrent().setLocalUser(param);
-
-                                // move on to placement
-                                startPlacementActivity();
-                            }
-                        }
-                    });
-                }else {
-                    //TODO show Connection failed
-                }
-            }
-        });
-    }
-
-
-    /**
      * Connects to a server and re-enables the button for the name check.
      */
     private void connectToServer() {
@@ -142,24 +95,30 @@ public class JoinGameActivity extends AppCompatActivity {
             throw new IllegalStateException("Please dont try to connect twice");
 
         // init with singleton
-        this.clientCommunicator = new DummyNetworkCommunicator();
+        this.clientCommunicator = ClientGameHandlerAsyncCommunication.getInstance();
+
+        String ip = txtIp.getText().toString();
 
         try {
             // init wifi direct
-            this.clientCommunicator.initClientGameHandler(this, new CallbackObject<SalutDevice>() {
+            this.clientCommunicator.initClientGameHandler(ip, this, new CallbackObject<HandshakeDTO>() {
                 @Override
-                public void callback(SalutDevice param) {
+                public void callback(final HandshakeDTO param) {
                     // connecting finished
+                    JoinGameActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // re-enable button
+                            btnJoinGame.setEnabled(true);
+                            btnJoinGame.setText("Name überprüfen");
 
-                    // re-enable button
-                    btnJoinGame.setEnabled(true);
-                    btnJoinGame.setText("Name überprüfen");
+                            // show server name
+                            txtServer.setVisibility(View.VISIBLE);
+                            txtServer.setText("Verbindung zum Server: " + param.getId() + " hergestellt!");
 
-                    // show server name
-                    txtServer.setVisibility(View.VISIBLE);
-                    txtServer.setText("Verbindung zum Server: " + param.deviceName + " " + param.readableName + " hergestellt!");
-
-                    connectedToServer = true;
+                            connectedToServer = true;
+                        }
+                    });
                 }
             });
         } catch (Exception e) {

@@ -3,13 +3,15 @@ package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import java.io.Serializable;
+
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.TileTypeConverter;
 
 /**
  * Created by Alexander on 05.04.2018.
  */
 
-public class BattleAreaTile {
+public class BattleAreaTile implements Serializable {
 
 
     public enum TileType {
