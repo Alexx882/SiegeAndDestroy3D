@@ -85,13 +85,12 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
 
     @Override
     public TurnDTO sendShotOnEnemyToServer(User user, int col, int row) {
+
+
+
         return null;
     }
 
-    @Override
-    public void sendShotCountToServer(int shot) {
-
-    }
 
     @Override
     public void initClientGameHandler(String ip, Activity activity, CallbackObject<HandshakeDTO> isConnected) {

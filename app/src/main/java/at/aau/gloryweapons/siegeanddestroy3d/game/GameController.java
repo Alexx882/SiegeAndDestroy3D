@@ -7,13 +7,13 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ClientGameHandlerAsyncCommunication;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
-import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.ClientGameHandlerWifi;
 
 public class GameController {
 
-    private NetworkCommunicator communicator = new ClientGameHandlerWifi();
+    private NetworkCommunicator communicator = new ClientGameHandlerAsyncCommunication();
     private static int shotsFired = 0;
 
     /**
