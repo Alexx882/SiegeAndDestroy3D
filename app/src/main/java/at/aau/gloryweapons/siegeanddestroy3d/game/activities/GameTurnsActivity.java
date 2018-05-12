@@ -24,14 +24,17 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 
 public class GameTurnsActivity extends AppCompatActivity {
-    ImageView iv = null;
-    GameConfiguration gameSettings = null;
-    GameController controller = null;
+    private ImageView iv = null;
+    private GameConfiguration gameSettings = null;
+    private GameController controller = null;
     private BoardRenderer board = null;
-    User actualUser = null;
+    private User actualUser = null;
+    private BattleArea actualBattleArea = null;
     private GameBoardImageView[][] visualBoard = null;
+    private boolean shooting = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +48,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         controller = new GameController();
 
         final int nRows = 9, nCols = 9;
-        //todo is needed but not working at the moment....no serverShit available
+        //gets the right user
         for (User u : gameSettings.getUserList()) {
             if (u.getId() == GlobalGameSettings.getCurrent().getPlayerId()) {
                 actualUser = u;
@@ -57,15 +60,18 @@ public class GameTurnsActivity extends AppCompatActivity {
             if (area.getUserId() == actualUser.getId()) {
                 //  visualBoard=initBoard(nRows, nCols);
                 visualBoard = loadBattleArea(area, nRows, nCols);
+                actualBattleArea = area;
             }
         }
 
-
+        //sets the OnClickListener for the Button to end the turn
         Button button = findViewById(R.id.buttonUpadteWater);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                iv.setImageResource(R.drawable.ship_end);
+                if (!controller.endTurn(gameSettings)) {
+                    Toast.makeText(GameTurnsActivity.this, "first finish your turn", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -88,6 +94,7 @@ public class GameTurnsActivity extends AppCompatActivity {
                     for (BattleArea area : gameSettings.getBattleAreaList()) {
                         if (area.getUserId() == gameSettings.getUserByIndex(view.getId()).getId()) {
                             loadBattleArea(area, nRows, nCols);
+                            actualBattleArea = area;
                         }
                     }
 
@@ -168,14 +175,31 @@ public class GameTurnsActivity extends AppCompatActivity {
                 gView[i][j].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        GameBoardImageView v = (GameBoardImageView) view;
+                        final GameBoardImageView v = (GameBoardImageView) view;
                         Log.i("fish", "" + v.getBoardCol() + v.getBoardRow());
                         //controlls the returnvalue of controller.shotOnEnemy
-                        if (controller.shotOnEnemy(gameSettings, actualUser, v.getBoardCol(), v.getBoardRow()) == null) {
-                            Toast.makeText(GameTurnsActivity.this, "Nice try", Toast.LENGTH_SHORT).show();
-                        } else {
-                            int drawable = getTheRightTile(controller.shotOnEnemy(gameSettings, actualUser, v.getBoardCol(), v.getBoardRow()));
-                            gView[v.getBoardRow()][v.getBoardCol()].setImageResource(drawable);
+                        if (!shooting) {
+                            shooting=true;
+                            controller.shotOnEnemy(gameSettings, actualBattleArea, actualUser, v.getBoardCol(), v.getBoardRow(), new CallbackObject<BattleAreaTile.TileType>() {
+                                @Override
+                                public void callback(BattleAreaTile.TileType param) {
+                                    if(param != null)
+                                    {
+                                        int drawable = getTheRightTile(param);
+                                        gView[v.getBoardRow()][v.getBoardCol()].setImageResource(drawable);
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(GameTurnsActivity.this, "Nice try", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                            /*if (controller.shotOnEnemy(gameSettings, actualBattleArea, actualUser, v.getBoardCol(), v.getBoardRow()) == null) {
+                                Toast.makeText(GameTurnsActivity.this, "Nice try", Toast.LENGTH_SHORT).show();
+                            } else {
+                                int drawable = getTheRightTile(controller.shotOnEnemy(gameSettings, actualBattleArea, actualUser, v.getBoardCol(), v.getBoardRow()));
+                                gView[v.getBoardRow()][v.getBoardCol()].setImageResource(drawable);
+                            }*/
                         }
                     }
                 });
@@ -210,7 +234,7 @@ public class GameTurnsActivity extends AppCompatActivity {
                 drawable = R.drawable.ship_end;
                 break;
             case SHIP_DESTROYED:
-                drawable = R.drawable.ship_start;
+                drawable = R.drawable.ship_destroyed;
                 break;
         }
         return drawable;

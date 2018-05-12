@@ -19,6 +19,7 @@ public class GameConfiguration implements Serializable {
 
     @JsonField
     private List<BattleArea> battleAreaList;
+    private int shots;
 
     // Test Constructor. Dient nur zum Testen der Positionierung von SpielerLabels
     public GameConfiguration(boolean debug) {
@@ -69,4 +70,11 @@ public class GameConfiguration implements Serializable {
         return userList.get(i);
     }
 
+    public int getShots() {
+        return shots;
+    }
+
+    public void setShots(int shots) {
+        this.shots = shots;
+    }
 }
