@@ -1,13 +1,20 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
+import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.io.Serializable;
 
 @JsonObject
 public class User implements Serializable {
+
+    @JsonField
     private int id;
+
+    @JsonField
     private String ip;
+
+    @JsonField
     private String name;
 
 
