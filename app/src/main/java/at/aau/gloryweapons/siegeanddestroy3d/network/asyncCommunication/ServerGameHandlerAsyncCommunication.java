@@ -177,9 +177,13 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
         // check if name is available and return it
         User user = null;
+
+        //TODO delete this BEGIN
         if (!requestedName.equals("test")){
             user = serverController.checkName(requestedName);
         }
+
+        //TODO END
 
         if(user != null)
             user.setIp("127.0.0.1");

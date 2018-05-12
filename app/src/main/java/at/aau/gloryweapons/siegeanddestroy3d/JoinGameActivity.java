@@ -77,6 +77,7 @@ public class JoinGameActivity extends AppCompatActivity {
                             } else {
                                 // name invalid
                                 showError("Username nicht verfügbar!");
+
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
