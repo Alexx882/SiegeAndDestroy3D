@@ -31,26 +31,26 @@ public class BasicShip implements Serializable {
     @JsonField
     private List<BattleAreaTile> forJsonTile;
 
-    public List<BattleAreaTile> getForJsonTile() {
-        if (tiles != null){
-            forJsonTile = new ArrayList<>(Arrays.asList(tiles));
-        }
-        return forJsonTile;
-    }
-
-    public void setForJsonTile(List<BattleAreaTile> forJsonTile) {
-        this.forJsonTile = forJsonTile;
-        tiles = this.forJsonTile.toArray(new BattleAreaTile[forJsonTile.size()]);
+    public BasicShip(int userId, int length, boolean horizontal) {
+        this.userId = userId;
+        this.length = length;
+        this.tiles = new BattleAreaTile[this.length];
+        this.horizontal = horizontal;
     }
 
     public BasicShip(){
     }
 
-    public BasicShip(int userId, int length, boolean horizontal) {
-        this.userId = userId;
-        this.length = length;
-       // this.tiles = new BattleAreaTile[this.length];
-        this.horizontal = horizontal;
+    public List<BattleAreaTile> getForJsonTile() {
+        if (tiles != null){
+            forJsonTile = new ArrayList<>(Arrays.asList(tiles));
+            }
+          return forJsonTile;
+    }
+
+    public void setForJsonTile(List<BattleAreaTile> forJsonTile) {
+        this.forJsonTile = forJsonTile;
+        tiles = this.forJsonTile.toArray(new BattleAreaTile[forJsonTile.size()]);
     }
 
     public int getUserId() {
