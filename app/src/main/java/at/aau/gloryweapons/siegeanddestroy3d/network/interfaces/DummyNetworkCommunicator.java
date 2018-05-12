@@ -66,6 +66,11 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
         // just return
     }
 
+    @Override
+    public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
+
+    }
+
     /**
      * Class used for simulating delay.
      */
@@ -110,16 +115,6 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
 
             callback.callback(new GameConfiguration(true));
         }
-    }
-
-    /**
-     * @param user
-     * @param col
-     * @param row
-     * @return
-     */
-    public TurnDTO sendShotOnEnemyToServer(User user, int col, int row) {
-        return null;
     }
 
 }

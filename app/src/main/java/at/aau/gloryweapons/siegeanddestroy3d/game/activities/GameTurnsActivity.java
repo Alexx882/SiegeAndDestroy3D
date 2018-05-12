@@ -24,6 +24,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 
 public class GameTurnsActivity extends AppCompatActivity {
     private ImageView iv = null;
@@ -33,6 +34,7 @@ public class GameTurnsActivity extends AppCompatActivity {
     private User actualUser = null;
     private BattleArea actualBattleArea = null;
     private GameBoardImageView[][] visualBoard = null;
+    private boolean shooting = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,14 +175,31 @@ public class GameTurnsActivity extends AppCompatActivity {
                 gView[i][j].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        GameBoardImageView v = (GameBoardImageView) view;
+                        final GameBoardImageView v = (GameBoardImageView) view;
                         Log.i("fish", "" + v.getBoardCol() + v.getBoardRow());
                         //controlls the returnvalue of controller.shotOnEnemy
-                        if (controller.shotOnEnemy(gameSettings, actualBattleArea, actualUser, v.getBoardCol(), v.getBoardRow()) == null) {
-                            Toast.makeText(GameTurnsActivity.this, "Nice try", Toast.LENGTH_SHORT).show();
-                        } else {
-                            int drawable = getTheRightTile(controller.shotOnEnemy(gameSettings, actualBattleArea, actualUser, v.getBoardCol(), v.getBoardRow()));
-                            gView[v.getBoardRow()][v.getBoardCol()].setImageResource(drawable);
+                        if (!shooting) {
+                            shooting=true;
+                            controller.shotOnEnemy(gameSettings, actualBattleArea, actualUser, v.getBoardCol(), v.getBoardRow(), new CallbackObject<BattleAreaTile.TileType>() {
+                                @Override
+                                public void callback(BattleAreaTile.TileType param) {
+                                    if(param != null)
+                                    {
+                                        int drawable = getTheRightTile(param);
+                                        gView[v.getBoardRow()][v.getBoardCol()].setImageResource(drawable);
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(GameTurnsActivity.this, "Nice try", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                            /*if (controller.shotOnEnemy(gameSettings, actualBattleArea, actualUser, v.getBoardCol(), v.getBoardRow()) == null) {
+                                Toast.makeText(GameTurnsActivity.this, "Nice try", Toast.LENGTH_SHORT).show();
+                            } else {
+                                int drawable = getTheRightTile(controller.shotOnEnemy(gameSettings, actualBattleArea, actualUser, v.getBoardCol(), v.getBoardRow()));
+                                gView[v.getBoardRow()][v.getBoardCol()].setImageResource(drawable);
+                            }*/
                         }
                     }
                 });

@@ -126,6 +126,11 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
         }
     }
 
+    @Override
+    public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
+
+    }
+
     public Salut getNetwork() {
         return this.network;
     }
@@ -159,10 +164,4 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
 
     }
 
-    @Override
-    public TurnDTO sendShotOnEnemyToServer(User user, int col, int row) {
-        TurnDTO t = new TurnDTO(TurnDTO.TurnType.HIT, user);
-
-        return t;
-    }
 }

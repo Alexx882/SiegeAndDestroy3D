@@ -2,6 +2,7 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.dto;
 
 import java.io.Serializable;
 
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
 public class TurnDTO implements Serializable{
@@ -9,6 +10,7 @@ public class TurnDTO implements Serializable{
     private static final long serialVersionUID = 1459083456079L;
     private TurnType type;
     private User user;
+    private BattleArea area;
     private int attacksUserID;
     private int yCoordinates;
     private int xCoordinates;
@@ -21,9 +23,9 @@ public class TurnDTO implements Serializable{
         ERROR
     }
 
-    public TurnDTO(TurnType type, User user){
+    public TurnDTO(TurnType type, BattleArea area){
         this.type = type;
-        this.user = user;
+        this.area = area;
     }
 
     public TurnType getType() {

@@ -23,6 +23,7 @@ import java.util.List;
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
@@ -148,6 +149,8 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
                     handleHandshakeDto((HandshakeDTO) receivedObject, socket);
                 } else if (receivedObject instanceof UserNameRequestDTO) {
                     handleUserNameRequest((UserNameRequestDTO) receivedObject);
+                } else if (receivedObject instanceof TurnDTO) {
+                    handleTurnDTO((TurnDTO) receivedObject);
                 } else {
                     Log.e(this.getClass().getName(), "cannot cast class");
                 }
@@ -262,6 +265,11 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         for (ClientData clientData : socketList) {
             sendToClient(clientData, object);
         }
+    }
+
+    private void handleTurnDTO(TurnDTO hitType) {
+
+
     }
 
 

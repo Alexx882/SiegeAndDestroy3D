@@ -9,6 +9,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ClientGameHandlerAsyncCommunication;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 
 public class GameController {
@@ -24,33 +25,39 @@ public class GameController {
      * @param row
      * @return
      */
-    public BattleAreaTile.TileType shotOnEnemy(GameConfiguration game, BattleArea enemyArea, User enemy, int col, int row) {
-        BattleAreaTile.TileType tile = null;
+    public void shotOnEnemy(GameConfiguration game, final BattleArea enemyArea, User enemy, final int col, final int row, final CallbackObject<BattleAreaTile.TileType> callback) {
+
         if (checkIfMyTurn()) {
             if (enemy.getId() != GlobalGameSettings.getCurrent().getPlayerId()) {
                 if (shotsFired <= game.getShots()) {
 
                     shotsFired++;
-                    TurnDTO t = null;
-                    t = communicator.sendShotOnEnemyToServer(enemy, col, row);
-                    switch (t.getType()) {
-                        case NO_HIT:
-                            tile = BattleAreaTile.TileType.NO_HIT;
-                            enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.NO_HIT);
-                            break;
-                        case HIT:
-                            tile = BattleAreaTile.TileType.SHIP_DESTROYED;
-                            enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
-                            break;
-                    }
+
+                    communicator.sendShotOnEnemyToServer(enemyArea, col, row, new CallbackObject<TurnDTO>() {
+                        @Override
+                        public void callback(TurnDTO t) {
+                            BattleAreaTile.TileType tile = null;
+                            switch (t.getType()) {
+                                case NO_HIT:
+                                    tile = BattleAreaTile.TileType.NO_HIT;
+                                    enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.NO_HIT);
+                                    break;
+                                case HIT:
+                                    tile = BattleAreaTile.TileType.SHIP_DESTROYED;
+                                    enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                                    break;
+                            }
+                            callback.callback(tile);
+                        }
+                    });
+
                 }
             }
 
         } else {
-            return null;
-
+            callback.callback(null);
         }
-        return tile;
+
     }
 
     /**
