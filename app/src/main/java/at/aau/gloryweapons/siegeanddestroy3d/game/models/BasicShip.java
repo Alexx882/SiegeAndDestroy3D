@@ -1,23 +1,55 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonIgnore;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.TileTypeConverter;
 
 /**
  * Created by Alexander on 05.04.2018.
  */
+@JsonObject
 public class BasicShip implements Serializable {
+    @JsonField
     private int userId = -1;
+
+    @JsonField
     private int length = 0;
+
+    @JsonIgnore
     private BattleAreaTile[] tiles;
+
+    @JsonField
     private boolean horizontal = true;
+
+    @JsonField
+    private List<BattleAreaTile> forJsonTile;
+
+    public List<BattleAreaTile> getForJsonTile() {
+        if (tiles != null){
+            forJsonTile = new ArrayList<>(Arrays.asList(tiles));
+        }
+        return forJsonTile;
+    }
+
+    public void setForJsonTile(List<BattleAreaTile> forJsonTile) {
+        this.forJsonTile = forJsonTile;
+        tiles = this.forJsonTile.toArray(new BattleAreaTile[forJsonTile.size()]);
+    }
+
+    public BasicShip(){
+    }
 
     public BasicShip(int userId, int length, boolean horizontal) {
         this.userId = userId;
         this.length = length;
-        this.tiles = new BattleAreaTile[this.length];
+       // this.tiles = new BattleAreaTile[this.length];
         this.horizontal = horizontal;
     }
 
