@@ -21,7 +21,7 @@ public class GlobalGameSettings implements Serializable {
 
     // network settings
     private final String SERVICE_NAME = "sAd3D";
-    private final int port = 16661;
+    private final int port = 61616;
     private boolean isServer;
 
     private GlobalGameSettings() {
