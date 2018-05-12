@@ -130,6 +130,11 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
         }
     }
 
+    @Override
+    public int getNumberOfConnectedPlayers() {
+        return 0;
+    }
+
     /**
      * Processes the various requests
      * @param object

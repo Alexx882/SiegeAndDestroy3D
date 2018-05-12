@@ -15,4 +15,10 @@ public interface NetworkCommunicatorServer {
      * Stop network and disable wifi direct
      */
     public void resetNetwork();
+
+    /**
+     * Returns the number of currently connected players.
+     * @return
+     */
+    public int getNumberOfConnectedPlayers();
 }
