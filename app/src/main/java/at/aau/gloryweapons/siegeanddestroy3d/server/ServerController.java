@@ -12,7 +12,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
-
+// TODO more tests for creating the GameConfig etc
 public class ServerController {
 
     private AtomicInteger id = new AtomicInteger(1);
@@ -53,14 +53,22 @@ public class ServerController {
         return id.getAndAdd(1);
     }
 
-
     private GameConfiguration gameConfig;
     private List<User> users = new ArrayList<>(4);
     private List<BattleArea> battleAreas = new ArrayList<>(4);
-    private List<CallbackObject<GameConfiguration>> callbacks =new ArrayList<>(4);
+    private List<CallbackObject<GameConfiguration>> callbacks = new ArrayList<>(4);
 
-    public void addDataToGameConfig(User user, BattleArea battleArea,
-                                    List<BasicShip> placedShips, CallbackObject<GameConfiguration> callback) {
+    /**
+     * Adds the user and his battle area to the gameconfig.
+     * If all connected players registered their areas the created gameconfig is returned in the callback.
+     *
+     * @param user
+     * @param battleArea
+     * @param placedShips
+     * @param callback    Returns the complete gameconfig once all players are ready.
+     */
+    public synchronized void addDataToGameConfig(User user, BattleArea battleArea,
+                                                 List<BasicShip> placedShips, CallbackObject<GameConfiguration> callback) {
         // prepare data for config
         users.add(user);
         battleAreas.add(battleArea);
@@ -73,7 +81,7 @@ public class ServerController {
             gameConfig.setBattleAreaList(battleAreas);
 
             for (CallbackObject<GameConfiguration> cb : callbacks)
-                if(callback != null)
+                if (callback != null)
                     callback.callback(gameConfig);
         }
     }
