@@ -48,9 +48,9 @@ public class WrapperHelper {
                 case "UserNameRequestDTO":
                     UserNameRequestDTO userNameRequestDTO = LoganSquare.parse(dtoWrapper.getJsonObject(), UserNameRequestDTO.class);
                     return userNameRequestDTO;
-                case "User":
-                    User user = LoganSquare.parse(dtoWrapper.getJsonObject(), User.class);
-                    return user;
+                case "UserNameResponseDTO":
+                    UserNameResponseDTO userNameResponseDTO = LoganSquare.parse(dtoWrapper.getJsonObject(), UserNameResponseDTO.class);
+                    return userNameResponseDTO;
                 default:
                     Log.e(this.getClass().getName(), "class name does not exist");
                     break;

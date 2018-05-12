@@ -25,6 +25,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
@@ -146,16 +147,16 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
                 //map object
                 if (receivedObject instanceof HandshakeDTO) {
                     handleHandshake((HandshakeDTO) receivedObject);
-                } else if (receivedObject instanceof User) {
-                    handleUserResponse((User) receivedObject);
+                } else if (receivedObject instanceof UserNameResponseDTO) {
+                    handleUserResponse((UserNameResponseDTO) receivedObject);
                 }
 
             }
         });
     }
 
-    private void handleUserResponse(User user) {
-        userNameCallback.callback(user);
+    private void handleUserResponse(UserNameResponseDTO user) {
+        userNameCallback.callback(user.getNewUser());
     }
 
     private void handleHandshake(HandshakeDTO handshakeDTO) {

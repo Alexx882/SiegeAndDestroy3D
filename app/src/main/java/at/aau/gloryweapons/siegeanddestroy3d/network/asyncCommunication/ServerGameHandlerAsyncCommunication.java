@@ -24,9 +24,11 @@ import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
+import at.aau.gloryweapons.siegeanddestroy3d.server.ServerController;
 
 import static android.content.Context.WIFI_SERVICE;
 
@@ -43,6 +45,12 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     private Activity activity;
 
     private WrapperHelper wrapperHelper;
+
+    private ServerController serverController;
+
+    private ServerGameHandlerAsyncCommunication(){
+        serverController = new ServerController();
+    }
 
     public static ServerGameHandlerAsyncCommunication getInstance() {
         if (instance == null) {
@@ -111,6 +119,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
                 userList.add("client");
             }
         }
+        // TODO move to view.
         activity.runOnUiThread(new Runnable() {
 
             @Override
@@ -163,23 +172,25 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
      * @param userNameRequestDTO
      */
     private void handleUserNameRequest(UserNameRequestDTO userNameRequestDTO) {
-        if (nameIsAvailable(userNameRequestDTO.getCheckUsername())) {
-            User user = new User();
-            user.setName(userNameRequestDTO.getCheckUsername());
-            user.setId(123);
+        String requestedName = userNameRequestDTO.getCheckUsername();
+
+        // check if name is available and return it
+        User user = serverController.checkName(requestedName);
+        if(user != null)
             user.setIp("127.0.0.1");
-            //user.setId(userNameRequestDTO.getDeviceName());
-            ClientData data = getClientDataByID(userNameRequestDTO.getDeviceName());
-            data.setUser(user);
-            sendToClient(data, user);
-
-            //update UI
-            usernameListToUI();
-
-            //TODO chande ID in User object
-        } else {
+        else
             Log.e(this.getClass().getName(), "The username is already taken");
-        }
+
+        // send valid User or null back to client
+        ClientData data = getClientDataByID(userNameRequestDTO.getDeviceName());
+        data.setUser(user);
+
+        UserNameResponseDTO response = new UserNameResponseDTO();
+        response.setNewUser(user);
+        sendToClient(data, response);
+
+        //update UI
+        usernameListToUI();
     }
 
 
@@ -196,21 +207,6 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
             }
         }
         return null;
-    }
-
-    /**
-     * Tests if the name is available
-     *
-     * @param name String
-     * @return boolean
-     */
-    private boolean nameIsAvailable(String name) {
-        for (ClientData data : socketList) {
-            if (data.getUser() != null && data.getUser().getName().equals(name)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
