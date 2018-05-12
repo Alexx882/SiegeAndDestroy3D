@@ -174,8 +174,13 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     private void handleUserNameRequest(UserNameRequestDTO userNameRequestDTO) {
         String requestedName = userNameRequestDTO.getCheckUsername();
 
+
         // check if name is available and return it
-        User user = serverController.checkName(requestedName);
+        User user = null;
+        if (!requestedName.equals("test")){
+            user = serverController.checkName(requestedName);
+        }
+
         if(user != null)
             user.setIp("127.0.0.1");
         else
