@@ -1,6 +1,7 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.activities;
 
 import android.content.Intent;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +19,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
+import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ClientGameHandlerAsyncCommunication;
+import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ServerGameHandlerAsyncCommunication;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
@@ -61,9 +64,10 @@ public class PlacementActivity extends AppCompatActivity {
 
     /**
      * Switches from this activity to the GameTurnsActivity
+     *
      * @param gameConfig
      */
-    private void switchToGameActivity(GameConfiguration gameConfig){
+    private void switchToGameActivity(GameConfiguration gameConfig) {
         Intent switchActivityIntent = new Intent(this, GameTurnsActivity.class);
         switchActivityIntent.putExtra(GameConfiguration.INTENT_KEYWORD, gameConfig);
         startActivity(switchActivityIntent);
@@ -241,7 +245,14 @@ public class PlacementActivity extends AppCompatActivity {
     }
 
     private void sendConfigurationToServer() {
-        NetworkCommunicator comm = new DummyNetworkCommunicator();
+        NetworkCommunicator comm;
+
+        // should be inited already
+        if (GlobalGameSettings.getCurrent().isServer())
+            comm = ServerGameHandlerAsyncCommunication.getInstance();
+        else
+            comm = ClientGameHandlerAsyncCommunication.getInstance();
+
         CallbackObject<GameConfiguration> callback = new CallbackObject<GameConfiguration>() {
             @Override
             public void callback(GameConfiguration param) {
@@ -249,7 +260,7 @@ public class PlacementActivity extends AppCompatActivity {
             }
         };
 
-        comm.sendGameConfigurationToServer(null, playerBoard, Arrays.asList(ships), callback);
+        comm.sendGameConfigurationToServer(GlobalGameSettings.getCurrent().getLocalUser(), playerBoard, Arrays.asList(ships), callback);
     }
 
     /**
