@@ -82,6 +82,8 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         AsyncServer server = new AsyncServer();
         InetAddress address = null;
 
+        GlobalGameSettings.getCurrent().setServer(true);
+
         //ip adrdress
         try {
             address = InetAddress.getByName(ip);
@@ -185,13 +187,13 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         User user = null;
 
         //TODO delete this BEGIN
-        if (!requestedName.equals("test")){
+        if (!requestedName.equals("test")) {
             user = serverController.checkName(requestedName);
         }
 
         //TODO END
 
-        if(user != null)
+        if (user != null)
             user.setIp("127.0.0.1");
         else
             Log.e(this.getClass().getName(), "The username is already taken");
@@ -293,7 +295,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     @Override
     public void sendGameConfigurationToServer(User user, BattleArea userBoard, List<BasicShip> placedShips, CallbackObject<GameConfiguration> callback) {
-        // TODO
+        serverController.addDataToGameConfig(user, userBoard, placedShips, callback);
     }
 
     @Override

@@ -51,6 +51,9 @@ public class WrapperHelper {
                 case "UserNameResponseDTO":
                     UserNameResponseDTO userNameResponseDTO = LoganSquare.parse(dtoWrapper.getJsonObject(), UserNameResponseDTO.class);
                     return userNameResponseDTO;
+                case "GameConfigurationRequestDTO":
+                    GameConfigurationRequestDTO gameConfigDTO = LoganSquare.parse(dtoWrapper.getJsonObject(), GameConfigurationRequestDTO.class);
+                    return gameConfigDTO;
                 default:
                     Log.e(this.getClass().getName(), "class name does not exist");
                     break;

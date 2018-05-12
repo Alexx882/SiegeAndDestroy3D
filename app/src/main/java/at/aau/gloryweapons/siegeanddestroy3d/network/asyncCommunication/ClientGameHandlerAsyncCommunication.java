@@ -17,6 +17,7 @@ import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.UUID;
 
+import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
@@ -110,6 +111,8 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
         InetSocketAddress inetSocketAddress = new InetSocketAddress(ip, 61616);
         Log.i("*********", inetSocketAddress.getAddress() + ":" + inetSocketAddress.getPort());
         this.isConnected = isConnected;
+
+        GlobalGameSettings.getCurrent().setServer(false);
 
         thisDeviceName = UUID.randomUUID().toString();
         //TODO save UUID
