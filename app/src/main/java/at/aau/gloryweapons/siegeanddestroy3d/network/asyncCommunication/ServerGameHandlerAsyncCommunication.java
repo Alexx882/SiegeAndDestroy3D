@@ -57,7 +57,6 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     private ServerController serverController;
 
-
     private ServerGameHandlerAsyncCommunication() {
         serverController = new ServerController();
     }
@@ -192,20 +191,10 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     private void handleUserNameRequest(UserNameRequestDTO userNameRequestDTO) {
         String requestedName = userNameRequestDTO.getCheckUsername();
 
-
         // check if name is available and return it
-        User user = null;
+        User user = serverController.checkName(requestedName);
 
-        //TODO delete this BEGIN
-        if (!requestedName.equals("test")) {
-            user = serverController.checkName(requestedName);
-        }
-
-        //TODO END
-
-        if (user != null)
-            user.setIp("127.0.0.1");
-        else
+        if (user == null)
             Log.e(this.getClass().getName(), "The username is already taken");
 
         // send valid User or null back to client
@@ -224,20 +213,13 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         serverController.addDataToGameConfig(gameConfigRequestDto.getUser(),
                 gameConfigRequestDto.getBattleArea(),
                 gameConfigRequestDto.getPlacedShips(),
-                new UserCallbackObject<GameConfiguration>(getClientDataByUser(gameConfigRequestDto.getUser())) {
+                new ClientDataCallbackObject<GameConfiguration>(getClientDataByUser(gameConfigRequestDto.getUser())) {
                     @Override
                     public void callback(GameConfiguration gameConfig) {
-//                        // send the complete gameConfig back to the client
+                        // send the complete gameConfig back to the client
                         sendToClient(clientData, gameConfig);
                     }
                 }
-//                new CallbackObject<GameConfiguration>() {
-//                    @Override
-//                    public void callback(GameConfiguration gameConfig) {
-//                        // send the complete gameConfig back to all clients
-//                        sendToAllClients(gameConfig);
-//                    }
-//                }
         );
     }
 
@@ -258,7 +240,8 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     private ClientData getClientDataByUser(User user) {
         for (ClientData clientData : socketList) {
-            if (clientData.getUser().equals(user)) {
+            if (clientData.getUser() != null
+                    && clientData.getUser().equals(user)) {
                 return clientData;
             }
         }
@@ -310,7 +293,6 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     private void handleTurnDTO(TurnDTO hitType) {
 
-
     }
 
     @Override
@@ -332,7 +314,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     @Override
     public void receiveServerMessages(CallbackObject<InstructionDTO> callback) {
-
+        // not needed on server
     }
 
     @Override
@@ -357,13 +339,16 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     @Override
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
-
+        // TODO
     }
 
-    private abstract class UserCallbackObject<T> implements CallbackObject<T>{
+    /**
+     * Used to remember the client data for communication
+     */
+    private abstract class ClientDataCallbackObject<T> implements CallbackObject<T> {
         protected ClientData clientData;
 
-        public  UserCallbackObject(ClientData clientData){
+        public ClientDataCallbackObject(ClientData clientData) {
             this.clientData = clientData;
         }
     }

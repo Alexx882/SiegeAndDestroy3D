@@ -16,8 +16,6 @@ public class ClientData {
     private AsyncSocket socket;
     private User user;
     private String id;
-    private BattleArea battleArea;
-    private List<BasicShip> placedShips;
 
     public AsyncSocket getSocket() {
         return socket;
@@ -41,21 +39,5 @@ public class ClientData {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public BattleArea getBattleArea() {
-        return battleArea;
-    }
-
-    public void setBattleArea(BattleArea battleArea) {
-        this.battleArea = battleArea;
-    }
-
-    public List<BasicShip> getPlacedShips() {
-        return placedShips;
-    }
-
-    public void setPlacedShips(List<BasicShip> placedShips) {
-        this.placedShips = placedShips;
     }
 }

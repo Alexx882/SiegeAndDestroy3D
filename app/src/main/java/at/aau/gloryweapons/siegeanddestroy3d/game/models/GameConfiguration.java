@@ -24,9 +24,9 @@ public class GameConfiguration implements Serializable {
     // Test Constructor. Dient nur zum Testen der Positionierung von SpielerLabels
     public GameConfiguration(boolean debug) {
         userList = new ArrayList<User>();
-        User u1 = new User(1, "user123.", "user1");
-        User u2 = new User(2, "user213.", "user2");
-        User u3 = new User(3, "user321.", "user3");
+        User u1 = new User(1, "user1");
+        User u2 = new User(2, "user2");
+        User u3 = new User(3, "user3");
         userList.add(u1);
         userList.add(u2);
         userList.add(u3);

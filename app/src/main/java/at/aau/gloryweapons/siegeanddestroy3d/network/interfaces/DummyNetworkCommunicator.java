@@ -43,7 +43,7 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
     @Override
     public void getUserId(CallbackObject<User> callback) {
         int id = (1000 + (int) (Math.random() * (1000000)));
-        this.user = new User(id, null, null);
+        this.user = new User(id, null);
         return;
     }
 
@@ -94,7 +94,7 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
             if (name == null || name.equals("alex"))
                 callback.callback(null);
             else
-                callback.callback(new User(10, "10.0.0.1", name));
+                callback.callback(new User(10, name));
         }
     }
 

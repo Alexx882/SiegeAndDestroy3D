@@ -12,15 +12,10 @@ public class User implements Serializable {
     private int id;
 
     @JsonField
-    private String ip;
-
-    @JsonField
     private String name;
 
-
-    public User(int uId, String uIp, String uName) {
+    public User(int uId, String uName) {
         id = uId;
-        ip = uIp;
         name = uName;
     }
 
@@ -33,14 +28,6 @@ public class User implements Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
     }
 
     public String getName() {

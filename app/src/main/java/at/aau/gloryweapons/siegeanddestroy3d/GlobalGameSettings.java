@@ -29,7 +29,7 @@ public class GlobalGameSettings implements Serializable {
     private User actualUser = null;
 
     private GlobalGameSettings() {
-        localUser = new User(1, "12", "Patrick");
+        localUser = new User(1, "Patrick");
     }
 
     public void setLocalUser(User user) {
