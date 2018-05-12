@@ -364,7 +364,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         protected ClientData clientData;
 
         public  UserCallbackObject(ClientData clientData){
-
+            this.clientData = clientData;
         }
     }
 }

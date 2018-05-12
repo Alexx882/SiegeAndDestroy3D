@@ -81,8 +81,8 @@ public class ServerController {
             gameConfig.setBattleAreaList(battleAreas);
 
             for (CallbackObject<GameConfiguration> cb : callbacks)
-                if (callback != null)
-                    callback.callback(gameConfig);
+                if (cb != null)
+                    cb.callback(gameConfig);
         }
     }
 
