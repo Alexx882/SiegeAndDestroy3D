@@ -338,7 +338,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     }
 
     @Override
-    public TurnDTO sendShotOnEnemyToServer(User user, int col, int row) {
-        return null;
+    public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
+
     }
 }

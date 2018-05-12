@@ -14,7 +14,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunica
 
 public class GameController {
 
-    private NetworkCommunicator communicator = new ClientGameHandlerAsyncCommunication();
+    private NetworkCommunicator communicator = ClientGameHandlerAsyncCommunication.getInstance();
     private static int shotsFired = 0;
 
     /**
