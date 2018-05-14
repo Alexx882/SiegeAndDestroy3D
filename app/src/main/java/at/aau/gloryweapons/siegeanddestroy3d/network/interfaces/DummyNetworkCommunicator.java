@@ -10,6 +10,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 
@@ -42,8 +43,13 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
     @Override
     public void getUserId(CallbackObject<User> callback) {
         int id = (1000 + (int) (Math.random() * (1000000)));
-        this.user = new User(id, null, null);
+        this.user = new User(id, null);
         return;
+    }
+
+    @Override
+    public void initClientGameHandler(String ip, Activity activity, CallbackObject<HandshakeDTO> isConnected) {
+
     }
 
     @Override
@@ -58,6 +64,11 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
     @Override
     public void resetNetwork() {
         // just return
+    }
+
+    @Override
+    public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
+
     }
 
     /**
@@ -83,7 +94,7 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
             if (name == null || name.equals("alex"))
                 callback.callback(null);
             else
-                callback.callback(new User(10, "10.0.0.1", name));
+                callback.callback(new User(10, name));
         }
     }
 
@@ -106,15 +117,6 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
         }
     }
 
-    /**
-     * @param user
-     * @param col
-     * @param row
-     * @return
-     */
-    public TurnDTO sendShotOnEnemyToServer(User user, int col, int row) {
-        return null;
-    }
 }
 
 

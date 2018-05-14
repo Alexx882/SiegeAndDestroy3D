@@ -31,7 +31,7 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
     private SalutServiceData serviceData;
     private UserCallBack userCallBack;
 
-    private Map<String,String> userMapper; // 1. String = Salut device.readableName (UUID), 2.Username (default = client)
+    private Map<String, String> userMapper; // 1. String = Salut device.readableName (UUID), 2.Username (default = client)
 
     private static ServerGameHandlerWifi instance;
 
@@ -45,8 +45,8 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
     /**
      * Initialization of the salut server
      *
-     * @param activity      current activity
-     * @param userCallBack  a callback for the representation of the clients
+     * @param activity     current activity
+     * @param userCallBack a callback for the representation of the clients
      */
     public void initServerGameHandler(final Activity activity, UserCallBack userCallBack) {
 
@@ -60,7 +60,7 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
         SalutDataCallback salutDataCallback = new SalutDataCallback() {
             @Override
             public void onDataReceived(Object object) {
-                Log.d(this.getClass().getName(), "request from client " + (String)object.toString());
+                Log.d(this.getClass().getName(), "request from client " + (String) object.toString());
                 callbackHandler(object);
             }
         };
@@ -89,7 +89,7 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
             public void call(SalutDevice device) {
                 userMapper.put(device.readableName, "client");
                 usernameListToUI();
-                Log.d(this.getClass().getName(), device.deviceName + " -- " + device.readableName +  " has connected!!");
+                Log.d(this.getClass().getName(), device.deviceName + " -- " + device.readableName + " has connected!!");
             }
         });
 
@@ -98,26 +98,28 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
     /**
      * Displays the existing user names in the UI
      */
-    private void usernameListToUI(){
+    private void usernameListToUI() {
         userCallBack.callback(new ArrayList<>(userMapper.values()));
     }
 
     /**
      * adds a new user name
+     *
      * @param deviceName
      * @param username
      */
-    private void setUsername(String deviceName, String username){
+    private void setUsername(String deviceName, String username) {
         userMapper.put(deviceName, username);
         usernameListToUI();
     }
 
     /**
      * it will be checked if a username already exists
+     *
      * @param name
-     * @return  name already exists: true, false
+     * @return name already exists: true, false
      */
-    private boolean nameIsAvailable(String name){
+    private boolean nameIsAvailable(String name) {
         return userMapper.containsValue(name);
     }
 
@@ -130,26 +132,30 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
         }
     }
 
+    @Override
+    public int getNumberOfConnectedPlayers() {
+        return 0;
+    }
+
     /**
      * Processes the various requests
+     *
      * @param object
      */
     private void callbackHandler(Object object) {
-        try{
+        try {
             String json = (String) object;
-            UserNameRequestDTO userNameRequestDTO = LoganSquare.parse(json,UserNameRequestDTO.class);
+            UserNameRequestDTO userNameRequestDTO = LoganSquare.parse(json, UserNameRequestDTO.class);
 
             //TODO: check username
 
-        }catch (IOException ex)
-        {
+        } catch (IOException ex) {
             Log.e(this.getClass().getName(), "Failed to parse network data.");
         }
 
     }
 
     /**
-     *
      * @param userNameRequestDTO
      */
     private void userNameRequestDtoHandler(UserNameRequestDTO userNameRequestDTO) {
@@ -158,7 +164,6 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
 
 
     /**
-     *
      * @return returns the Salut object
      */
     public Salut getNetwork() {
@@ -168,12 +173,13 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
 
     /**
      * Sends an object to a specific client
+     *
      * @param deviceName the device name is not the user name!
-     * @param object    Important: Objects must be JsonObjects! The objects must have the notation @JsonObject and @JsonField
+     * @param object     Important: Objects must be JsonObjects! The objects must have the notation @JsonObject and @JsonField
      */
-    private void sendToClient(String deviceName, Object object){
-        for (SalutDevice device: network.registeredClients ) {
-            if (device.readableName == deviceName){
+    private void sendToClient(String deviceName, Object object) {
+        for (SalutDevice device : network.registeredClients) {
+            if (device.readableName == deviceName) {
                 network.sendToDevice(device, object, new SalutCallback() {
                     @Override
                     public void call() {
@@ -187,14 +193,23 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
 
     /**
      * sends an object to all clients
-     * @param object    Important: Objects must be JsonObjects! The objects must have the notation @JsonObject and @JsonField
+     *
+     * @param object Important: Objects must be JsonObjects! The objects must have the notation @JsonObject and @JsonField
      */
-    private void sendToAllClients(Object object){
+    private void sendToAllClients(Object object) {
         network.sendToAllDevices(object, new SalutCallback() {
             @Override
             public void call() {
                 Log.e(this.getClass().getName(), "failure - object could not be sent to all clients!");
             }
         });
+    }
+
+    /**
+     * @param shotCount
+     */
+    @Override
+    public void sendShotCountToServer(int shotCount) {
+
     }
 }

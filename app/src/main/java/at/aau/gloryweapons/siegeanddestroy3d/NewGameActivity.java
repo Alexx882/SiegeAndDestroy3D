@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.format.Formatter;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,10 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
+import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ClientData;
+import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ServerGameHandlerAsyncCommunication;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
-import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.ServerGameHandlerWifi;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class NewGameActivity extends AppCompatActivity {
@@ -34,7 +34,8 @@ public class NewGameActivity extends AppCompatActivity {
     private List<String> usersList;
     private ArrayAdapter<String> adapter;
 
-    private NetworkCommunicatorServer serverGameHandlerWifi;
+    // private NetworkCommunicatorServer serverGameHandlerWifi;
+    private NetworkCommunicatorServer serverGameHandlerAsyncComm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +44,20 @@ public class NewGameActivity extends AppCompatActivity {
 
         //init Server
         //ServerGameHandler.getInstance().initSimpleSocketServer();
+        /*
         this.serverGameHandlerWifi = ServerGameHandlerWifi.getInstance();
         serverGameHandlerWifi.initServerGameHandler(this, new UserCallBack() {
             @Override
             public void callback(List<String> users) {
                 listViewUpdater(users);
+            }
+        });
+        */
+        serverGameHandlerAsyncComm = ServerGameHandlerAsyncCommunication.getInstance();
+        serverGameHandlerAsyncComm.initServerGameHandler(this, new UserCallBack() {
+            @Override
+            public void callback(List<String> param) {
+                listViewUpdater(param);
             }
         });
 
@@ -79,6 +89,14 @@ public class NewGameActivity extends AppCompatActivity {
                     return;
 
                 } else {
+  
+                  // start placement for server  
+                     serverGameHandlerAsyncComm.sendShotCountToServer(Integer.parseInt(shot.toString()));
+                  
+                     GlobalGameSettings.getCurrent()
+                            // connected clients + this host
+                            .setNumberPlayers(serverGameHandlerAsyncComm.getNumberOfConnectedPlayers() + 1);
+
                     Intent intent = new Intent(NewGameActivity.this, PlacementActivity.class);
                     startActivity(intent);
 
@@ -104,26 +122,26 @@ public class NewGameActivity extends AppCompatActivity {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
 
-    private void initAdapter(){
+    private void initAdapter() {
         usersList = new ArrayList<>();
-        adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,android.R.id.text1,usersList);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, usersList);
 
         userListView.setAdapter(adapter);
     }
 
-    private void listViewUpdater(List<String> usersList){
+    private void listViewUpdater(List<String> usersList) {
         this.usersList.clear();
         this.usersList.addAll(usersList);
-        if (adapter != null){
+        if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
     }
 
     @Override
     public void onBackPressed() {
-        if (serverGameHandlerWifi != null){
+      /*  if (serverGameHandlerWifi != null){
            serverGameHandlerWifi.resetNetwork();
-        }
+        }*/
         super.onBackPressed();
     }
 }

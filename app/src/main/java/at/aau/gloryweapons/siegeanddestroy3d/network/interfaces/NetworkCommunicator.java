@@ -11,6 +11,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 
@@ -53,18 +54,22 @@ public interface NetworkCommunicator {
 
     // thanks Android for not supporting static in Interfaces.
 
+    public void initClientGameHandler(String ip, final Activity activity, CallbackObject<HandshakeDTO> isConnected);
+
     public void initClientGameHandler(final Activity activity, CallbackObject<SalutDevice> showServer);
+
     /**
      * Stop network and disable wifi direct
      */
     public void resetNetwork();
 
     /**
-     * @param user
+     *
+     * @param area
      * @param col
      * @param row
-     * @return
+     * @param callback
      */
-    public TurnDTO sendShotOnEnemyToServer(User user, int col, int row);
+    public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback);
 
 }

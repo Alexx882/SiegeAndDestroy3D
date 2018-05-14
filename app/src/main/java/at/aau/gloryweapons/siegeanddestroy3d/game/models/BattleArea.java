@@ -1,17 +1,74 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonIgnore;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.TileTypeConverter;
 
 /**
  * Created by Alexander on 05.04.2018.
  */
-
+@JsonObject(serializeNullObjects = true, serializeNullCollectionElements = true)
 public class BattleArea implements Serializable {
-
+    @JsonField
     private int userId;
+
+    @JsonField
     private int rows;
+
+    @JsonField
     private int columns;
+
+    @JsonIgnore
     private BattleAreaTile[][] battleAreaTiles;
+
+    @JsonField
+    private List<BattleAreaTile[]> forJsonBattleAreaTiles;
+
+    /**
+     *Hack for LoganSquare JSON
+     * @return      List<BattleAreaTile[]>
+     */
+    public List<BattleAreaTile[]> getForJsonBattleAreaTiles() {
+        if (battleAreaTiles == null){
+            forJsonBattleAreaTiles = new ArrayList<>();
+        }
+        if (forJsonBattleAreaTiles == null){
+            forJsonBattleAreaTiles = new ArrayList<>();
+        }else {
+            forJsonBattleAreaTiles.clear();
+        }
+
+        for (int i = 0; i < battleAreaTiles.length; i++) {
+            forJsonBattleAreaTiles.add(battleAreaTiles[i]);
+        }
+        return forJsonBattleAreaTiles;
+    }
+
+    /**
+     * Hack for LoganSquare JSON
+     */
+    public void setForJsonBattleAreaTiles(List<BattleAreaTile[]> forJsonBattleAreaTiles) {
+        if (battleAreaTiles == null){
+            battleAreaTiles = new BattleAreaTile[rows][columns];
+        }
+        this.forJsonBattleAreaTiles = forJsonBattleAreaTiles;
+        for (int i = 0; i < battleAreaTiles.length; i++) {
+            battleAreaTiles[i] = forJsonBattleAreaTiles.get(i);
+        }
+    }
+
+    /**
+     * empty constructor for json mapping
+     */
+    public BattleArea(){
+
+    }
 
     /**
      * Creates a new BattleArea with given playerId and dimensions. All tiles are water.
@@ -56,6 +113,30 @@ public class BattleArea implements Serializable {
 
     public BattleAreaTile[][] getBattleAreaTiles() {
         return battleAreaTiles;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public void setRows(int rows) {
+        this.rows = rows;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
+    public void setColumns(int columns) {
+        this.columns = columns;
+    }
+
+    public void setBattleAreaTiles(BattleAreaTile[][] battleAreaTiles) {
+        this.battleAreaTiles = battleAreaTiles;
     }
 
     /**
