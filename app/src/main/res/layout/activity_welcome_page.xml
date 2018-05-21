@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WelcomePageActivity">
+    tools:context=".WelcomePageActivity"
+    android:background="@drawable/water_background1">
 
     <Button
         android:id="@+id/Starten"
@@ -13,14 +14,16 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:background="@android:color/background_light"
+        android:fontFamily="@font/press_start_2p"
         android:text="Starten"
-        android:textSize="24sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.49" />
+        app:layout_constraintVertical_bias="0.39" />
+
 
     <Button
         android:id="@+id/Beitreten"
@@ -29,8 +32,10 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="192dp"
+        android:background="@android:color/background_light"
+        android:fontFamily="@font/press_start_2p"
         android:text="Beitreten"
-        android:textSize="24sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -43,15 +48,17 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Willkommen"
+        android:fontFamily="@font/press_start_2p"
+        android:text="Siege and Destroy"
         android:textAlignment="center"
-        android:textSize="50sp"
+        android:textSize="30sp"
         app:layout_constraintBottom_toTopOf="@+id/Starten"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.335" />
+
 
     <Button
         android:id="@+id/proximityTest"
@@ -72,4 +79,6 @@
         android:text="Accelerometer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+
 </android.support.constraint.ConstraintLayout>
