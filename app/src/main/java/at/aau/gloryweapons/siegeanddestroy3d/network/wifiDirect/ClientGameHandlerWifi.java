@@ -37,7 +37,7 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
     private Salut network;
     private static ClientGameHandlerWifi instance;
     private CallbackObject<SalutDevice> salutDeviceCallbackObject;
-    private String thisDeviceName;
+    private int clientId;
 
 
     public static ClientGameHandlerWifi getInstance() {
@@ -49,7 +49,7 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
 
     public void initClientGameHandler(final Activity activity, CallbackObject<SalutDevice> showServer) {
 
-        thisDeviceName = UUID.randomUUID().toString();
+        //clientId = UUID.randomUUID().toString();
 
         //reset server mode
         if (ServerGameHandlerWifi.getInstance().getNetwork() != null && ServerGameHandlerWifi.getInstance().getNetwork().isRunningAsHost) {
@@ -65,7 +65,7 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
             }
         };
         this.dataReceiver = new SalutDataReceiver(activity, salutDataCallback);
-        this.serviceData = new SalutServiceData(GlobalGameSettings.getCurrent().getServiceName(), GlobalGameSettings.getCurrent().getPort(), thisDeviceName);
+        this.serviceData = new SalutServiceData(GlobalGameSettings.getCurrent().getServiceName(), GlobalGameSettings.getCurrent().getPort(),Integer.toString(clientId) );
 
         GlobalGameSettings.getCurrent().setServer(false);
 
@@ -140,22 +140,12 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
         userCallbackObject = callback;
         UserNameRequestDTO userNameRequestDTO = new UserNameRequestDTO();
         userNameRequestDTO.setCheckUsername(username);
-        userNameRequestDTO.setDeviceName(thisDeviceName);
+        userNameRequestDTO.setClientId(clientId);
         sendToServer(userNameRequestDTO);
     }
 
     @Override
     public void sendGameConfigurationToServer(User user, BattleArea userBoard, List<BasicShip> placedShips, CallbackObject<GameConfiguration> callback) {
-
-    }
-
-    @Override
-    public void receiveServerMessages(CallbackObject<InstructionDTO> callback) {
-
-    }
-
-    @Override
-    public void getUserId(CallbackObject<User> callback) {
 
     }
 

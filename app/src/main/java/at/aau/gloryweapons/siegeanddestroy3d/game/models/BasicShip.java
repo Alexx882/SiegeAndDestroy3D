@@ -25,7 +25,7 @@ public class BasicShip implements Serializable {
     @JsonIgnore
     private BattleAreaTile[] tiles;
 
-    @JsonField
+    @JsonField(name = "h")
     private boolean horizontal = true;
 
     @JsonField

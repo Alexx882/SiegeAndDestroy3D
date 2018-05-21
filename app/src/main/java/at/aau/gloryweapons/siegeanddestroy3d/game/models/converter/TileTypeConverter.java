@@ -10,8 +10,8 @@ import java.util.Arrays;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 
-public class TileTypeConverter extends StringBasedTypeConverter<BattleAreaTile.TileType> {
-     @Override
+public class TileTypeConverter extends IntBasedTypeConverter<BattleAreaTile.TileType> {
+   /*  @Override
      public BattleAreaTile.TileType getFromString(String type) {
          return BattleAreaTile.TileType.valueOf(type);
      }
@@ -19,8 +19,8 @@ public class TileTypeConverter extends StringBasedTypeConverter<BattleAreaTile.T
      @Override
      public String convertToString(BattleAreaTile.TileType object) {
          return object.toString();
-     }
-     /*
+     }*/
+
     @Override
     public BattleAreaTile.TileType getFromInt(int i) {
         return BattleAreaTile.TileType.values()[i];
@@ -30,5 +30,5 @@ public class TileTypeConverter extends StringBasedTypeConverter<BattleAreaTile.T
     public int convertToInt(BattleAreaTile.TileType object) {
         return Arrays.asList(BattleAreaTile.TileType.values()).indexOf(object);
     }
-    */
+
 }

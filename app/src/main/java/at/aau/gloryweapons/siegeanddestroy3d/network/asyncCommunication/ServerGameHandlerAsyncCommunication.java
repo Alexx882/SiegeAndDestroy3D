@@ -5,20 +5,26 @@ import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
 import android.util.Log;
 
+import com.arasthel.asyncjob.AsyncJob;
 import com.koushikdutta.async.AsyncServer;
 import com.koushikdutta.async.AsyncServerSocket;
 import com.koushikdutta.async.AsyncSocket;
 import com.koushikdutta.async.ByteBufferList;
 import com.koushikdutta.async.DataEmitter;
+import com.koushikdutta.async.DataSink;
 import com.koushikdutta.async.Util;
 import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.callback.DataCallback;
 import com.koushikdutta.async.callback.ListenCallback;
+import com.koushikdutta.async.callback.WritableCallback;
 import com.peak.salut.SalutDevice;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
@@ -46,7 +52,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     private static ServerGameHandlerAsyncCommunication instance;
 
     //Client data list
-    private List<ClientData> socketList;
+    private HashMap<Integer, ClientData> clientDataMap;
 
     //client name list
     private UserCallBack userCallBack;
@@ -74,7 +80,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         wrapperHelper = WrapperHelper.getInstance();
         this.activity = activity;
         this.userCallBack = userCallBack;
-        socketList = new ArrayList<>();
+        this.clientDataMap = new HashMap<Integer, ClientData>();
         WifiManager wm = (WifiManager) activity.getApplicationContext().getSystemService(WIFI_SERVICE);
         String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
         //create instance
@@ -82,6 +88,8 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         InetAddress address = null;
 
         GlobalGameSettings.getCurrent().setServer(true);
+
+        Util.SUPRESS_DEBUG_EXCEPTIONS = false;
 
         //ip adrdress
         try {
@@ -126,7 +134,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
      */
     private void usernameListToUI() {
         final List<String> userList = new ArrayList<>();
-        for (ClientData data : socketList) {
+        for (ClientData data : clientDataMap.values()) {
             if (data.getUser() != null) {
                 userList.add(data.getUser().getName());
             } else {
@@ -157,7 +165,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
                 Object receivedObject = wrapperHelper.jsonToObject(request);
 
-                //TODO map data
+                // find correct handler
                 if (receivedObject instanceof HandshakeDTO) {
                     handleHandshakeDto((HandshakeDTO) receivedObject, socket);
                 } else if (receivedObject instanceof UserNameRequestDTO) {
@@ -174,12 +182,12 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     }
 
     private void handleHandshakeDto(HandshakeDTO handshakeDTO, AsyncSocket socket) {
-        //TODO create wrapper class
         ClientData clientData = new ClientData();
         clientData.setSocket(socket);
-        clientData.setId(handshakeDTO.getId());
-        socketList.add(clientData);
+        clientData.setId(socket.hashCode());
 
+        clientDataMap.put(clientData.getId(), clientData);
+        handshakeDTO.setClientId(clientData.getId());
         sendToClient(clientData, handshakeDTO);
     }
 
@@ -198,7 +206,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
             Log.e(this.getClass().getName(), "The username is already taken");
 
         // send valid User or null back to client
-        ClientData data = getClientDataByID(userNameRequestDTO.getDeviceName());
+        ClientData data = clientDataMap.get(userNameRequestDTO.getClientId());
         data.setUser(user);
 
         UserNameResponseDTO response = new UserNameResponseDTO();
@@ -213,7 +221,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         serverController.addDataToGameConfig(gameConfigRequestDto.getUser(),
                 gameConfigRequestDto.getBattleArea(),
                 gameConfigRequestDto.getPlacedShips(),
-                new ClientDataCallbackObject<GameConfiguration>(getClientDataByUser(gameConfigRequestDto.getUser())) {
+                new ClientDataCallbackObject<GameConfiguration>(clientDataMap.get(gameConfigRequestDto.getClientId())) {
                     @Override
                     public void callback(GameConfiguration gameConfig) {
                         // send the complete gameConfig back to the client
@@ -221,31 +229,6 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
                     }
                 }
         );
-    }
-
-    /**
-     * Returns the ClientData object by id
-     *
-     * @param id generated user id
-     * @return ClientDate object
-     */
-    private ClientData getClientDataByID(String id) {
-        for (ClientData clientData : socketList) {
-            if (clientData.getId().equals(id)) {
-                return clientData;
-            }
-        }
-        return null;
-    }
-
-    private ClientData getClientDataByUser(User user) {
-        for (ClientData clientData : socketList) {
-            if (clientData.getUser() != null
-                    && clientData.getUser().equals(user)) {
-                return clientData;
-            }
-        }
-        return null;
     }
 
     /**
@@ -257,8 +240,8 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
      * @param clientData ClientData Object
      * @param object     Object - Must be implemented in the WrapperHelper class to be converted again
      */
-    private void sendToClient(ClientData clientData, Object object) {
-        Log.i(this.getClass().getName(), "try to write message...");
+    private void tsendToClient(ClientData clientData, Object object) {
+        Log.i(this.getClass().getName(), " try to write message...");
 
         //Object to json
         final String json = wrapperHelper.ObjectToWrappedJson(object);
@@ -276,6 +259,46 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         });
     }
 
+    private synchronized void sendToClient(final ClientData clientData, final Object object) {
+        final String json = wrapperHelper.ObjectToWrappedJson(object);
+        byte[] bytes = json.getBytes();
+
+        final ByteBuffer bb = ByteBufferList.obtain(bytes.length);
+        bb.put(bytes);
+        bb.flip();
+        final ByteBufferList bbl = new ByteBufferList();
+        bbl.add(bb);
+
+        Log.i("+++++++++++++", "remaining: " + bbl.remaining());
+
+        final CompletedCallback callback = new CompletedCallback() {
+            @Override
+            public void onCompleted(Exception ex) {
+                if (ex != null) Log.e(this.getClass().getName(), ex.getMessage());
+                Log.i(this.getClass().getName(), "[Server] Successfully wrote message: ");
+            }
+        };
+
+        //send data
+        final WritableCallback wc;
+        final DataSink sink = clientData.getSocket();
+        sink.setWriteableCallback(wc = new WritableCallback() {
+            @Override
+            public void onWriteable() {
+                while (bbl.remaining() != 0){
+                    sink.write(bbl);
+                    if (bbl.remaining() == 0 && callback != null) {
+                        sink.setWriteableCallback(null);
+                        callback.onCompleted(null);
+                        return;
+                    }
+                }
+
+            }
+        });
+        wc.onWriteable();
+    }
+
     /**
      * Sends the object to all clients. Objects are automatically
      * converted into a json string. The object must be implemented
@@ -286,7 +309,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
      */
     private void sendToAllClients(Object object) {
         Log.i(this.getClass().getName(), "try to send to all clients...");
-        for (ClientData clientData : socketList) {
+        for (ClientData clientData : clientDataMap.values()) {
             sendToClient(clientData, object);
         }
     }
@@ -297,14 +320,14 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     @Override
     public int getNumberOfConnectedPlayers() {
-        return socketList.size();
+        return clientDataMap.values().size();
     }
 
     // Network-Client methods
 
     @Override
     public void sendNameToServer(String username, CallbackObject<User> callback) {
-        // not needed on server
+        // TODO register this name
     }
 
     @Override
@@ -313,22 +336,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     }
 
     @Override
-    public void receiveServerMessages(CallbackObject<InstructionDTO> callback) {
-        // not needed on server
-    }
-
-    @Override
-    public void getUserId(CallbackObject<User> callback) {
-        // not needed on server
-    }
-
-    @Override
     public void initClientGameHandler(String ip, Activity activity, CallbackObject<HandshakeDTO> isConnected) {
-        // not needed on server
-    }
-
-    @Override
-    public void initClientGameHandler(Activity activity, CallbackObject<SalutDevice> showServer) {
         // not needed on server
     }
 

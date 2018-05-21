@@ -13,8 +13,8 @@ public class GlobalGameSettings implements Serializable {
     private int numberPlayers;
 
     // fixed size of rows and cols
-    private int numberRows = 9;
-    private int numberCols = 9;
+    private int numberRows = 8;
+    private int numberCols = 8;
 
     // fixed number and sizes of ships
     private int numberShips = 4;

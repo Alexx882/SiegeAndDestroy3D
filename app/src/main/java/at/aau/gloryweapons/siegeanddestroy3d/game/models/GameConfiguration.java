@@ -19,6 +19,8 @@ public class GameConfiguration implements Serializable {
 
     @JsonField
     private List<BattleArea> battleAreaList;
+
+    @JsonField
     private int shots;
 
     // Test Constructor. Dient nur zum Testen der Positionierung von SpielerLabels

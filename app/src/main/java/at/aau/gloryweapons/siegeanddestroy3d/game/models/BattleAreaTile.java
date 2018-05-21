@@ -2,11 +2,10 @@ package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
-import com.bluelinelabs.logansquare.typeconverters.IntBasedTypeConverter;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.OrientationConverter;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.TileTypeConverter;
 
 /**
@@ -26,11 +25,11 @@ public class BattleAreaTile implements Serializable {
     }
 
 
-    @JsonField
+    @JsonField(name = "h", typeConverter = OrientationConverter.class)
     private boolean horizontal = true;
 
     // initial type is water
-    @JsonField(typeConverter = TileTypeConverter.class)
+    @JsonField(name = "t", typeConverter = TileTypeConverter.class)
     private TileType type = TileType.WATER;
 
     public TileType getType() {

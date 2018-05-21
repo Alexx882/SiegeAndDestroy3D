@@ -36,29 +36,8 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
     }
 
     @Override
-    public void receiveServerMessages(CallbackObject<InstructionDTO> callback) {
-
-    }
-
-    @Override
-    public void getUserId(CallbackObject<User> callback) {
-        int id = (1000 + (int) (Math.random() * (1000000)));
-        this.user = new User(id, null);
-        return;
-    }
-
-    @Override
     public void initClientGameHandler(String ip, Activity activity, CallbackObject<HandshakeDTO> isConnected) {
 
-    }
-
-    @Override
-    public void initClientGameHandler(Activity activity, CallbackObject<SalutDevice> showServer) {
-        SalutDevice dev = new SalutDevice();
-        dev.deviceName = "HandyX";
-        dev.readableName = "UserY";
-
-        showServer.callback(dev);
     }
 
     @Override

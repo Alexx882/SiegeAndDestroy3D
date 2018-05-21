@@ -38,25 +38,7 @@ public interface NetworkCommunicator {
     public void sendGameConfigurationToServer(User user, BattleArea userBoard,
                                               List<BasicShip> placedShips, CallbackObject<GameConfiguration> callback);
 
-    /**
-     * Registers a callback which is called if the communicator receives a message from the server.
-     *
-     * @param callback
-     */
-    public void receiveServerMessages(CallbackObject<InstructionDTO> callback);
-
-    /**
-     * sends a request for the user id
-     *
-     * @param callback The callback which is called to return the User object. ip and name are NULL
-     */
-    public void getUserId(CallbackObject<User> callback);
-
-    // thanks Android for not supporting static in Interfaces.
-
     public void initClientGameHandler(String ip, final Activity activity, CallbackObject<HandshakeDTO> isConnected);
-
-    public void initClientGameHandler(final Activity activity, CallbackObject<SalutDevice> showServer);
 
     /**
      * Stop network and disable wifi direct
@@ -64,7 +46,6 @@ public interface NetworkCommunicator {
     public void resetNetwork();
 
     /**
-     *
      * @param area
      * @param col
      * @param row

@@ -1,5 +1,7 @@
 package at.aau.gloryweapons.siegeanddestroy3d.server;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,7 +50,6 @@ public class ServerController {
         return user;
     }
 
-    //getID and always add 1
     private int getId() {
         return id.getAndAdd(1);
     }
@@ -74,6 +75,8 @@ public class ServerController {
         battleAreas.add(battleArea);
         callbacks.add(callback);
 
+        Log.i(this.getClass().toString(), "addDataToGameConfig number players: " + GlobalGameSettings.getCurrent().getNumberPlayers());
+
         if (users.size() == GlobalGameSettings.getCurrent().getNumberPlayers()) {
             // all players finished placement
             gameConfig = new GameConfiguration();
@@ -83,6 +86,8 @@ public class ServerController {
             for (CallbackObject<GameConfiguration> cb : callbacks)
                 if (cb != null)
                     cb.callback(gameConfig);
+
+            callbacks.clear();
         }
     }
 
