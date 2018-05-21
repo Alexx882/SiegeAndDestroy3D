@@ -4,13 +4,10 @@ import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 @JsonObject
-public class HandshakeDTO {
+public class HandshakeDTO extends RequestDTO {
 
     @JsonField
     private boolean connectionEstablished;
-
-    @JsonField
-    private int id;
 
     public boolean isConnectionEstablished() {
         return connectionEstablished;
@@ -18,13 +15,5 @@ public class HandshakeDTO {
 
     public void setConnectionEstablished(boolean connectionEstablished) {
         this.connectionEstablished = connectionEstablished;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 }

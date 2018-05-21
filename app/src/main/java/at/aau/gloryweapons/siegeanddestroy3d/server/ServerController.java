@@ -1,5 +1,7 @@
 package at.aau.gloryweapons.siegeanddestroy3d.server;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,7 +26,7 @@ public class ServerController {
      * @param name The name to check
      * @return User object if the name is available.
      */
-    public synchronized User checkName(String name, int id) {
+    public synchronized User checkName(String name) {
         //check name
         if (ValidationHelperClass.isUserNameValid(name)) {
 
@@ -44,12 +46,11 @@ public class ServerController {
         names.add(name);
         User user = new User();
         user.setName(name);
-        user.setId(id);
+        user.setId(getId());
         return user;
     }
 
-    //getID and always add 1
-    public int getId() {
+    private int getId() {
         return id.getAndAdd(1);
     }
 
@@ -73,6 +74,8 @@ public class ServerController {
         users.add(user);
         battleAreas.add(battleArea);
         callbacks.add(callback);
+
+        Log.i(this.getClass().toString(), "addDataToGameConfig number players: " + GlobalGameSettings.getCurrent().getNumberPlayers());
 
         if (users.size() == GlobalGameSettings.getCurrent().getNumberPlayers()) {
             // all players finished placement

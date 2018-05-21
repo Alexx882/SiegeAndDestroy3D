@@ -8,11 +8,10 @@ import java.io.Serializable;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.TileTypeConverter;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.converter.TurnTypeConverter;
 
 @JsonObject
-public class TurnDTO implements Serializable {
+public class TurnDTO extends RequestDTO implements Serializable {
 
     @JsonIgnore
     private static final long serialVersionUID = 1459083456079L;

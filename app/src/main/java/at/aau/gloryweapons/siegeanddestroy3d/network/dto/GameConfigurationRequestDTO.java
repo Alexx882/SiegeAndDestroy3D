@@ -5,8 +5,6 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.List;
 
-import javax.security.auth.callback.Callback;
-
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
@@ -16,7 +14,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
  */
 
 @JsonObject
-public class GameConfigurationRequestDTO {
+public class GameConfigurationRequestDTO extends RequestDTO {
 
     @JsonField
     private User user;

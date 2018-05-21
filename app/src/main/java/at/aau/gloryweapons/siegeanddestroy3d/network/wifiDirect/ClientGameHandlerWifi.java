@@ -150,16 +150,6 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
     }
 
     @Override
-    public void receiveServerMessages(CallbackObject<InstructionDTO> callback) {
-
-    }
-
-    @Override
-    public void getUserId(CallbackObject<User> callback) {
-
-    }
-
-    @Override
     public void initClientGameHandler(String ip, Activity activity, CallbackObject<HandshakeDTO> isConnected) {
 
     }

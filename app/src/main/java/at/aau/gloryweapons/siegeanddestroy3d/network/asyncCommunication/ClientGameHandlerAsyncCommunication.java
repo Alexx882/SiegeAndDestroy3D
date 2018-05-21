@@ -11,11 +11,9 @@ import com.koushikdutta.async.Util;
 import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.callback.ConnectCallback;
 import com.koushikdutta.async.callback.DataCallback;
-import com.peak.salut.SalutDevice;
 
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.UUID;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
@@ -24,7 +22,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.RequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
@@ -43,7 +41,6 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
 
     private CallbackObject<TurnDTO> shotHit;
     private CallbackObject<GameConfiguration> gameConfigCallback;
-
 
     private static ClientGameHandlerAsyncCommunication instance;
 
@@ -64,7 +61,6 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
 
         UserNameRequestDTO nameRequestDTO = new UserNameRequestDTO();
         nameRequestDTO.setCheckUsername(username);
-        nameRequestDTO.setClientId(clientId);
 
         sendToServer(nameRequestDTO);
     }
@@ -79,21 +75,6 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
         request.setPlacedShips(placedShips);
 
         sendToServer(request);
-    }
-
-    @Override
-    public void receiveServerMessages(CallbackObject<InstructionDTO> callback) {
-
-    }
-
-    @Override
-    public void getUserId(CallbackObject<User> callback) {
-
-    }
-
-    @Override
-    public void initClientGameHandler(Activity activity, CallbackObject<SalutDevice> showServer) {
-        Log.i(this.getClass().getName(), "WTF??!!");
     }
 
     @Override
@@ -121,11 +102,9 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
 
         GlobalGameSettings.getCurrent().setServer(false);
 
-        //thisDeviceName = UUID.randomUUID().toString();
-        //TODO save UUID
-
         wrapperHelper = WrapperHelper.getInstance();
 
+        // connect to server
         AsyncServer.getDefault().connectSocket(inetSocketAddress, new ConnectCallback() {
             @Override
             public void onConnectCompleted(Exception ex, AsyncSocket socket) {
@@ -136,31 +115,17 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
                 server = socket;
                 Util.SUPRESS_DEBUG_EXCEPTIONS = false;
 
-                //build handshake
+                //build and send handshake
                 HandshakeDTO handshakeDTO = new HandshakeDTO();
                 handshakeDTO.setConnectionEstablished(true);
-                //handshakeDTO.setId(thisDeviceName);
-                handshakeDTO.setId(0);
-                String json = wrapperHelper.ObjectToWrappedJson(handshakeDTO);
+                sendToServer(handshakeDTO);
 
-                //send handshake
-                Util.writeAll(server, json.getBytes(), new CompletedCallback() {
-                    @Override
-                    public void onCompleted(Exception ex) {
-                        if(ex != null){
-                            Log.e(this.getClass().getName(), ex.getMessage());
-                        }
-                    }
-                });
-                receivedFromServer();
-
+                initServerCallbackHandler();
             }
         });
-
-
     }
 
-    private void receivedFromServer() {
+    private void initServerCallbackHandler() {
         server.setDataCallback(new DataCallback() {
             @Override
             public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
@@ -168,10 +133,9 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
                 Log.i("*****", "remaining: " + bb.remaining());
                 String receivedMessage = new String(bb.getAllByteArray());
                 System.out.println("[Client] Received Message " + receivedMessage);
-                Log.i(this.getClass().getName(), "[Client] Received message size: " +receivedMessage.length());
-                //TODO handle request
+                Log.i(this.getClass().getName(), "[Client] Received message size: " + receivedMessage.length());
 
-                if (emitter.isPaused()){
+                if (emitter.isPaused()) {
                     emitter.resume();
                 }
 
@@ -196,19 +160,20 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
     }
 
     private void handleHandshake(HandshakeDTO handshakeDTO) {
-        this.clientId = handshakeDTO.getId();
+        this.clientId = handshakeDTO.getClientId();
         Log.v(this.getClass().getName(), "handshake: " + handshakeDTO.isConnectionEstablished());
-        Log.v(this.getClass().getName(), "handshake - new client ID: " + handshakeDTO.getId());
+        Log.v(this.getClass().getName(), "handshake - new client ID: " + handshakeDTO.getClientId());
         isConnected.callback(handshakeDTO);
     }
 
     private void handleGameConfigResponse(GameConfiguration gameConfig) {
-        BattleArea battleArea = gameConfig.getBattleAreaList().get(0);
         gameConfigCallback.callback(gameConfig);
     }
 
+    private void sendToServer(RequestDTO object) {
+        // send the client id with the request
+        object.setClientId(clientId);
 
-    private void sendToServer(Object object) {
         String json = wrapperHelper.ObjectToWrappedJson(object);
         if (json.length() <= 2) {
             Log.e(this.getClass().getName(), "Cannot send object");
@@ -222,6 +187,4 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
             }
         });
     }
-
-
 }
