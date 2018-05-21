@@ -327,7 +327,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     @Override
     public void sendNameToServer(String username, CallbackObject<User> callback) {
-        // not needed on server
+        // TODO register this name
     }
 
     @Override

@@ -86,6 +86,8 @@ public class ServerController {
             for (CallbackObject<GameConfiguration> cb : callbacks)
                 if (cb != null)
                     cb.callback(gameConfig);
+
+            callbacks.clear();
         }
     }
 
