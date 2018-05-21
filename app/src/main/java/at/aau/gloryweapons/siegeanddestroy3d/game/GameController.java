@@ -1,7 +1,5 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game;
 
-import android.widget.Toast;
-
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
@@ -68,7 +66,7 @@ public class GameController {
      * @return
      */
     private boolean checkIfMyTurn() {
-        if (GlobalGameSettings.getCurrent().getPlayerId() == GlobalGameSettings.getCurrent().getActualUser().getId()) {
+        if (GlobalGameSettings.getCurrent().getPlayerId() == GlobalGameSettings.getCurrent().getUserOfCurrentTurn().getId()) {
             return true;
         } else {
             return false;
@@ -90,5 +88,14 @@ public class GameController {
         } else {
             return false;
         }
+    }
+
+    public void RegisterForTurnInfoUpdates(){
+        communicator.registerForTurnInfos(new CallbackObject<User>() {
+            @Override
+            public void callback(User param) {
+                // TODO handle next user for turn
+            }
+        });
     }
 }

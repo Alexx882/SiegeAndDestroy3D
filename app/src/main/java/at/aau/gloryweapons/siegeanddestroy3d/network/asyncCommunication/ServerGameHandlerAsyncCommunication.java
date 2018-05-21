@@ -5,7 +5,6 @@ import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
 import android.util.Log;
 
-import com.arasthel.asyncjob.AsyncJob;
 import com.koushikdutta.async.AsyncServer;
 import com.koushikdutta.async.AsyncServerSocket;
 import com.koushikdutta.async.AsyncSocket;
@@ -17,13 +16,11 @@ import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.callback.DataCallback;
 import com.koushikdutta.async.callback.ListenCallback;
 import com.koushikdutta.async.callback.WritableCallback;
-import com.peak.salut.SalutDevice;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,8 +31,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
@@ -56,6 +53,8 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     //client name list
     private UserCallBack userCallBack;
+
+    CallbackObject<User> turnInfoUpdateCallback;
 
     private Activity activity;
 
@@ -218,6 +217,16 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     }
 
     private void handleGameConfigRequest(GameConfigurationRequestDTO gameConfigRequestDto) {
+        // after the gameConfig finished the clients should get info about the first turn
+        // just overwrite every time, bc its just needed once
+        serverController.registerForGameConfigCompletion(new CallbackObject<User>() {
+            @Override
+            public void callback(User nextUser) {
+                sendFirstTurnInfo(nextUser);
+            }
+        });
+
+        // add data for every client
         serverController.addDataToGameConfig(gameConfigRequestDto.getUser(),
                 gameConfigRequestDto.getBattleArea(),
                 gameConfigRequestDto.getPlacedShips(),
@@ -229,6 +238,33 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
                     }
                 }
         );
+    }
+
+    /**
+     * Sends the info about the first turn to the clients.
+     */
+    private void sendFirstTurnInfo(User nextUser) {
+        TurnInfoDTO turnInfo = new TurnInfoDTO();
+        turnInfo.setPlayerNextTurn(nextUser);
+
+        // send to clients
+        sendToAllClients(turnInfo);
+
+        // send to server game instance
+        turnInfoUpdateCallback.callback(nextUser);
+    }
+    
+    /**
+     * Sends the info about the next turn to the clients.
+     */
+    private void sendNextTurnInfo() {
+        // TODO send the next turn info somewhere
+        User nextUser = serverController.getUserForNextTurn();
+
+        TurnInfoDTO turnInfo = new TurnInfoDTO();
+        turnInfo.setPlayerNextTurn(nextUser);
+
+        sendToAllClients(turnInfo);
     }
 
     /**
@@ -316,8 +352,8 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     private void handleTurnDTO(TurnDTO hitType) {
         hitType = serverController.checkShot(hitType);
-       ClientData client= clientDataMap.get(hitType.getClientId());
-       sendToClient(client,hitType);
+        ClientData client = clientDataMap.get(hitType.getClientId());
+        sendToClient(client, hitType);
     }
 
     @Override
@@ -350,6 +386,11 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     @Override
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
         // TODO
+    }
+
+    @Override
+    public void registerForTurnInfos(CallbackObject<User> nextUserCallback) {
+        this.turnInfoUpdateCallback = nextUserCallback;
     }
 
     /**

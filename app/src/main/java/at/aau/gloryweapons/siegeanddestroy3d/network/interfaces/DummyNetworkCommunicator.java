@@ -50,6 +50,11 @@ public class DummyNetworkCommunicator implements NetworkCommunicator {
 
     }
 
+    @Override
+    public void registerForTurnInfos(CallbackObject<User> nextUserCallback) {
+
+    }
+
     /**
      * Class used for simulating delay.
      */

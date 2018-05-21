@@ -24,6 +24,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationReques
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.RequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
@@ -41,6 +42,8 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
 
     private CallbackObject<TurnDTO> shotHitCallback;
     private CallbackObject<GameConfiguration> gameConfigCallback;
+
+    private CallbackObject<User> turnInfoCallback;
 
     private static ClientGameHandlerAsyncCommunication instance;
 
@@ -89,6 +92,11 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
         hitType.setxCoordinates(row);
         hitType.setyCoordinates(col);
         sendToServer(hitType);
+    }
+
+    @Override
+    public void registerForTurnInfos(CallbackObject<User> nextUserCallback) {
+        this.turnInfoCallback = nextUserCallback;
     }
 
     @Override
@@ -151,8 +159,9 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
                     handleGameConfigResponse((GameConfiguration) receivedObject);
                 } else if (receivedObject instanceof TurnDTO){
                     shotHitCallback.callback((TurnDTO)receivedObject);
+                } else if (receivedObject instanceof TurnInfoDTO) {
+                    handleTurnInfo((TurnInfoDTO) receivedObject);
                 }
-
             }
         });
     }
@@ -170,6 +179,11 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
 
     private void handleGameConfigResponse(GameConfiguration gameConfig) {
         gameConfigCallback.callback(gameConfig);
+    }
+
+    private void handleTurnInfo(TurnInfoDTO receivedObject) {
+        if (turnInfoCallback != null)
+            turnInfoCallback.callback(receivedObject.getPlayerNextTurn());
     }
 
     private void sendToServer(RequestDTO object) {

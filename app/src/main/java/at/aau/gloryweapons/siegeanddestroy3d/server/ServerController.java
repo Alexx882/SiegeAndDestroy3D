@@ -4,7 +4,10 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.security.auth.callback.Callback;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
@@ -57,10 +60,16 @@ public class ServerController {
     }
 
     private GameConfiguration gameConfig;
-    private List<User> users = new ArrayList<>(4);
+    private ArrayList<User> users = new ArrayList<>(4);
     private List<BattleArea> battleAreas = new ArrayList<>(4);
     private List<CallbackObject<GameConfiguration>> callbacks = new ArrayList<>(4);
-    private int shots =0;
+    private int shots = 0;
+    private CallbackObject<User> turnOfFirstUserCallback;
+
+    public void registerForGameConfigCompletion(CallbackObject<User> callback) {
+        // just overwrite old values, because we need it only once
+        turnOfFirstUserCallback = callback;
+    }
 
     /**
      * Adds the user and his battle area to the gameconfig.
@@ -87,12 +96,41 @@ public class ServerController {
             gameConfig.setBattleAreaList(battleAreas);
             gameConfig.setShots(this.shots);
 
+            // inform the clients about the game config
             for (CallbackObject<GameConfiguration> cb : callbacks)
                 if (cb != null)
                     cb.callback(gameConfig);
 
             callbacks.clear();
+
+            // also inform the clients about the first turn
+            if(turnOfFirstUserCallback != null)
+                turnOfFirstUserCallback.callback(getUserForFirstTurn());
         }
+    }
+
+    private int userIdxForCurrentTurn = 0;
+
+    /**
+     * A user is decided to be the first player. Decision is random.
+     *
+     * @return The user to use first
+     */
+    public User getUserForFirstTurn() {
+        // decide per random so nobody is preferred
+        userIdxForCurrentTurn = new Random().nextInt(4);
+        return users.get(userIdxForCurrentTurn);
+    }
+
+    /**
+     * The next user in the order is returned.
+     *
+     * @return
+     */
+    public User getUserForNextTurn() {
+        // just loop through
+        userIdxForCurrentTurn = (userIdxForCurrentTurn + 1) % users.size();
+        return users.get(userIdxForCurrentTurn);
     }
 
     /**
@@ -159,7 +197,7 @@ public class ServerController {
      */
     public void sentShots(int shots) {
 
-        this.shots =shots;
+        this.shots = shots;
     }
 }
 
