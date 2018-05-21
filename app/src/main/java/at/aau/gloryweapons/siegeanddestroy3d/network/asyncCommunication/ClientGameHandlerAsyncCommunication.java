@@ -39,7 +39,7 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
     private CallbackObject<HandshakeDTO> isConnected;
     private CallbackObject<User> userNameCallback;
 
-    private CallbackObject<TurnDTO> shotHit;
+    private CallbackObject<TurnDTO> shotHitCallback;
     private CallbackObject<GameConfiguration> gameConfigCallback;
 
     private static ClientGameHandlerAsyncCommunication instance;
@@ -84,7 +84,7 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
 
     @Override
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
-        shotHit = callback;
+        shotHitCallback = callback;
         TurnDTO hitType = new TurnDTO(TurnDTO.TurnType.SHOT, area);
         hitType.setxCoordinates(row);
         hitType.setyCoordinates(col);
@@ -149,6 +149,8 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
                     handleUserResponse((UserNameResponseDTO) receivedObject);
                 } else if (receivedObject instanceof GameConfiguration) {
                     handleGameConfigResponse((GameConfiguration) receivedObject);
+                } else if (receivedObject instanceof TurnDTO){
+                    shotHitCallback.callback((TurnDTO)receivedObject);
                 }
 
             }

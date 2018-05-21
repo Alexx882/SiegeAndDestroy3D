@@ -316,7 +316,8 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     private void handleTurnDTO(TurnDTO hitType) {
         hitType = serverController.checkShot(hitType);
-
+       ClientData client= clientDataMap.get(hitType.getClientId());
+       sendToClient(client,hitType);
     }
 
     @Override
