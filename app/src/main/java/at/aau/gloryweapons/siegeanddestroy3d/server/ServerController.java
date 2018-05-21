@@ -9,8 +9,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
@@ -58,6 +60,7 @@ public class ServerController {
     private List<User> users = new ArrayList<>(4);
     private List<BattleArea> battleAreas = new ArrayList<>(4);
     private List<CallbackObject<GameConfiguration>> callbacks = new ArrayList<>(4);
+    private int shots =0;
 
     /**
      * Adds the user and his battle area to the gameconfig.
@@ -82,6 +85,7 @@ public class ServerController {
             gameConfig = new GameConfiguration();
             gameConfig.setUserList(users);
             gameConfig.setBattleAreaList(battleAreas);
+            gameConfig.setShots(this.shots);
 
             for (CallbackObject<GameConfiguration> cb : callbacks)
                 if (cb != null)
@@ -91,5 +95,71 @@ public class ServerController {
         }
     }
 
+    /**
+     * checks the tile and sets the type of the TurnDTO
+     *
+     * @param hit
+     * @return
+     */
+    public TurnDTO checkShot(TurnDTO hit) {
+
+        BattleAreaTile tile = new BattleAreaTile();
+        for (BattleArea area : battleAreas) {
+            if (hit.getUser().getId() == area.getUserId()) {
+
+                tile = area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()];
+                tile = checkTile(tile);
+                if (tile.getType() == BattleAreaTile.TileType.NO_HIT) {
+                    hit.setType(TurnDTO.TurnType.NO_HIT);
+                    area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()].setType(BattleAreaTile.TileType.NO_HIT);
+                } else {
+                    hit.setType(TurnDTO.TurnType.HIT);
+                    area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                }
+            }
+        }
+
+        return hit;
+
+    }
+
+    /**
+     * checks the type of the enemies Tile on the server
+     *
+     * @param tile
+     * @return
+     */
+    private BattleAreaTile checkTile(BattleAreaTile tile) {
+        switch (tile.getType()) {
+            case WATER:
+                tile.setType(BattleAreaTile.TileType.NO_HIT);
+                break;
+            case NO_HIT:
+                break;
+            case SHIP_START:
+                tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                break;
+            case SHIP_MIDDLE:
+                tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                break;
+            case SHIP_END:
+                tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                break;
+            case SHIP_DESTROYED:
+                break;
+        }
+        return tile;
+
+    }
+
+    /**
+     * saves Shots in gameConfig
+     *
+     * @param shots
+     */
+    public void sentShots(int shots) {
+
+        this.shots =shots;
+    }
 }
 

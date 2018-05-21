@@ -29,28 +29,30 @@ public class GameController {
 
         if (checkIfMyTurn()) {
             if (enemy.getId() != GlobalGameSettings.getCurrent().getPlayerId()) {
-                if (shotsFired <= game.getShots()) {
+                if (enemyArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.SHIP_DESTROYED) {
+                    if (shotsFired <= game.getShots()) {
 
-                    shotsFired++;
+                        shotsFired++;
 
-                    communicator.sendShotOnEnemyToServer(enemyArea, col, row, new CallbackObject<TurnDTO>() {
-                        @Override
-                        public void callback(TurnDTO t) {
-                            BattleAreaTile.TileType tile = null;
-                            switch (t.getType()) {
-                                case NO_HIT:
-                                    tile = BattleAreaTile.TileType.NO_HIT;
-                                    enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.NO_HIT);
-                                    break;
-                                case HIT:
-                                    tile = BattleAreaTile.TileType.SHIP_DESTROYED;
-                                    enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
-                                    break;
+                        communicator.sendShotOnEnemyToServer(enemyArea, col, row, new CallbackObject<TurnDTO>() {
+                            @Override
+                            public void callback(TurnDTO t) {
+                                BattleAreaTile.TileType tile = null;
+                                switch (t.getType()) {
+                                    case NO_HIT:
+                                        tile = BattleAreaTile.TileType.NO_HIT;
+                                        enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.NO_HIT);
+                                        break;
+                                    case HIT:
+                                        tile = BattleAreaTile.TileType.SHIP_DESTROYED;
+                                        enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                                        break;
+                                }
+                                callback.callback(tile);
                             }
-                            callback.callback(tile);
-                        }
-                    });
+                        });
 
+                    }
                 }
             }
 

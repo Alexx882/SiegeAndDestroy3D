@@ -126,7 +126,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
      */
     @Override
     public void sendShotCountToServer(int shotCount) {
-
+        serverController.sentShots(shotCount);
     }
 
     /**
@@ -285,7 +285,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
         sink.setWriteableCallback(wc = new WritableCallback() {
             @Override
             public void onWriteable() {
-                while (bbl.remaining() != 0){
+                while (bbl.remaining() != 0) {
                     sink.write(bbl);
                     if (bbl.remaining() == 0 && callback != null) {
                         sink.setWriteableCallback(null);
@@ -315,6 +315,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
     }
 
     private void handleTurnDTO(TurnDTO hitType) {
+        hitType = serverController.checkShot(hitType);
 
     }
 
