@@ -12,7 +12,7 @@ public class UserNameRequestDTO {
     private String checkUsername;
 
     @JsonField
-    private String deviceName;
+    private int clientId;
 
     public String getCheckUsername() {
         return checkUsername;
@@ -22,11 +22,11 @@ public class UserNameRequestDTO {
         this.checkUsername = checkUsername;
     }
 
-    public String getDeviceName() {
-        return deviceName;
+    public int getClientId() {
+        return clientId;
     }
 
-    public void setDeviceName(String deviceName) {
-        this.deviceName = deviceName;
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
 }

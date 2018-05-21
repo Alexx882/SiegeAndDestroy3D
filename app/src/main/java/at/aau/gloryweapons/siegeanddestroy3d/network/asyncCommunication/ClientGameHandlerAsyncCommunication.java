@@ -34,7 +34,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunica
 
 public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator {
     private AsyncSocket server;
-    private String thisDeviceName;
+    private int clientId;
     private WrapperHelper wrapperHelper;
 
     //callbacks
@@ -64,7 +64,7 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
 
         UserNameRequestDTO nameRequestDTO = new UserNameRequestDTO();
         nameRequestDTO.setCheckUsername(username);
-        nameRequestDTO.setDeviceName(thisDeviceName);
+        nameRequestDTO.setClientId(clientId);
 
         sendToServer(nameRequestDTO);
     }
@@ -121,7 +121,7 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
 
         GlobalGameSettings.getCurrent().setServer(false);
 
-        thisDeviceName = UUID.randomUUID().toString();
+        //thisDeviceName = UUID.randomUUID().toString();
         //TODO save UUID
 
         wrapperHelper = WrapperHelper.getInstance();
@@ -134,18 +134,22 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
                 }
                 Log.v(this.getClass().getName(), " connection completed...");
                 server = socket;
+                Util.SUPRESS_DEBUG_EXCEPTIONS = false;
 
                 //build handshake
                 HandshakeDTO handshakeDTO = new HandshakeDTO();
                 handshakeDTO.setConnectionEstablished(true);
-                handshakeDTO.setId(thisDeviceName);
+                //handshakeDTO.setId(thisDeviceName);
+                handshakeDTO.setId(0);
                 String json = wrapperHelper.ObjectToWrappedJson(handshakeDTO);
 
                 //send handshake
                 Util.writeAll(server, json.getBytes(), new CompletedCallback() {
                     @Override
                     public void onCompleted(Exception ex) {
-
+                        if(ex != null){
+                            Log.e(this.getClass().getName(), ex.getMessage());
+                        }
                     }
                 });
                 receivedFromServer();
@@ -160,9 +164,16 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
         server.setDataCallback(new DataCallback() {
             @Override
             public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
+                Log.i("*****", "remaining: " + bb.hasRemaining());
+                Log.i("*****", "remaining: " + bb.remaining());
                 String receivedMessage = new String(bb.getAllByteArray());
                 System.out.println("[Client] Received Message " + receivedMessage);
+                Log.i(this.getClass().getName(), "[Client] Received message size: " +receivedMessage.length());
                 //TODO handle request
+
+                if (emitter.isPaused()){
+                    emitter.resume();
+                }
 
                 //json to object
                 Object receivedObject = wrapperHelper.jsonToObject(receivedMessage);
@@ -185,11 +196,14 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
     }
 
     private void handleHandshake(HandshakeDTO handshakeDTO) {
+        this.clientId = handshakeDTO.getId();
         Log.v(this.getClass().getName(), "handshake: " + handshakeDTO.isConnectionEstablished());
+        Log.v(this.getClass().getName(), "handshake - new client ID: " + handshakeDTO.getId());
         isConnected.callback(handshakeDTO);
     }
 
     private void handleGameConfigResponse(GameConfiguration gameConfig) {
+        BattleArea battleArea = gameConfig.getBattleAreaList().get(0);
         gameConfigCallback.callback(gameConfig);
     }
 

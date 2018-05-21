@@ -121,7 +121,7 @@ public class JoinGameActivity extends AppCompatActivity {
 
                             // show server name
                             txtServer.setVisibility(View.VISIBLE);
-                            txtServer.setText("Verbindung zum Server: " + param.getId() + " hergestellt!");
+                            txtServer.setText("Verbindung zum Server hergestellt! User ID: "+ param.getId());
 
                             connectedToServer = true;
                         }

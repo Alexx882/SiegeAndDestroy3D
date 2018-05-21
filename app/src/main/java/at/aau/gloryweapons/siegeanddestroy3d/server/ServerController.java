@@ -24,7 +24,7 @@ public class ServerController {
      * @param name The name to check
      * @return User object if the name is available.
      */
-    public synchronized User checkName(String name) {
+    public synchronized User checkName(String name, int id) {
         //check name
         if (ValidationHelperClass.isUserNameValid(name)) {
 
@@ -44,12 +44,12 @@ public class ServerController {
         names.add(name);
         User user = new User();
         user.setName(name);
-        user.setId(getId());
+        user.setId(id);
         return user;
     }
 
     //getID and always add 1
-    private int getId() {
+    public int getId() {
         return id.getAndAdd(1);
     }
 

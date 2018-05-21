@@ -15,7 +15,7 @@ public class ClientData {
 
     private AsyncSocket socket;
     private User user;
-    private String id;
+    private int id;
 
     public AsyncSocket getSocket() {
         return socket;
@@ -33,11 +33,11 @@ public class ClientData {
         this.user = user;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 }

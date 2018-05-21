@@ -10,7 +10,7 @@ public class HandshakeDTO {
     private boolean connectionEstablished;
 
     @JsonField
-    private String id;
+    private int id;
 
     public boolean isConnectionEstablished() {
         return connectionEstablished;
@@ -20,11 +20,11 @@ public class HandshakeDTO {
         this.connectionEstablished = connectionEstablished;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 }
