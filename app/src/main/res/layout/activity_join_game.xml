@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="at.aau.gloryweapons.siegeanddestroy3d.JoinGameActivity">
+    tools:context="at.aau.gloryweapons.siegeanddestroy3d.JoinGameActivity"
+    android:background="@drawable/water_80">
 
     <TextView
         android:id="@+id/textView2"
@@ -12,8 +13,9 @@
         android:layout_height="29dp"
         android:layout_marginStart="60dp"
         android:layout_marginTop="50dp"
+        android:fontFamily="@font/press_start_2p"
         android:text="Username:"
-        android:textSize="20sp"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,9 +27,10 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="80dp"
         android:ems="10"
+        android:fontFamily="@font/press_start_2p"
         android:hint="Host IP"
         android:inputType="textPersonName"
-        android:textSize="20sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textViewHostIP"
         app:layout_constraintTop_toBottomOf="@+id/editTextUserName"
@@ -37,14 +40,13 @@
         android:id="@+id/textViewHostIP"
         android:layout_width="150dp"
         android:layout_height="29dp"
-        android:layout_marginTop="20dp"
         android:layout_marginStart="60dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/press_start_2p"
         android:text="Host IP:"
-        android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteX="60dp"
-        tools:layout_editor_absoluteY="146dp" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <EditText
         android:id="@+id/editTextUserName"
@@ -54,9 +56,10 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="40dp"
         android:ems="10"
+        android:fontFamily="@font/press_start_2p"
         android:hint="Benutzername"
         android:inputType="textPersonName"
-        android:textSize="20sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toTopOf="parent" />
@@ -68,6 +71,8 @@
         android:layout_marginBottom="80dp"
         android:layout_marginEnd="60dp"
         android:layout_marginStart="60dp"
+        android:background="@android:color/background_light"
+        android:fontFamily="@font/press_start_2p"
         android:text="Server suchen"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
