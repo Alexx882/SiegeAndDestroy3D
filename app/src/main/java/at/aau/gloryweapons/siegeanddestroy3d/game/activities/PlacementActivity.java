@@ -24,6 +24,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ServerGa
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryonet;
+import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryonet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.ClientGameHandlerWifi;
 
 public class PlacementActivity extends AppCompatActivity {
@@ -249,9 +251,9 @@ public class PlacementActivity extends AppCompatActivity {
 
         // should be inited already
         if (GlobalGameSettings.getCurrent().isServer())
-            comm = ServerGameHandlerAsyncCommunication.getInstance();
+            comm = ServerGameHandlerKryonet.getInstance();
         else
-            comm = ClientGameHandlerAsyncCommunication.getInstance();
+            comm = ClientGameHandlerKryonet.getInstance();
 
         CallbackObject<GameConfiguration> callback = new CallbackObject<GameConfiguration>() {
             @Override
@@ -259,6 +261,7 @@ public class PlacementActivity extends AppCompatActivity {
                 switchToGameActivity(param);
             }
         };
+       // comm.sendGameConfigurationToServer(GlobalGameSettings.getCurrent().getLocalUser(), playerBoard, Arrays.asList(ships), callback);
 
         comm.sendGameConfigurationToServer(GlobalGameSettings.getCurrent().getLocalUser(), playerBoard, Arrays.asList(ships), callback);
     }

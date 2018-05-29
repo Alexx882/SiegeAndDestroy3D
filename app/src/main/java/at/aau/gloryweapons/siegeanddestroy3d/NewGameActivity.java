@@ -23,6 +23,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ServerGa
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
+import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryonet;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class NewGameActivity extends AppCompatActivity {
@@ -53,7 +54,7 @@ public class NewGameActivity extends AppCompatActivity {
             }
         });
         */
-        serverGameHandlerAsyncComm = ServerGameHandlerAsyncCommunication.getInstance();
+        serverGameHandlerAsyncComm = ServerGameHandlerKryonet.getInstance();
         serverGameHandlerAsyncComm.initServerGameHandler(this, new UserCallBack() {
             @Override
             public void callback(List<String> param) {
