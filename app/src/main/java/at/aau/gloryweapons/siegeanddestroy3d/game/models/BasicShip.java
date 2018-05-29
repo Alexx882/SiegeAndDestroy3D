@@ -27,10 +27,10 @@ public class BasicShip implements Serializable {
 
     @JsonField(name = "h")
     private boolean horizontal = true;
-
+/*
     @JsonField
     private List<BattleAreaTile> forJsonTile;
-
+*/
     public BasicShip(int userId, int length, boolean horizontal) {
         this.userId = userId;
         this.length = length;
@@ -40,7 +40,7 @@ public class BasicShip implements Serializable {
 
     public BasicShip(){
     }
-
+/*
     public List<BattleAreaTile> getForJsonTile() {
         if (tiles != null){
             forJsonTile = new ArrayList<>(Arrays.asList(tiles));
@@ -52,7 +52,7 @@ public class BasicShip implements Serializable {
         this.forJsonTile = forJsonTile;
         tiles = this.forJsonTile.toArray(new BattleAreaTile[forJsonTile.size()]);
     }
-
+*/
     public int getUserId() {
         return userId;
     }

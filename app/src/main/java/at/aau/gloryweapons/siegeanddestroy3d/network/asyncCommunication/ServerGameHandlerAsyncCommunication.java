@@ -93,7 +93,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
         //ip adrdress
         try {
-            address = InetAddress.getByName(ip);
+                address = InetAddress.getByName(ip);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

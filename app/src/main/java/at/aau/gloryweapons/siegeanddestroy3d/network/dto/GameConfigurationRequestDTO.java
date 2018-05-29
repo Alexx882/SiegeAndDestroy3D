@@ -42,7 +42,7 @@ public class GameConfigurationRequestDTO extends RequestDTO {
     }
 
     public List<BasicShip> getPlacedShips() {
-        return placedShips;
+        return this.placedShips;
     }
 
     public void setPlacedShips(List<BasicShip> placedShips) {
