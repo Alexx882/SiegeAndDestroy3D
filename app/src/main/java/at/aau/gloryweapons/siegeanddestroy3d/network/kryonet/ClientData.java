@@ -1,5 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
+import com.esotericsoftware.kryonet.Connection;
 import com.koushikdutta.async.AsyncSocket;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
@@ -12,7 +13,9 @@ public class ClientData {
     private AsyncSocket socket;
     private User user;
     private int id;
+    private Connection connection;
 
+    // TODO remove socket field
     public AsyncSocket getSocket() {
         return socket;
     }
@@ -35,5 +38,13 @@ public class ClientData {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
     }
 }

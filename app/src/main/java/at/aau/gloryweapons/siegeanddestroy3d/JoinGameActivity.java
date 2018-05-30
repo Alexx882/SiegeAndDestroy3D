@@ -104,7 +104,7 @@ public class JoinGameActivity extends AppCompatActivity {
         String ip = txtIp.getText().toString();
 
         try {
-            // init wifi direct
+            // init connection
             this.clientCommunicator.initClientGameHandler(ip, this, new CallbackObject<HandshakeDTO>() {
                 @Override
                 public void callback(final HandshakeDTO param) {
@@ -129,7 +129,7 @@ public class JoinGameActivity extends AppCompatActivity {
             // TODO @johannes return error if something bad happened (ie. some additional callback etc)
 
             // show and log error
-            Log.e("Error", "Salut connection could not be established." + e.getMessage());
+            Log.e("Error", "connection could not be established." + e.getMessage());
             showError("Verbindung fehlgeschlagen");
 
             // enable button again
