@@ -24,8 +24,6 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ServerGa
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
-import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryonet;
-import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryonet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.ClientGameHandlerWifi;
 
 public class PlacementActivity extends AppCompatActivity {
@@ -251,9 +249,9 @@ public class PlacementActivity extends AppCompatActivity {
 
         // should be inited already
         if (GlobalGameSettings.getCurrent().isServer())
-            comm = ServerGameHandlerKryonet.getInstance();
+            comm = ServerGameHandlerAsyncCommunication.getInstance();
         else
-            comm = ClientGameHandlerKryonet.getInstance();
+            comm = ClientGameHandlerAsyncCommunication.getInstance();
 
         CallbackObject<GameConfiguration> callback = new CallbackObject<GameConfiguration>() {
             @Override

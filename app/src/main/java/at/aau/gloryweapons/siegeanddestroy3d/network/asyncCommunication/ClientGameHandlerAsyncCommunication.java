@@ -105,6 +105,7 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
         kryoClient = new Client();
         kryoHelper = new KryonetHelper(kryoClient);
         kryoClient.start();
+        // init before starting to send
         initServerCallbackHandler();
 
         // connect to server

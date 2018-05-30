@@ -14,6 +14,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.esotericsoftware.kryonet.Server;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,6 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ServerGa
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
-import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryonet;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class NewGameActivity extends AppCompatActivity {
@@ -54,7 +55,7 @@ public class NewGameActivity extends AppCompatActivity {
             }
         });
         */
-        serverGameHandlerAsyncComm = ServerGameHandlerKryonet.getInstance();
+        serverGameHandlerAsyncComm = ServerGameHandlerAsyncCommunication.getInstance();
         serverGameHandlerAsyncComm.initServerGameHandler(this, new UserCallBack() {
             @Override
             public void callback(List<String> param) {

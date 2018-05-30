@@ -19,7 +19,6 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
-import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryonet;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class JoinGameActivity extends AppCompatActivity {
@@ -103,7 +102,7 @@ public class JoinGameActivity extends AppCompatActivity {
             throw new IllegalStateException("Please dont try to connect twice");
 
         // init with singleton
-        this.clientCommunicator = ClientGameHandlerKryonet.getInstance();
+        this.clientCommunicator = ClientGameHandlerAsyncCommunication.getInstance();
 
         String ip = txtIp.getText().toString();
 

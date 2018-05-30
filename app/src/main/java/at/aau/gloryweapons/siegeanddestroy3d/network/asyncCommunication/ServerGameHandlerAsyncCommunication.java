@@ -84,6 +84,7 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
         // init kryo
         kryoServer = new Server();
+        kryoHelper = new KryonetHelper(kryoServer);
         kryoServer.start();
 
         try {
