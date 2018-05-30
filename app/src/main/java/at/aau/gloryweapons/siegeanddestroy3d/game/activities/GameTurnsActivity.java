@@ -25,6 +25,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
+import at.aau.gloryweapons.siegeanddestroy3d.sensors.CheatEventListener;
 
 public class GameTurnsActivity extends AppCompatActivity {
     private ImageView iv = null;
@@ -116,7 +117,37 @@ public class GameTurnsActivity extends AppCompatActivity {
 
             constraintSet.applyTo(userLayout);
         }
+        //call method
+        useSensorsforCheating();
+    }
 
+    CheatEventListener cheatListener;
+
+    /**
+     * register Sensors
+     */
+    public void useSensorsforCheating() {
+        cheatListener = new CheatEventListener(this);
+        cheatListener.registerForChanges(new CallbackObject<Boolean>() {
+            @Override
+            public void callback(Boolean param) {
+                if (param == true) {
+                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        cheatListener.unregisterSensors();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cheatListener.registerSensors();
     }
 
     private GameBoardImageView createImageViewForGrid(GridLayout grid, int imageResource, int row, int col) {
