@@ -15,6 +15,7 @@ public class ClientData {
     private int id;
     private Connection connection;
 
+    // TODO remove socket field
     public AsyncSocket getSocket() {
         return socket;
     }

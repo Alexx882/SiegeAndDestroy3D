@@ -261,8 +261,6 @@ public class PlacementActivity extends AppCompatActivity {
                 switchToGameActivity(param);
             }
         };
-       // comm.sendGameConfigurationToServer(GlobalGameSettings.getCurrent().getLocalUser(), playerBoard, Arrays.asList(ships), callback);
-
         comm.sendGameConfigurationToServer(GlobalGameSettings.getCurrent().getLocalUser(), playerBoard, Arrays.asList(ships), callback);
     }
 
