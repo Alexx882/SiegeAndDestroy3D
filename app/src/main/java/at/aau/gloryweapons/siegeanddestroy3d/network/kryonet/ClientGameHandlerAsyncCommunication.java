@@ -1,4 +1,4 @@
-package at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication;
+package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
 import android.util.Log;
@@ -24,7 +24,6 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
-import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.KryonetHelper;
 
 public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator {
     private Client kryoClient;

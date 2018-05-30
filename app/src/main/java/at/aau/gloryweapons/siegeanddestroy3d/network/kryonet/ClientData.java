@@ -1,4 +1,4 @@
-package at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication;
+package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.koushikdutta.async.AsyncSocket;
