@@ -118,7 +118,7 @@ public class ServerController {
      */
     public User getUserForFirstTurn() {
         // decide per random so nobody is preferred
-        userIdxForCurrentTurn = new Random().nextInt(4);
+        userIdxForCurrentTurn = new Random().nextInt(users.size());
         return users.get(userIdxForCurrentTurn);
     }
 

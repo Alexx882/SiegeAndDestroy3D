@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
@@ -87,11 +88,16 @@ public class NewGameActivity extends AppCompatActivity {
                     return;
 
                 } else {
-  
-                  // start placement for server  
-                     serverGameHandlerAsyncComm.sendShotCountToServer(Integer.parseInt(shot.toString()));
-                  
-                     GlobalGameSettings.getCurrent()
+
+                    // start placement for server
+                    serverGameHandlerAsyncComm.sendShotCountToServer(Integer.parseInt(shot.toString()));
+                    // todo name check for server
+                    User localuser = new User();
+                    localuser.setId(10);
+                    localuser.setName(name.toString());
+                    GlobalGameSettings.getCurrent().setLocalUser(localuser);
+
+                    GlobalGameSettings.getCurrent()
                             // connected clients + this host
                             .setNumberPlayers(serverGameHandlerAsyncComm.getNumberOfConnectedPlayers() + 1);
 
