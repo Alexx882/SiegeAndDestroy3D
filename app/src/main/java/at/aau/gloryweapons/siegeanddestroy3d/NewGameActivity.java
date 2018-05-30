@@ -18,9 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
-import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ClientData;
-import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ServerGameHandlerAsyncCommunication;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
@@ -53,7 +51,7 @@ public class NewGameActivity extends AppCompatActivity {
             }
         });
         */
-        serverGameHandlerAsyncComm = ServerGameHandlerAsyncCommunication.getInstance();
+        serverGameHandlerAsyncComm = ServerGameHandlerKryoNet.getInstance();
         serverGameHandlerAsyncComm.initServerGameHandler(this, new UserCallBack() {
             @Override
             public void callback(List<String> param) {

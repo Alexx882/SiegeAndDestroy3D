@@ -1,18 +1,13 @@
-package at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication;
+package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
 import android.util.Log;
 
-import com.koushikdutta.async.AsyncServer;
-import com.koushikdutta.async.AsyncSocket;
-import com.koushikdutta.async.ByteBufferList;
-import com.koushikdutta.async.DataEmitter;
-import com.koushikdutta.async.Util;
-import com.koushikdutta.async.callback.CompletedCallback;
-import com.koushikdutta.async.callback.ConnectCallback;
-import com.koushikdutta.async.callback.DataCallback;
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 
-import java.net.InetSocketAddress;
+import java.io.IOException;
 import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
@@ -30,27 +25,29 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 
-public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator {
-    private AsyncSocket server;
+public class ClientGameHandlerKryoNet implements NetworkCommunicator {
+    private Client kryoClient;
+    private KryonetHelper kryoHelper;
+
     private int clientId;
     private WrapperHelper wrapperHelper;
 
-    //callbacks
-    private CallbackObject<HandshakeDTO> isConnected;
+    // callbacks
+    // TODO check foreach if null before calling
+    private CallbackObject<HandshakeDTO> isConnectedCallback;
     private CallbackObject<User> userNameCallback;
-
-    private CallbackObject<TurnDTO> shotHit;
+    private CallbackObject<TurnDTO> shotHitCallback;
     private CallbackObject<GameConfiguration> gameConfigCallback;
 
-    private static ClientGameHandlerAsyncCommunication instance;
+    private static ClientGameHandlerKryoNet instance;
 
-    private ClientGameHandlerAsyncCommunication() {
+    private ClientGameHandlerKryoNet() {
 
     }
 
-    public static ClientGameHandlerAsyncCommunication getInstance() {
+    public static ClientGameHandlerKryoNet getInstance() {
         if (instance == null) {
-            instance = new ClientGameHandlerAsyncCommunication();
+            instance = new ClientGameHandlerKryoNet();
         }
         return instance;
     }
@@ -84,7 +81,7 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
 
     @Override
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
-        shotHit = callback;
+        shotHitCallback = callback;
         TurnDTO hitType = new TurnDTO(TurnDTO.TurnType.SHOT, area);
         hitType.setxCoordinates(row);
         hitType.setyCoordinates(col);
@@ -92,65 +89,59 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
     }
 
     @Override
-    public void initClientGameHandler(String ip, Activity activity, CallbackObject<HandshakeDTO> isConnected) {
-        Log.i(this.getClass().getName(), "init client game handler async connection...");
+    public void initClientGameHandler(final String ip, Activity activity, CallbackObject<HandshakeDTO> isConnectedCallback) {
+        GlobalGameSettings.getCurrent().setServer(false);
+        this.isConnectedCallback = isConnectedCallback;
+
+        com.esotericsoftware.minlog.Log.set(com.esotericsoftware.minlog.Log.LEVEL_DEBUG);
+        Log.i(this.getClass().getName(), "init client connection...");
         Log.i(this.getClass().getName(), "try to connect to " + ip);
 
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(ip, 61616);
-        Log.i("*********", inetSocketAddress.getAddress() + ":" + inetSocketAddress.getPort());
-        this.isConnected = isConnected;
-
-        GlobalGameSettings.getCurrent().setServer(false);
-
+        // init wrapper
         wrapperHelper = WrapperHelper.getInstance();
 
+        // init kryo
+        kryoClient = new Client();
+        KryonetHelper.registerClassesForEndpoint(kryoClient);
+        kryoClient.start();
+        // init before starting to send
+        initServerCallbackHandler();
+
         // connect to server
-        AsyncServer.getDefault().connectSocket(inetSocketAddress, new ConnectCallback() {
-            @Override
-            public void onConnectCompleted(Exception ex, AsyncSocket socket) {
-                if (ex != null) {
-                    Log.e(this.getClass().getName(), ex.getMessage());
+        new Thread("Connection") {
+            public void run() {
+                try {
+                    // this is blocking
+                    kryoClient.connect(5000, ip, GlobalGameSettings.getCurrent().getPort());
+
+                    //build and send handshake
+                    HandshakeDTO handshakeDTO = new HandshakeDTO();
+                    handshakeDTO.setConnectionEstablished(true);
+                    sendToServer(handshakeDTO);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
-                Log.v(this.getClass().getName(), " connection completed...");
-                server = socket;
-                Util.SUPRESS_DEBUG_EXCEPTIONS = false;
-
-                //build and send handshake
-                HandshakeDTO handshakeDTO = new HandshakeDTO();
-                handshakeDTO.setConnectionEstablished(true);
-                sendToServer(handshakeDTO);
-
-                initServerCallbackHandler();
             }
-        });
+        }.start();
     }
 
     private void initServerCallbackHandler() {
-        server.setDataCallback(new DataCallback() {
-            @Override
-            public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
-                Log.i("*****", "remaining: " + bb.hasRemaining());
-                Log.i("*****", "remaining: " + bb.remaining());
-                String receivedMessage = new String(bb.getAllByteArray());
-                System.out.println("[Client] Received Message " + receivedMessage);
-                Log.i(this.getClass().getName(), "[Client] Received message size: " + receivedMessage.length());
-
-                if (emitter.isPaused()) {
-                    emitter.resume();
-                }
+        kryoClient.addListener(new Listener(){
+            public void received(Connection serverConnection, Object receivedObject) {
 
                 //json to object
-                Object receivedObject = wrapperHelper.jsonToObject(receivedMessage);
+//                Object receivedObject = wrapperHelper.jsonToObject(receivedMessage);
+
+                System.out.println("[Client] Received Message " + receivedObject.getClass().getName());
 
                 //map object
                 if (receivedObject instanceof HandshakeDTO) {
-                    handleHandshake((HandshakeDTO) receivedObject);
+                    handleHandshakeResponse((HandshakeDTO) receivedObject);
                 } else if (receivedObject instanceof UserNameResponseDTO) {
                     handleUserResponse((UserNameResponseDTO) receivedObject);
                 } else if (receivedObject instanceof GameConfiguration) {
                     handleGameConfigResponse((GameConfiguration) receivedObject);
                 }
-
             }
         });
     }
@@ -159,32 +150,27 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
         userNameCallback.callback(user.getNewUser());
     }
 
-    private void handleHandshake(HandshakeDTO handshakeDTO) {
+    private void handleHandshakeResponse(HandshakeDTO handshakeDTO) {
         this.clientId = handshakeDTO.getClientId();
         Log.v(this.getClass().getName(), "handshake: " + handshakeDTO.isConnectionEstablished());
         Log.v(this.getClass().getName(), "handshake - new client ID: " + handshakeDTO.getClientId());
-        isConnected.callback(handshakeDTO);
+        isConnectedCallback.callback(handshakeDTO);
     }
 
     private void handleGameConfigResponse(GameConfiguration gameConfig) {
         gameConfigCallback.callback(gameConfig);
     }
 
-    private void sendToServer(RequestDTO object) {
+    private void sendToServer(final RequestDTO object) {
+        Log.d(this.getClass().getName(), "send object: " + object.getClass().getName());
+
         // send the client id with the request
         object.setClientId(clientId);
 
-        String json = wrapperHelper.ObjectToWrappedJson(object);
-        if (json.length() <= 2) {
-            Log.e(this.getClass().getName(), "Cannot send object");
-            return;
-        }
-        Util.writeAll(server, json.getBytes(), new CompletedCallback() {
-            @Override
-            public void onCompleted(Exception ex) {
-                if (ex != null) throw new RuntimeException(ex);
-                System.out.println("[Client] Successfully wrote message");
+        new Thread("send"){
+            public void run(){
+                kryoClient.sendTCP(object);
             }
-        });
+        }.start();
     }
 }

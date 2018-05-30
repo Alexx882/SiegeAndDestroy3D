@@ -1,7 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.activities;
 
 import android.content.Intent;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,12 +18,10 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
-import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ClientGameHandlerAsyncCommunication;
-import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ServerGameHandlerAsyncCommunication;
+import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
+import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
-import at.aau.gloryweapons.siegeanddestroy3d.network.wifiDirect.ClientGameHandlerWifi;
 
 public class PlacementActivity extends AppCompatActivity {
     private BoardRenderer gridRenderer;
@@ -249,9 +246,9 @@ public class PlacementActivity extends AppCompatActivity {
 
         // should be inited already
         if (GlobalGameSettings.getCurrent().isServer())
-            comm = ServerGameHandlerAsyncCommunication.getInstance();
+            comm = ServerGameHandlerKryoNet.getInstance();
         else
-            comm = ClientGameHandlerAsyncCommunication.getInstance();
+            comm = ClientGameHandlerKryoNet.getInstance();
 
         CallbackObject<GameConfiguration> callback = new CallbackObject<GameConfiguration>() {
             @Override
@@ -259,7 +256,6 @@ public class PlacementActivity extends AppCompatActivity {
                 switchToGameActivity(param);
             }
         };
-
         comm.sendGameConfigurationToServer(GlobalGameSettings.getCurrent().getLocalUser(), playerBoard, Arrays.asList(ships), callback);
     }
 

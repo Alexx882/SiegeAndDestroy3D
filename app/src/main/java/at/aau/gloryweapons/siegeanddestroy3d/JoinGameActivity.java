@@ -10,13 +10,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.peak.salut.SalutDevice;
-
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
-import at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication.ClientGameHandlerAsyncCommunication;
+import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.DummyNetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
@@ -102,12 +99,12 @@ public class JoinGameActivity extends AppCompatActivity {
             throw new IllegalStateException("Please dont try to connect twice");
 
         // init with singleton
-        this.clientCommunicator = ClientGameHandlerAsyncCommunication.getInstance();
+        this.clientCommunicator = ClientGameHandlerKryoNet.getInstance();
 
         String ip = txtIp.getText().toString();
 
         try {
-            // init wifi direct
+            // init connection
             this.clientCommunicator.initClientGameHandler(ip, this, new CallbackObject<HandshakeDTO>() {
                 @Override
                 public void callback(final HandshakeDTO param) {
@@ -132,7 +129,7 @@ public class JoinGameActivity extends AppCompatActivity {
             // TODO @johannes return error if something bad happened (ie. some additional callback etc)
 
             // show and log error
-            Log.e("Error", "Salut connection could not be established." + e.getMessage());
+            Log.e("Error", "connection could not be established." + e.getMessage());
             showError("Verbindung fehlgeschlagen");
 
             // enable button again
