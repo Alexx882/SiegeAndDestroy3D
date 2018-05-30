@@ -31,7 +31,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 
-public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator {
+public class ClientGameHandlerKryoNet implements NetworkCommunicator {
     private AsyncSocket server;
     private int clientId;
     private WrapperHelper wrapperHelper;
@@ -45,15 +45,15 @@ public class ClientGameHandlerAsyncCommunication implements NetworkCommunicator 
 
     private CallbackObject<User> turnInfoCallback;
 
-    private static ClientGameHandlerAsyncCommunication instance;
+    private static ClientGameHandlerKryoNet instance;
 
-    private ClientGameHandlerAsyncCommunication() {
+    private ClientGameHandlerKryoNet() {
 
     }
 
-    public static ClientGameHandlerAsyncCommunication getInstance() {
+    public static ClientGameHandlerKryoNet getInstance() {
         if (instance == null) {
-            instance = new ClientGameHandlerAsyncCommunication();
+            instance = new ClientGameHandlerKryoNet();
         }
         return instance;
     }

@@ -18,8 +18,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
-import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerAsyncCommunication;
-import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerAsyncCommunication;
+import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
+import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 
@@ -246,9 +246,9 @@ public class PlacementActivity extends AppCompatActivity {
 
         // should be inited already
         if (GlobalGameSettings.getCurrent().isServer())
-            comm = ServerGameHandlerAsyncCommunication.getInstance();
+            comm = ServerGameHandlerKryoNet.getInstance();
         else
-            comm = ClientGameHandlerAsyncCommunication.getInstance();
+            comm = ClientGameHandlerKryoNet.getInstance();
 
         CallbackObject<GameConfiguration> callback = new CallbackObject<GameConfiguration>() {
             @Override

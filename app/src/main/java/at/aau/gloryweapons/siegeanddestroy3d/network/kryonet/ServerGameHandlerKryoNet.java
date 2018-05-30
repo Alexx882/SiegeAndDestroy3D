@@ -44,9 +44,9 @@ import at.aau.gloryweapons.siegeanddestroy3d.server.ServerController;
 
 import static android.content.Context.WIFI_SERVICE;
 
-public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorServer, NetworkCommunicator {
+public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, NetworkCommunicator {
     //instance
-    private static ServerGameHandlerAsyncCommunication instance;
+    private static ServerGameHandlerKryoNet instance;
 
     //Client data list
     private HashMap<Integer, ClientData> clientDataMap;
@@ -62,13 +62,13 @@ public class ServerGameHandlerAsyncCommunication implements NetworkCommunicatorS
 
     private ServerController serverController;
 
-    private ServerGameHandlerAsyncCommunication() {
+    private ServerGameHandlerKryoNet() {
         serverController = new ServerController();
     }
 
-    public static ServerGameHandlerAsyncCommunication getInstance() {
+    public static ServerGameHandlerKryoNet getInstance() {
         if (instance == null) {
-            instance = new ServerGameHandlerAsyncCommunication();
+            instance = new ServerGameHandlerKryoNet();
         }
         return instance;
     }
