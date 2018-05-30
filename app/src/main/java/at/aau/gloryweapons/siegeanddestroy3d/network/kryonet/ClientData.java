@@ -1,11 +1,7 @@
-package at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication;
+package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import com.koushikdutta.async.AsyncSocket;
 
-import java.util.List;
-
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
 /**

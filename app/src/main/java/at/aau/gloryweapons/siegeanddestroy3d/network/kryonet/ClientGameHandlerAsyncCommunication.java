@@ -1,4 +1,4 @@
-package at.aau.gloryweapons.siegeanddestroy3d.network.asyncCommunication;
+package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
 import android.util.Log;
