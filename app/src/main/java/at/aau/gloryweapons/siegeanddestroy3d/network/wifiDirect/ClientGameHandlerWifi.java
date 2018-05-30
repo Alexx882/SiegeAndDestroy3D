@@ -131,6 +131,11 @@ public class ClientGameHandlerWifi implements NetworkCommunicator {
 
     }
 
+    @Override
+    public void registerForTurnInfos(CallbackObject<User> nextUserCallback) {
+
+    }
+
     public Salut getNetwork() {
         return this.network;
     }

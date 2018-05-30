@@ -4,13 +4,18 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.security.auth.callback.Callback;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
@@ -55,9 +60,16 @@ public class ServerController {
     }
 
     private GameConfiguration gameConfig;
-    private List<User> users = new ArrayList<>(4);
+    private ArrayList<User> users = new ArrayList<>(4);
     private List<BattleArea> battleAreas = new ArrayList<>(4);
     private List<CallbackObject<GameConfiguration>> callbacks = new ArrayList<>(4);
+    private int shots = 0;
+    private CallbackObject<User> turnOfFirstUserCallback;
+
+    public void registerForGameConfigCompletion(CallbackObject<User> callback) {
+        // just overwrite old values, because we need it only once
+        turnOfFirstUserCallback = callback;
+    }
 
     /**
      * Adds the user and his battle area to the gameconfig.
@@ -82,14 +94,110 @@ public class ServerController {
             gameConfig = new GameConfiguration();
             gameConfig.setUserList(users);
             gameConfig.setBattleAreaList(battleAreas);
+            gameConfig.setShots(this.shots);
 
+            // inform the clients about the game config
             for (CallbackObject<GameConfiguration> cb : callbacks)
                 if (cb != null)
                     cb.callback(gameConfig);
 
             callbacks.clear();
+
+            // also inform the clients about the first turn
+            if(turnOfFirstUserCallback != null)
+                turnOfFirstUserCallback.callback(getUserForFirstTurn());
         }
     }
 
+    private int userIdxForCurrentTurn = 0;
+
+    /**
+     * A user is decided to be the first player. Decision is random.
+     *
+     * @return The user to use first
+     */
+    public User getUserForFirstTurn() {
+        // decide per random so nobody is preferred
+        userIdxForCurrentTurn = new Random().nextInt(users.size());
+        return users.get(userIdxForCurrentTurn);
+    }
+
+    /**
+     * The next user in the order is returned.
+     *
+     * @return
+     */
+    public User getUserForNextTurn() {
+        // just loop through
+        userIdxForCurrentTurn = (userIdxForCurrentTurn + 1) % users.size();
+        return users.get(userIdxForCurrentTurn);
+    }
+
+    /**
+     * checks the tile and sets the type of the TurnDTO
+     *
+     * @param hit
+     * @return
+     */
+    public TurnDTO checkShot(TurnDTO hit) {
+
+        BattleAreaTile tile = new BattleAreaTile();
+        for (BattleArea area : battleAreas) {
+            if (hit.getUser().getId() == area.getUserId()) {
+
+                tile = area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()];
+                tile = checkTile(tile);
+                if (tile.getType() == BattleAreaTile.TileType.NO_HIT) {
+                    hit.setType(TurnDTO.TurnType.NO_HIT);
+                    area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()].setType(BattleAreaTile.TileType.NO_HIT);
+                } else {
+                    hit.setType(TurnDTO.TurnType.HIT);
+                    area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                }
+            }
+        }
+
+        return hit;
+
+    }
+
+    /**
+     * checks the type of the enemies Tile on the server
+     *
+     * @param tile
+     * @return
+     */
+    private BattleAreaTile checkTile(BattleAreaTile tile) {
+        switch (tile.getType()) {
+            case WATER:
+                tile.setType(BattleAreaTile.TileType.NO_HIT);
+                break;
+            case NO_HIT:
+                break;
+            case SHIP_START:
+                tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                break;
+            case SHIP_MIDDLE:
+                tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                break;
+            case SHIP_END:
+                tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                break;
+            case SHIP_DESTROYED:
+                break;
+        }
+        return tile;
+
+    }
+
+    /**
+     * saves Shots in gameConfig
+     *
+     * @param shots
+     */
+    public void sentShots(int shots) {
+
+        this.shots = shots;
+    }
 }
 

@@ -25,6 +25,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
+import at.aau.gloryweapons.siegeanddestroy3d.sensors.CheatEventListener;
 
 public class GameTurnsActivity extends AppCompatActivity {
     private ImageView iv = null;
@@ -47,7 +48,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         board = new BoardRenderer(this);
         controller = new GameController();
 
-        final int nRows = 9, nCols = 9;
+        final int nRows = GlobalGameSettings.getCurrent().getNumberRows(), nCols = GlobalGameSettings.getCurrent().getNumberColumns();
         //gets the right user
         for (User u : gameSettings.getUserList()) {
             if (u.getId() == GlobalGameSettings.getCurrent().getPlayerId()) {
@@ -116,7 +117,37 @@ public class GameTurnsActivity extends AppCompatActivity {
 
             constraintSet.applyTo(userLayout);
         }
+        //call method
+        useSensorsforCheating();
+    }
 
+    CheatEventListener cheatListener;
+
+    /**
+     * register Sensors
+     */
+    public void useSensorsforCheating() {
+        cheatListener = new CheatEventListener(this);
+        cheatListener.registerForChanges(new CallbackObject<Boolean>() {
+            @Override
+            public void callback(Boolean param) {
+                if (param == true) {
+                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        cheatListener.unregisterSensors();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cheatListener.registerSensors();
     }
 
     private GameBoardImageView createImageViewForGrid(GridLayout grid, int imageResource, int row, int col) {
@@ -147,27 +178,31 @@ public class GameTurnsActivity extends AppCompatActivity {
         for (int i = 0; i < nRows; ++i) {
             for (int j = 0; j < nCols; ++j) {
                 //gView[i][j].setOnClickListener(null);
+                int orientation = 0;
+                if (!tiles[i][j].isHorizontal()) {
+                    orientation = 90;
+                }
                 switch (tiles[i][j].getType()) {
                     case WATER:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.water, i, j, 0);
+                        gView[i][j] = board.addImageToGrid(grid, R.drawable.water, i, j, orientation);
                         break;
                     case NO_HIT:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.no_hit, i, j, 0);
+                        gView[i][j] = board.addImageToGrid(grid, R.drawable.no_hit, i, j, orientation);
                         break;
                     case SHIP_START:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_start, i, j, 0);
+                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_start, i, j, orientation);
                         break;
                     case SHIP_MIDDLE:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_middle, i, j, 0);
+                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_middle, i, j, orientation);
                         break;
                     case SHIP_END:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_end, i, j, 0);
+                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_end, i, j, orientation);
                         break;
                     case SHIP_DESTROYED:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_destroyed, i, j, 0);
+                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_destroyed, i, j, orientation);
                         break;
                     default:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_start, i, j, 90);
+                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_start, i, j, orientation);
                         break;
                 }
 
@@ -179,17 +214,14 @@ public class GameTurnsActivity extends AppCompatActivity {
                         Log.i("fish", "" + v.getBoardCol() + v.getBoardRow());
                         //controlls the returnvalue of controller.shotOnEnemy
                         if (!shooting) {
-                            shooting=true;
+                            shooting = true;
                             controller.shotOnEnemy(gameSettings, actualBattleArea, actualUser, v.getBoardCol(), v.getBoardRow(), new CallbackObject<BattleAreaTile.TileType>() {
                                 @Override
                                 public void callback(BattleAreaTile.TileType param) {
-                                    if(param != null)
-                                    {
+                                    if (param != null) {
                                         int drawable = getTheRightTile(param);
                                         gView[v.getBoardRow()][v.getBoardCol()].setImageResource(drawable);
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         Toast.makeText(GameTurnsActivity.this, "Nice try", Toast.LENGTH_SHORT).show();
                                     }
                                 }

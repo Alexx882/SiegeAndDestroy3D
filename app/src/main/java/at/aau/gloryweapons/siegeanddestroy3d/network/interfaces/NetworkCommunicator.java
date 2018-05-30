@@ -7,6 +7,8 @@ import com.peak.salut.SalutDevice;
 
 import java.util.List;
 
+import javax.security.auth.callback.Callback;
+
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
@@ -14,6 +16,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 
 /**
  * The Interface for a Object used to communicate with the server.
@@ -53,4 +56,11 @@ public interface NetworkCommunicator {
      */
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback);
 
+    /**
+     * Informs about the next user to take his turn.
+     * Callback is called everytime the server has new info.
+     *
+     * @param nextUserCallback
+     */
+    public void registerForTurnInfos(CallbackObject<User> nextUserCallback);
 }

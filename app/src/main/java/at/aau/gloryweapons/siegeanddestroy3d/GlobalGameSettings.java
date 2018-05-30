@@ -11,6 +11,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 public class GlobalGameSettings implements Serializable {
     private User localUser;
     private int numberPlayers;
+    private User currentTurnUser;
 
     // fixed size of rows and cols
     private int numberRows = 8;
@@ -25,18 +26,12 @@ public class GlobalGameSettings implements Serializable {
     private final int port = 61616;
     private boolean isServer;
 
-    //actualUser
-    private User actualUser = null;
-
     private GlobalGameSettings() {
-        localUser = new User(1, "Patrick");
+
     }
 
     public void setLocalUser(User user) {
-        /*if (user == null)
-            throw new IllegalArgumentException("user");
-
-        this.localUser = user;*/
+        this.localUser = user;
     }
 
     public int getPlayerId() {
@@ -87,12 +82,12 @@ public class GlobalGameSettings implements Serializable {
         isServer = server;
     }
 
-    public User getActualUser() {
-        return actualUser;
+    public User getUserOfCurrentTurn() {
+        return this.currentTurnUser;
     }
 
-    public void setActualUser(User actualUser) {
-        this.actualUser = actualUser;
+    public void setUserOfCurrentTurn(User userOfCurrentTurn) {
+        this.currentTurnUser = userOfCurrentTurn;
     }
 
     private static GlobalGameSettings _current = null;
