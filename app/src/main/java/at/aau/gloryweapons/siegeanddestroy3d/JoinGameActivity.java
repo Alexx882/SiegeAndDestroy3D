@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
-import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerAsyncCommunication;
+import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
@@ -99,7 +99,7 @@ public class JoinGameActivity extends AppCompatActivity {
             throw new IllegalStateException("Please dont try to connect twice");
 
         // init with singleton
-        this.clientCommunicator = ClientGameHandlerAsyncCommunication.getInstance();
+        this.clientCommunicator = ClientGameHandlerKryoNet.getInstance();
 
         String ip = txtIp.getText().toString();
 
