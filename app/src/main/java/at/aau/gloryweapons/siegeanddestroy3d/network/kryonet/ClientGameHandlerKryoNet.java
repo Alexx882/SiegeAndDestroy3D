@@ -102,7 +102,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicator {
 
         // init kryo
         kryoClient = new Client();
-        kryoHelper = new KryonetHelper(kryoClient);
+        KryonetHelper.registerClassesForEndpoint(kryoClient);
         kryoClient.start();
         // init before starting to send
         initServerCallbackHandler();
@@ -166,12 +166,6 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicator {
 
         // send the client id with the request
         object.setClientId(clientId);
-
-        String json = wrapperHelper.ObjectToWrappedJson(object);
-        if (json.length() <= 2) {
-            Log.e(this.getClass().getName(), "Cannot send object");
-            return;
-        }
 
         new Thread("send"){
             public void run(){

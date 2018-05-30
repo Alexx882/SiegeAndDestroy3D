@@ -72,7 +72,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
         // init kryo
         kryoServer = new Server();
-        kryoHelper = new KryonetHelper(kryoServer);
+        KryonetHelper.registerClassesForEndpoint(kryoServer);
         kryoServer.start();
 
         try {
@@ -190,9 +190,6 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     private void sendToClient(final ClientData clientData, final Object object) {
         Log.d(this.getClass().getName(), "send object: " + object.getClass().getName());
-
-        final String json = wrapperHelper.ObjectToWrappedJson(object);
-        byte[] bytes = json.getBytes();
 
         new Thread("send") {
             public void run() {

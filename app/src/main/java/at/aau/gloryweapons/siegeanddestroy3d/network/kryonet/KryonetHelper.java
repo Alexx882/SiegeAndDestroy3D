@@ -1,9 +1,7 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.serializers.CollectionSerializer;
-import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Server;
+import com.esotericsoftware.kryonet.EndPoint;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,25 +23,14 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
 import de.javakaffee.kryoserializers.ArraysAsListSerializer;
 
 public class KryonetHelper {
-    private Client client;
-    private Server server;
-    private Kryo kryo;
-
-    public KryonetHelper(Client client){
-        this.client = client;
-        this.kryo = client.getKryo();
-        registeringClasses();
+    private KryonetHelper() {
     }
 
-    public KryonetHelper(Server server){
-        this.server = server;
-        this.kryo = server.getKryo();
-        registeringClasses();
-    }
+    public static void registerClassesForEndpoint(EndPoint kryoEndpoint) {
+        Kryo kryo = kryoEndpoint.getKryo();
 
-    private void registeringClasses(){
         kryo.register(ArrayList.class);
-        kryo.register( Arrays.asList( "" ).getClass(), new ArraysAsListSerializer() );
+        kryo.register(Arrays.asList("").getClass(), new ArraysAsListSerializer());
         kryo.register(List.class);
         kryo.register(HandshakeDTO.class);
         kryo.register(UserNameRequestDTO.class);
@@ -63,11 +50,5 @@ public class KryonetHelper {
         kryo.register(BattleAreaTile[].class);
         kryo.register(TurnDTO.TurnType.class);
         kryo.register(BattleAreaTile.TileType.class);
-
-
-
-
-
     }
-
 }
