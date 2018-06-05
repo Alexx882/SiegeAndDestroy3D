@@ -246,7 +246,7 @@ public class GameTurnsActivity extends AppCompatActivity {
      * @param tile
      * @return
      */
-    private int getTheRightTile(BattleAreaTile.TileType tile) {
+    public int getTheRightTile(BattleAreaTile.TileType tile) {
         int drawable = -1;
 
         switch (tile) {
