@@ -2,21 +2,14 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.interfaces;
 
 
 import android.app.Activity;
-
-import com.peak.salut.SalutDevice;
-
 import java.util.List;
-
-import javax.security.auth.callback.Callback;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 
 /**
  * The Interface for a Object used to communicate with the server.
