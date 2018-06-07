@@ -24,8 +24,8 @@ public class GlobalGameSettings implements Serializable {
     private int[] shipSizes = {3, 4, 2, 4};
 
     // network settings
-    private final String SERVICE_NAME = "sAd3D";
-    private final int port = 61616;
+    private static final String serviceName = "sAd3D";
+    private static final int port = 61616;
     private boolean isServer;
 
     private GlobalGameSettings() {
@@ -69,7 +69,7 @@ public class GlobalGameSettings implements Serializable {
     }
 
     public String getServiceName() {
-        return SERVICE_NAME;
+        return serviceName;
     }
 
     public int getPort() {
@@ -108,13 +108,13 @@ public class GlobalGameSettings implements Serializable {
         this.numberShots = numberShots;
     }
 
-    private static GlobalGameSettings _current = null;
+    private static GlobalGameSettings instance = null;
 
     public static GlobalGameSettings getCurrent() {
-        if (_current == null)
-            _current = new GlobalGameSettings();
+        if (instance == null)
+            instance = new GlobalGameSettings();
 
-        return _current;
+        return instance;
     }
 
 }

@@ -126,7 +126,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
                     handshakeDTO.setConnectionEstablished(true);
                     sendToServer(handshakeDTO);
                 } catch (IOException ex) {
-                    ex.printStackTrace();
+                   Log.e("KryoClient", "Error", ex);
                 }
             }
         }.start();

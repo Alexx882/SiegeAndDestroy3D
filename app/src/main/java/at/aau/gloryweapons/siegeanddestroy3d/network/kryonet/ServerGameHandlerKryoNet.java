@@ -86,8 +86,8 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
                     handleConnection(connection, object);
                 }
             });
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            Log.e("KryoClient", "Error", ex);
         }
     }
 

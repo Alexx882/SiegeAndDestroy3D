@@ -36,7 +36,7 @@ public class BattleArea implements Serializable {
      */
     public List<BattleAreaTile[]> getForJsonBattleAreaTiles() {
         if (battleAreaTiles == null){
-            forJsonBattleAreaTiles = new ArrayList<>();
+           return new ArrayList<>();
         }
         if (forJsonBattleAreaTiles == null){
             forJsonBattleAreaTiles = new ArrayList<>();

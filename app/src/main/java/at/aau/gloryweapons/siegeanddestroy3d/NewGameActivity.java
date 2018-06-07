@@ -28,9 +28,9 @@ public class NewGameActivity extends AppCompatActivity {
 
     private boolean appliedSettings = false;
 
-    private Button _buttonHostGame;
-    private EditText _editTextPlayerName;
-    private EditText _editTextNumberShots;
+    private Button buttonHostGame;
+    private EditText editTextPlayerName;
+    private EditText editTextNumberShots;
     private ListView userListView;
     private Switch switchSchummeln;
 
@@ -43,18 +43,6 @@ public class NewGameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_game);
-
-        //init Server
-        //ServerGameHandler.getInstance().initSimpleSocketServer();
-        /*
-        this.serverGameHandlerWifi = ServerGameHandlerWifi.getInstance();
-        serverGameHandlerWifi.initServerGameHandler(this, new UserCallBack() {
-            @Override
-            public void callback(List<String> users) {
-                listViewUpdater(users);
-            }
-        });
-        */
 
         // start server
         serverGameHandlerAsyncComm = ServerGameHandlerKryoNet.getInstance();
@@ -74,7 +62,7 @@ public class NewGameActivity extends AppCompatActivity {
         TextView t = findViewById(R.id.textViewIpHost);
         t.setText(ip);
 
-        _buttonHostGame.setOnClickListener(new View.OnClickListener() {
+        buttonHostGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!appliedSettings)
@@ -103,13 +91,13 @@ public class NewGameActivity extends AppCompatActivity {
      */
     private void applySettings() {
         // check user input
-        Editable name = _editTextPlayerName.getText();
+        Editable name = editTextPlayerName.getText();
         if (!ValidationHelperClass.isUserNameValid(name != null ? name.toString() : null)) {
             showLongToast("Bitte geben Sie einen Usernamen ein.");
             return;
         }
 
-        final Editable shot = _editTextNumberShots.getText();
+        final Editable shot = editTextNumberShots.getText();
         if (!ValidationHelperClass.validShots(shot != null ? shot.toString() : null)) {
             showLongToast("Bitte geben Sie eine Zahl ein.");
             return;
@@ -132,13 +120,13 @@ public class NewGameActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        _buttonHostGame.setText("Spiel starten");
+                        buttonHostGame.setText("Spiel starten");
                     }
                 });
 
                 // disable ui because its activated now.
-                _editTextPlayerName.setEnabled(false);
-                _editTextNumberShots.setEnabled(false);
+                editTextPlayerName.setEnabled(false);
+                editTextNumberShots.setEnabled(false);
                 switchSchummeln.setEnabled(false);
 
                 appliedSettings = true;
@@ -147,9 +135,9 @@ public class NewGameActivity extends AppCompatActivity {
     }
 
     private void loadUiElements() {
-        _buttonHostGame = findViewById(R.id.buttonHostGame);
-        _editTextPlayerName = findViewById(R.id.editTextPlayerName);
-        _editTextNumberShots = findViewById(R.id.editTextNumberShots);
+        buttonHostGame = findViewById(R.id.buttonHostGame);
+        editTextPlayerName = findViewById(R.id.editTextPlayerName);
+        editTextNumberShots = findViewById(R.id.editTextNumberShots);
         userListView = findViewById(R.id.listViewUser);
         switchSchummeln = findViewById(R.id.switchSchummeln);
 
@@ -162,7 +150,7 @@ public class NewGameActivity extends AppCompatActivity {
 
     private void initAdapter() {
         usersList = new ArrayList<>();
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, usersList);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1, usersList);
 
         userListView.setAdapter(adapter);
     }
