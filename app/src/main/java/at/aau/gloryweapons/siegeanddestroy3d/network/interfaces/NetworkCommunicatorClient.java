@@ -21,7 +21,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 /**
  * The Interface for a Object used to communicate with the server.
  */
-public interface NetworkCommunicator {
+public interface NetworkCommunicatorClient {
     /**
      * Sends a name to the server asynchronously and responds with the complete User if the name is valid.
      *
@@ -41,6 +41,12 @@ public interface NetworkCommunicator {
     public void sendGameConfigurationToServer(User user, BattleArea userBoard,
                                               List<BasicShip> placedShips, CallbackObject<GameConfiguration> callback);
 
+    /**
+     * Inits the Client.
+     * @param ip
+     * @param activity
+     * @param isConnected
+     */
     public void initClientGameHandler(String ip, final Activity activity, CallbackObject<HandshakeDTO> isConnected);
 
     /**

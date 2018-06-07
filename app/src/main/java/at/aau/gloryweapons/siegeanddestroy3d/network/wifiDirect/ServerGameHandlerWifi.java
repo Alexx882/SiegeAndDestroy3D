@@ -15,13 +15,15 @@ import com.peak.salut.SalutServiceData;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
 
+// TODO remove
 public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
 
     private SalutDataCallback callback;
@@ -29,7 +31,7 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
     private Salut network;
     private SalutDataReceiver dataReceiver;
     private SalutServiceData serviceData;
-    private UserCallBack userCallBack;
+    private CallbackObject<List<String>> userCallBack;
 
     private Map<String, String> userMapper; // 1. String = Salut device.readableName (UUID), 2.Username (default = client)
 
@@ -48,7 +50,7 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
      * @param activity     current activity
      * @param userCallBack a callback for the representation of the clients
      */
-    public void initServerGameHandler(final Activity activity, UserCallBack userCallBack) {
+    public void initServerGameHandler(final Activity activity, CallbackObject<List<String>> userCallBack) {
 
         //reset client mode
         ClientGameHandlerWifi.getInstance().resetNetwork();

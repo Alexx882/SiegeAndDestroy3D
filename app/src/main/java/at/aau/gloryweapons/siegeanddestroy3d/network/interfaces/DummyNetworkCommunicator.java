@@ -14,10 +14,11 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 
+// TODO remove
 /**
  * Simple dummy implementation for the network communicator.
  */
-public class DummyNetworkCommunicator implements NetworkCommunicator {
+public class DummyNetworkCommunicator implements NetworkCommunicatorClient {
 
     private User user;
 

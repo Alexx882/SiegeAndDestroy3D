@@ -24,10 +24,10 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
 
-
-public class ClientGameHandlerWifi implements NetworkCommunicator {
+// TODO remove
+public class ClientGameHandlerWifi implements NetworkCommunicatorClient {
 
     private SalutDataCallback callback;
     private Activity activity;

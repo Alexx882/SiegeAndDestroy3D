@@ -7,6 +7,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 
+// TODO remove
 public class WifiDirectHelper {
 
     private Activity activity;

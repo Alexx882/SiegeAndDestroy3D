@@ -15,6 +15,7 @@ import java.net.Socket;
 
 import static android.content.Context.WIFI_SERVICE;
 
+// TODO remove
 /**
  * Created by Johannes on 26.03.2018.
  */

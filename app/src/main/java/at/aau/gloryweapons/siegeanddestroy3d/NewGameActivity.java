@@ -19,9 +19,9 @@ import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class NewGameActivity extends AppCompatActivity {
@@ -53,7 +53,7 @@ public class NewGameActivity extends AppCompatActivity {
         });
         */
         serverGameHandlerAsyncComm = ServerGameHandlerKryoNet.getInstance();
-        serverGameHandlerAsyncComm.initServerGameHandler(this, new UserCallBack() {
+        serverGameHandlerAsyncComm.initServerGameHandler(this, new CallbackObject<List<String>>() {
             @Override
             public void callback(List<String> param) {
                 listViewUpdater(param);
