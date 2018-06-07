@@ -92,18 +92,14 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     }
 
     /**
-     * @param shotCount
-     */
-    @Override
-    public void sendShotCountToServer(int shotCount) {
-        serverController.sentShots(shotCount);
-    }
-
-    /**
      * Displays the existing user names in the UI
      */
     private void usernameListToUI() {
         final List<String> userList = new ArrayList<>();
+        // add name of host
+        if (GlobalGameSettings.getCurrent().getLocalUser() != null)
+            userList.add(GlobalGameSettings.getCurrent().getLocalUser().getName());
+        // add name of clients
         for (ClientData data : clientDataMap.values()) {
             if (data.getUser() != null) {
                 userList.add(data.getUser().getName());
@@ -111,6 +107,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
                 userList.add("client");
             }
         }
+
         // TODO move to view.
         activity.runOnUiThread(new Runnable() {
 
@@ -213,7 +210,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         // send to server game instance
         turnInfoUpdateCallback.callback(nextUser);
     }
-    
+
     /**
      * Sends the info about the next turn to the clients.
      */
@@ -276,7 +273,9 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     @Override
     public void sendNameToServer(String username, CallbackObject<User> callback) {
-        // TODO register this name
+        User user = serverController.checkName(username);
+        callback.callback(user);
+        usernameListToUI();
     }
 
     @Override

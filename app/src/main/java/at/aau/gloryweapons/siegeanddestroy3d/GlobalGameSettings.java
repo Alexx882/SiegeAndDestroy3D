@@ -12,6 +12,8 @@ public class GlobalGameSettings implements Serializable {
     private User localUser;
     private int numberPlayers;
     private User currentTurnUser;
+    private boolean schummelnEnabled;
+    private int numberShots;
 
     // fixed size of rows and cols
     private int numberRows = 8;
@@ -90,6 +92,22 @@ public class GlobalGameSettings implements Serializable {
         this.currentTurnUser = userOfCurrentTurn;
     }
 
+    public boolean isSchummelnEnabled() {
+        return schummelnEnabled;
+    }
+
+    public void setSchummelnEnabled(boolean schummelnEnabled) {
+        this.schummelnEnabled = schummelnEnabled;
+    }
+
+    public int getNumberShots() {
+        return numberShots;
+    }
+
+    public void setNumberShots(int numberShots) {
+        this.numberShots = numberShots;
+    }
+
     private static GlobalGameSettings _current = null;
 
     public static GlobalGameSettings getCurrent() {
@@ -98,4 +116,5 @@ public class GlobalGameSettings implements Serializable {
 
         return _current;
     }
+
 }

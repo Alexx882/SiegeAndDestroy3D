@@ -206,12 +206,4 @@ public class ServerGameHandlerWifi implements NetworkCommunicatorServer {
             }
         });
     }
-
-    /**
-     * @param shotCount
-     */
-    @Override
-    public void sendShotCountToServer(int shotCount) {
-
-    }
 }

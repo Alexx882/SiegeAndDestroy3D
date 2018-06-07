@@ -18,12 +18,6 @@ public interface NetworkCommunicatorServer {
      */
     public void resetNetwork();
 
-    // TODO move to GlobalGameConfig
-    /**
-     * @param shotCount
-     */
-    public void sendShotCountToServer(int shotCount);
-
      /**
      * Returns the number of currently connected players.
      * @return
