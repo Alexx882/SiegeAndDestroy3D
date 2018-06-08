@@ -107,9 +107,11 @@ public class NewGameActivity extends AppCompatActivity {
         serverGameHandlerAsyncComm.sendNameToServer(name.toString(), new CallbackObject<User>() {
             @Override
             public void callback(User param) {
-                if (param == null)
-                    // abort
+                if (param == null) {
+                    // name is not valid
+                    Toast.makeText(NewGameActivity.this, "Username nicht verfügbar!", Toast.LENGTH_SHORT).show();
                     return;
+                }
 
                 // apply input
                 GlobalGameSettings.getCurrent().setLocalUser(param);
