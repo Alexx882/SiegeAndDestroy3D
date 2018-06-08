@@ -109,13 +109,13 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         }
 
         // TODO move to view.
-        activity.runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                userCallBack.callback(userList);
-            }
-        });
+        if (userCallBack != null)
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    userCallBack.callback(userList);
+                }
+            });
 
     }
 
@@ -208,7 +208,8 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         sendToAllClients(turnInfo);
 
         // send to server game instance
-        turnInfoUpdateCallback.callback(nextUser);
+        if (turnInfoUpdateCallback != null)
+            turnInfoUpdateCallback.callback(nextUser);
     }
 
     /**

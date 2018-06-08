@@ -18,6 +18,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.RequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.ResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
 import de.javakaffee.kryoserializers.ArraysAsListSerializer;
@@ -50,5 +51,6 @@ public class KryonetHelper {
         kryo.register(BattleAreaTile[].class);
         kryo.register(TurnDTO.TurnType.class);
         kryo.register(BattleAreaTile.TileType.class);
+        kryo.register(TurnInfoDTO.class);
     }
 }
