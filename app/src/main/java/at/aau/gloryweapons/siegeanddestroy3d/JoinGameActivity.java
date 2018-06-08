@@ -14,7 +14,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
@@ -26,7 +26,7 @@ public class JoinGameActivity extends AppCompatActivity {
     private TextView txtError;
     private EditText txtIp;
 
-    private NetworkCommunicator clientCommunicator;
+    private NetworkCommunicatorClient clientCommunicator;
     private boolean connectedToServer = false;
 
     @Override

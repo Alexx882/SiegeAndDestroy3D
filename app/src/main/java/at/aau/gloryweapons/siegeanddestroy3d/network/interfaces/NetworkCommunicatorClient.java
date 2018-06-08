@@ -2,26 +2,19 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.interfaces;
 
 
 import android.app.Activity;
-
-import com.peak.salut.SalutDevice;
-
 import java.util.List;
-
-import javax.security.auth.callback.Callback;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 
 /**
  * The Interface for a Object used to communicate with the server.
  */
-public interface NetworkCommunicator {
+public interface NetworkCommunicatorClient {
     /**
      * Sends a name to the server asynchronously and responds with the complete User if the name is valid.
      *
@@ -41,6 +34,12 @@ public interface NetworkCommunicator {
     public void sendGameConfigurationToServer(User user, BattleArea userBoard,
                                               List<BasicShip> placedShips, CallbackObject<GameConfiguration> callback);
 
+    /**
+     * Inits the Client.
+     * @param ip
+     * @param activity
+     * @param isConnected
+     */
     public void initClientGameHandler(String ip, final Activity activity, CallbackObject<HandshakeDTO> isConnected);
 
     /**

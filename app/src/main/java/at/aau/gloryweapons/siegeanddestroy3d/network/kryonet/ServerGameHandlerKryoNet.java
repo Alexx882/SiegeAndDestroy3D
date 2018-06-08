@@ -1,25 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
-import android.net.wifi.WifiManager;
-import android.text.format.Formatter;
-import android.util.Log;
-
-import com.koushikdutta.async.AsyncServer;
-import com.koushikdutta.async.AsyncServerSocket;
-import com.koushikdutta.async.AsyncSocket;
-import com.koushikdutta.async.ByteBufferList;
-import com.koushikdutta.async.DataEmitter;
-import com.koushikdutta.async.DataSink;
-import com.koushikdutta.async.Util;
-import com.koushikdutta.async.callback.CompletedCallback;
-import com.koushikdutta.async.callback.DataCallback;
-import com.koushikdutta.async.callback.ListenCallback;
-import com.koushikdutta.async.callback.WritableCallback;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import android.util.Log;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -44,14 +25,11 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
 import at.aau.gloryweapons.siegeanddestroy3d.server.ServerController;
 
-import static android.content.Context.WIFI_SERVICE;
-
-public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, NetworkCommunicator {
+public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, NetworkCommunicatorClient {
     private Server kryoServer;
     private KryonetHelper kryoHelper;
 
@@ -62,7 +40,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     private HashMap<Integer, ClientData> clientDataMap;
 
     //client name list
-    private UserCallBack userCallBack;
+    private CallbackObject<List<String>> userCallBack;
 
     CallbackObject<User> turnInfoUpdateCallback;
 
@@ -84,7 +62,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     }
 
     @Override
-    public void initServerGameHandler(Activity activity, UserCallBack userCallBack) {
+    public void initServerGameHandler(Activity activity, CallbackObject<List<String>> userCallBack) {
         GlobalGameSettings.getCurrent().setServer(true);
 
         wrapperHelper = WrapperHelper.getInstance();
@@ -108,17 +86,9 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
                     handleConnection(connection, object);
                 }
             });
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            Log.e("KryoClient", "Error", ex);
         }
-    }
-
-    /**
-     * @param shotCount
-     */
-    @Override
-    public void sendShotCountToServer(int shotCount) {
-        serverController.sentShots(shotCount);
     }
 
     /**
@@ -126,6 +96,10 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
      */
     private void usernameListToUI() {
         final List<String> userList = new ArrayList<>();
+        // add name of host
+        if (GlobalGameSettings.getCurrent().getLocalUser() != null)
+            userList.add(GlobalGameSettings.getCurrent().getLocalUser().getName());
+        // add name of clients
         for (ClientData data : clientDataMap.values()) {
             if (data.getUser() != null) {
                 userList.add(data.getUser().getName());
@@ -133,6 +107,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
                 userList.add("client");
             }
         }
+
         // TODO move to view.
         activity.runOnUiThread(new Runnable() {
 
@@ -235,7 +210,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         // send to server game instance
         turnInfoUpdateCallback.callback(nextUser);
     }
-    
+
     /**
      * Sends the info about the next turn to the clients.
      */
@@ -298,7 +273,9 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     @Override
     public void sendNameToServer(String username, CallbackObject<User> callback) {
-        // TODO register this name
+        User user = serverController.checkName(username);
+        callback.callback(user);
+        usernameListToUI();
     }
 
     @Override

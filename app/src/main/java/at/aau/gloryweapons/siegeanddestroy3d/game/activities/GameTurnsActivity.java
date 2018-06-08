@@ -16,7 +16,7 @@ import android.widget.Toast;
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
 
-import at.aau.gloryweapons.siegeanddestroy3d.game.GameController;
+import at.aau.gloryweapons.siegeanddestroy3d.game.controllers.GameController;
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.renderer.BoardRenderer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;

@@ -1,4 +1,4 @@
-package at.aau.gloryweapons.siegeanddestroy3d.game;
+package at.aau.gloryweapons.siegeanddestroy3d.game.controllers;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
@@ -8,11 +8,11 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
 
 public class GameController {
 
-    private NetworkCommunicator communicator = ClientGameHandlerKryoNet.getInstance();
+    private NetworkCommunicatorClient communicator = ClientGameHandlerKryoNet.getInstance();
     private static int shotsFired = 0;
 
     /**
