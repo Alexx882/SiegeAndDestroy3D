@@ -9,11 +9,18 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKr
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
+import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryoNet;
 
 public class GameController {
 
-    private NetworkCommunicatorClient communicator = ClientGameHandlerKryoNet.getInstance();
-    private static int shotsFired = 0;
+    private NetworkCommunicatorClient communicator;
+    private static int shotsFired = 0; // todo remove static ?
+
+    public GameController() {
+        communicator = GlobalGameSettings.getCurrent().isServer()
+                ? ServerGameHandlerKryoNet.getInstance()
+                : ClientGameHandlerKryoNet.getInstance();
+    }
 
     /**
      * @param game
@@ -53,7 +60,6 @@ public class GameController {
                     }
                 }
             }
-
         } else {
             callback.callback(null);
         }
@@ -66,11 +72,11 @@ public class GameController {
      * @return
      */
     private boolean checkIfMyTurn() {
-        if (GlobalGameSettings.getCurrent().getPlayerId() == GlobalGameSettings.getCurrent().getUserOfCurrentTurn().getId()) {
-            return true;
-        } else {
-            return false;
-        }
+        if (GlobalGameSettings.getCurrent().getUserOfCurrentTurn() != null)
+            if (GlobalGameSettings.getCurrent().getPlayerId() == GlobalGameSettings.getCurrent().getUserOfCurrentTurn().getId()) {
+                return true;
+            }
+        return false;
     }
 
     /**
@@ -88,14 +94,5 @@ public class GameController {
         } else {
             return false;
         }
-    }
-
-    public void RegisterForTurnInfoUpdates(){
-        communicator.registerForTurnInfos(new CallbackObject<User>() {
-            @Override
-            public void callback(User param) {
-                // TODO handle next user for turn
-            }
-        });
     }
 }

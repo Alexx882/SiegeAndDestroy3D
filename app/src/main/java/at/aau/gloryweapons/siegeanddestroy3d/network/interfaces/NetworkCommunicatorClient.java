@@ -54,12 +54,4 @@ public interface NetworkCommunicatorClient {
      * @param callback
      */
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback);
-
-    /**
-     * Informs about the next user to take his turn.
-     * Callback is called everytime the server has new info.
-     *
-     * @param nextUserCallback
-     */
-    public void registerForTurnInfos(CallbackObject<User> nextUserCallback);
 }
