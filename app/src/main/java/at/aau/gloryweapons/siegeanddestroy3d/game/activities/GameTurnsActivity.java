@@ -23,6 +23,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.ReturnObject;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
@@ -34,7 +35,7 @@ public class GameTurnsActivity extends AppCompatActivity {
     private GameController controller = null;
     private BoardRenderer board = null;
     private User actualUser = null;
-    private BattleArea actualBattleArea = null;
+    private BattleArea actualBattleArea = null; 
     private GameBoardImageView[][] visualBoard = null;
     private boolean shooting = false;
 
@@ -46,6 +47,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         // receive and set parameters
         gameSettings = (GameConfiguration) getIntent().getExtras().get(GameConfiguration.INTENT_KEYWORD);
         GlobalGameSettings.setCurrent((GlobalGameSettings) getIntent().getExtras().get(GlobalGameSettings.INTENT_KEYWORD));
+        GlobalGameSettings.getCurrent().setNumberShots(gameSettings.getShots());
 
         board = new BoardRenderer(this);
         controller = new GameController();
@@ -72,7 +74,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!controller.endTurn(gameSettings)) {
+                if (!controller.endTurn()) {
                     Toast.makeText(GameTurnsActivity.this, "first finish your turn", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -119,7 +121,7 @@ public class GameTurnsActivity extends AppCompatActivity {
 
             constraintSet.applyTo(userLayout);
         }
-        //call method
+
         useSensorsforCheating();
     }
 
@@ -134,7 +136,7 @@ public class GameTurnsActivity extends AppCompatActivity {
             @Override
             public void callback(Boolean param) {
                 if (param == true) {
-                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -184,28 +186,42 @@ public class GameTurnsActivity extends AppCompatActivity {
                 if (!tiles[i][j].isHorizontal()) {
                     orientation = 90;
                 }
-                switch (tiles[i][j].getType()) {
-                    case WATER:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.water, i, j, orientation);
-                        break;
-                    case NO_HIT:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.no_hit, i, j, orientation);
-                        break;
-                    case SHIP_START:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_start, i, j, orientation);
-                        break;
-                    case SHIP_MIDDLE:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_middle, i, j, orientation);
-                        break;
-                    case SHIP_END:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_end, i, j, orientation);
-                        break;
-                    case SHIP_DESTROYED:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_destroyed, i, j, orientation);
-                        break;
-                    default:
-                        gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_start, i, j, orientation);
-                        break;
+                if (area.getUserId() != GlobalGameSettings.getCurrent().getPlayerId()) {
+                    switch (tiles[i][j].getType()) {
+                        case SHIP_DESTROYED:
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_destroyed, i, j, orientation);
+                            break;
+                        case NO_HIT:
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.no_hit, i, j, orientation);
+                            break;
+                        default:
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.water, i, j, orientation);
+                            break;
+                    }
+                } else {
+                    switch (tiles[i][j].getType()) {
+                        case WATER:
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.water, i, j, orientation);
+                            break;
+                        case NO_HIT:
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.no_hit, i, j, orientation);
+                            break;
+                        case SHIP_START:
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_start, i, j, orientation);
+                            break;
+                        case SHIP_MIDDLE:
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_middle, i, j, orientation);
+                            break;
+                        case SHIP_END:
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_end, i, j, orientation);
+                            break;
+                        case SHIP_DESTROYED:
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_destroyed, i, j, orientation);
+                            break;
+                        default:
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_start, i, j, orientation);
+                            break;
+                    }
                 }
 
                 //OnClickListener for the GridLayout. Calls the method shotOnEnemy in the GameController
@@ -217,15 +233,23 @@ public class GameTurnsActivity extends AppCompatActivity {
                         //controlls the returnvalue of controller.shotOnEnemy
                         if (!shooting) {
                             shooting = true;
-                            controller.shotOnEnemy(gameSettings, actualBattleArea, actualUser, v.getBoardCol(), v.getBoardRow(), new CallbackObject<BattleAreaTile.TileType>() {
+                            controller.shotOnEnemy(gameSettings, actualBattleArea, actualUser, v.getBoardCol(), v.getBoardRow(), new CallbackObject<ReturnObject>() {
                                 @Override
-                                public void callback(BattleAreaTile.TileType param) {
-                                    if (param != null) {
-                                        int drawable = getTheRightTile(param);
-                                        gView[v.getBoardRow()][v.getBoardCol()].setImageResource(drawable);
+                                public void callback(ReturnObject param) {
+                                    if (param.getI() == 0) {
+                                        final int drawable = getTheRightTile(param.getTile());
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+
+                                                gView[v.getBoardRow()][v.getBoardCol()].setImageResource(drawable);
+                                            }
+                                        });
+
                                     } else {
-                                        Toast.makeText(GameTurnsActivity.this, "Nice try", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(GameTurnsActivity.this, param.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
+                                    shooting = false;
                                 }
                             });
                             /*if (controller.shotOnEnemy(gameSettings, actualBattleArea, actualUser, v.getBoardCol(), v.getBoardRow()) == null) {

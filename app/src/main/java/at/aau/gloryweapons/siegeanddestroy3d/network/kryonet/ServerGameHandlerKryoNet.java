@@ -17,6 +17,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
@@ -130,10 +131,17 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
             handleTurnDTO((TurnDTO) receivedObject);
         } else if (receivedObject instanceof GameConfigurationRequestDTO) {
             handleGameConfigRequest((GameConfigurationRequestDTO) receivedObject);
+        } else if (receivedObject instanceof FinishRoundDTO) {
+            handleFinishRoundRequest((FinishRoundDTO) receivedObject);
         } else {
             Log.e(this.getClass().getName(), "cannot cast class");
         }
     }
+
+    private void handleFinishRoundRequest(FinishRoundDTO finish) {
+        sendNextTurnInfo();
+    }
+
 
     private void handleHandshakeDto(HandshakeDTO handshakeDTO, Connection clientConnection) {
         ClientData clientData = new ClientData();
@@ -206,6 +214,11 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         sendToAllClients(turnInfo);
 
         // save server game instance
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
     }
 
@@ -213,13 +226,14 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
      * Sends the info about the next turn to the clients.
      */
     private void sendNextTurnInfo() {
-        // TODO send the next turn info somewhere
         User nextUser = serverController.getUserForNextTurn();
 
         TurnInfoDTO turnInfo = new TurnInfoDTO();
         turnInfo.setPlayerNextTurn(nextUser);
 
         sendToAllClients(turnInfo);
+        //send to server
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
     }
 
     /**
@@ -291,8 +305,27 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         // todo remove
     }
 
+    /**
+     * handles the shot from the serverplayer.
+     *
+     * @param area
+     * @param col
+     * @param row
+     * @param callback
+     */
     @Override
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
-        // TODO
+        TurnDTO hitType = new TurnDTO(TurnDTO.TurnType.SHOT, area);
+
+        hitType.setxCoordinates(row);
+        hitType.setyCoordinates(col);
+        hitType = serverController.checkShot(hitType);
+        callback.callback(hitType);
+    }
+
+    @Override
+    public void sendFinish() {
+        FinishRoundDTO finish = new FinishRoundDTO();
+        handleFinishRoundRequest(finish);
     }
 }
