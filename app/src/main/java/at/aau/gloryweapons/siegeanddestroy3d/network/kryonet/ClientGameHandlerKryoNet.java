@@ -15,6 +15,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.RequestDTO;
@@ -84,9 +85,16 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
         shotHitCallback = callback;
         TurnDTO hitType = new TurnDTO(TurnDTO.TurnType.SHOT, area);
+
         hitType.setxCoordinates(row);
         hitType.setyCoordinates(col);
         sendToServer(hitType);
+    }
+
+    @Override
+    public void sendFinish() {
+        FinishRoundDTO finish =new FinishRoundDTO();
+        sendToServer(finish);
     }
 
     @Override

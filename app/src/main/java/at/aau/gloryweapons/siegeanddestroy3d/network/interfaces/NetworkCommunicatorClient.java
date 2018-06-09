@@ -2,6 +2,7 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.interfaces;
 
 
 import android.app.Activity;
+
 import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
@@ -36,6 +37,7 @@ public interface NetworkCommunicatorClient {
 
     /**
      * Inits the Client.
+     *
      * @param ip
      * @param activity
      * @param isConnected
@@ -48,10 +50,18 @@ public interface NetworkCommunicatorClient {
     public void resetNetwork();
 
     /**
+     * send shot to server
+     *
      * @param area
      * @param col
      * @param row
      * @param callback
      */
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback);
+
+    /**
+     * ends the turn
+     */
+    public void sendFinish();
+
 }

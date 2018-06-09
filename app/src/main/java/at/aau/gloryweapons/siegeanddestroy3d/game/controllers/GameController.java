@@ -4,6 +4,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.ReturnObject;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
@@ -30,12 +31,13 @@ public class GameController {
      * @param row
      * @return
      */
-    public void shotOnEnemy(GameConfiguration game, final BattleArea enemyArea, User enemy, final int col, final int row, final CallbackObject<BattleAreaTile.TileType> callback) {
+    public void shotOnEnemy(GameConfiguration game, final BattleArea enemyArea, User enemy, final int col, final int row, final CallbackObject<ReturnObject> callback) {
 
+        final ReturnObject object = new ReturnObject();
         if (checkIfMyTurn()) {
             if (enemy.getId() != GlobalGameSettings.getCurrent().getPlayerId()) {
-                if (enemyArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.SHIP_DESTROYED) {
-                    if (shotsFired <= game.getShots()) {
+                if (enemyArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.SHIP_DESTROYED && enemyArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.NO_HIT) {
+                    if (shotsFired < GlobalGameSettings.getCurrent().getNumberShots()) {
 
                         shotsFired++;
 
@@ -53,16 +55,29 @@ public class GameController {
                                         enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
                                         break;
                                 }
-                                callback.callback(tile);
+                                object.setTile(tile);
+                                callback.callback(object);
+
                             }
                         });
-
+                        return;
+                    } else {
+                        object.setI(1);
+                        object.setMessage("alle Schüsse abgegeben. runde beenden");
                     }
+                } else {
+                    object.setI(2);
+                    object.setMessage("dieses Feld ist bereits zerstört");
                 }
+            } else {
+                object.setI(3);
+                object.setMessage("nix selbstmord. nein :3");
             }
         } else {
-            callback.callback(null);
+            object.setI(4);
+            object.setMessage("du nix dran");
         }
+        callback.callback(object);
 
     }
 
@@ -82,13 +97,12 @@ public class GameController {
     /**
      * ends the players turn; checks if all available shots are fired before
      *
-     * @param game
      * @return
      */
-    public boolean endTurn(GameConfiguration game) {
-        if (shotsFired == game.getShots()) {
+    public boolean endTurn() {
+        if (shotsFired == GlobalGameSettings.getCurrent().getNumberShots()) {
             shotsFired = 0;
-            //todo server shit.. xD
+            communicator.sendFinish();
 
             return true;
         } else {
