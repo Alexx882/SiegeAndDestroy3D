@@ -67,6 +67,7 @@ public class PlacementActivity extends AppCompatActivity {
     private void switchToGameActivity(GameConfiguration gameConfig) {
         Intent switchActivityIntent = new Intent(this, GameTurnsActivity.class);
         switchActivityIntent.putExtra(GameConfiguration.INTENT_KEYWORD, gameConfig);
+        switchActivityIntent.putExtra(GlobalGameSettings.INTENT_KEYWORD, GlobalGameSettings.getCurrent());
         startActivity(switchActivityIntent);
 
         // remove this activity from the history stack - user shouldnt be able to get back to placement

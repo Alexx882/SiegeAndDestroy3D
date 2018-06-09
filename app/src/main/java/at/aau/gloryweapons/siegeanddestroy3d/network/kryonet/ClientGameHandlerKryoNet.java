@@ -39,7 +39,6 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private CallbackObject<User> userNameCallback;
     private CallbackObject<TurnDTO> shotHitCallback;
     private CallbackObject<GameConfiguration> gameConfigCallback;
-    private CallbackObject<User> turnInfoCallback;
 
     private static ClientGameHandlerKryoNet instance;
 
@@ -88,11 +87,6 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         hitType.setxCoordinates(row);
         hitType.setyCoordinates(col);
         sendToServer(hitType);
-    }
-
-    @Override
-    public void registerForTurnInfos(CallbackObject<User> nextUserCallback) {
-        this.turnInfoCallback = nextUserCallback;
     }
 
     @Override
@@ -177,8 +171,8 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     }
 
     private void handleTurnInfo(TurnInfoDTO receivedObject) {
-        if (turnInfoCallback != null)
-            turnInfoCallback.callback(receivedObject.getPlayerNextTurn());
+        // save info in GGS
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(receivedObject.getPlayerNextTurn());
     }
 
     private void sendToServer(final RequestDTO object) {

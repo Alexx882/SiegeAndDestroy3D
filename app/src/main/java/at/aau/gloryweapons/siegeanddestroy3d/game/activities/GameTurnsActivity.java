@@ -1,5 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.activities;
 
+import android.provider.Settings;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
@@ -42,9 +43,10 @@ public class GameTurnsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enemy_turn);
 
+        // receive and set parameters
+        gameSettings = (GameConfiguration) getIntent().getExtras().get(GameConfiguration.INTENT_KEYWORD);
+        GlobalGameSettings.setCurrent((GlobalGameSettings) getIntent().getExtras().get(GlobalGameSettings.INTENT_KEYWORD));
 
-        // receiving and saving the game configuration
-        gameSettings = new GameConfiguration(true);
         board = new BoardRenderer(this);
         controller = new GameController();
 

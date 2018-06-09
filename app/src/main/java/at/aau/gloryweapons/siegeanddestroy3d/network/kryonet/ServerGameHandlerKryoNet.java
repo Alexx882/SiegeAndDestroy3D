@@ -31,7 +31,6 @@ import at.aau.gloryweapons.siegeanddestroy3d.server.ServerController;
 
 public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, NetworkCommunicatorClient {
     private Server kryoServer;
-    private KryonetHelper kryoHelper;
 
     //instance
     private static ServerGameHandlerKryoNet instance;
@@ -39,9 +38,8 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     //Client data list
     private HashMap<Integer, ClientData> clientDataMap;
 
-    //client name list
+    // callbacks
     private CallbackObject<List<String>> userCallBack;
-
     CallbackObject<User> turnInfoUpdateCallback;
 
     private Activity activity;
@@ -109,13 +107,13 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         }
 
         // TODO move to view.
-        activity.runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                userCallBack.callback(userList);
-            }
-        });
+        if (userCallBack != null)
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    userCallBack.callback(userList);
+                }
+            });
 
     }
 
@@ -207,8 +205,8 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         // send to clients
         sendToAllClients(turnInfo);
 
-        // send to server game instance
-        turnInfoUpdateCallback.callback(nextUser);
+        // save server game instance
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
     }
 
     /**
@@ -296,21 +294,5 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     @Override
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
         // TODO
-    }
-
-    @Override
-    public void registerForTurnInfos(CallbackObject<User> nextUserCallback) {
-        this.turnInfoUpdateCallback = nextUserCallback;
-    }
-
-    /**
-     * Used to remember the client data for communication
-     */
-    private abstract class ClientDataCallbackObject<T> implements CallbackObject<T> {
-        protected ClientData clientData;
-
-        public ClientDataCallbackObject(ClientData clientData) {
-            this.clientData = clientData;
-        }
     }
 }

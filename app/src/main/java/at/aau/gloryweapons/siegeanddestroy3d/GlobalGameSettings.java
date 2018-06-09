@@ -1,5 +1,7 @@
 package at.aau.gloryweapons.siegeanddestroy3d;
 
+import android.provider.Settings;
+
 import java.io.Serializable;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
@@ -108,13 +110,22 @@ public class GlobalGameSettings implements Serializable {
         this.numberShots = numberShots;
     }
 
+    public static final String INTENT_KEYWORD ="GLOBALGAMESETTINGS_INTENT";
     private static GlobalGameSettings instance = null;
 
     public static GlobalGameSettings getCurrent() {
         if (instance == null)
             instance = new GlobalGameSettings();
-
         return instance;
+    }
+
+    /**
+     * Workaround because changing activities doesnt take singletons very well.
+     *
+     * @param current
+     */
+    public static void setCurrent(GlobalGameSettings current) {
+        instance = current;
     }
 
 }
