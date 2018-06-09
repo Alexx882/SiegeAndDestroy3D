@@ -35,7 +35,7 @@ public class GameTurnsActivity extends AppCompatActivity {
     private GameController controller = null;
     private BoardRenderer board = null;
     private User actualUser = null;
-    private BattleArea actualBattleArea = null;
+    private BattleArea actualBattleArea = null; 
     private GameBoardImageView[][] visualBoard = null;
     private boolean shooting = false;
 
