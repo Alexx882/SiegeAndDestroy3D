@@ -41,7 +41,7 @@ public class GameTurnsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enemy_turn);
-       GameBoardImageView[][] visualBoard = null;
+        GameBoardImageView[][] visualBoard = null;
         // receive and set parameters
         gameSettings = (GameConfiguration) getIntent().getExtras().get(GameConfiguration.INTENT_KEYWORD);
         GlobalGameSettings.setCurrent((GlobalGameSettings) getIntent().getExtras().get(GlobalGameSettings.INTENT_KEYWORD));
@@ -83,7 +83,7 @@ public class GameTurnsActivity extends AppCompatActivity {
 
         for (int i = 0; i < gameSettings.getUserList().size(); i++) {
             //create textview + setText with Username + ontouchlistener
-            TextView v = createUserLabel(nRows,nCols,i);
+            TextView v = createUserLabel(nRows, nCols, i);
             //set params for view
             ConstraintLayout.LayoutParams viewParam = new ConstraintLayout.LayoutParams(
                     ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
@@ -107,10 +107,10 @@ public class GameTurnsActivity extends AppCompatActivity {
 
     /**
      * create the labels for the users. is used in onCreate.
+     *
      * @return
      */
-    private TextView createUserLabel(final int nRows, final int nCols, int i)
-    {
+    private TextView createUserLabel(final int nRows, final int nCols, int i) {
         TextView v = new TextView(this);
         v.setText(gameSettings.getUserByIndex(i).getName());
         v.setTextSize(25);
@@ -224,7 +224,7 @@ public class GameTurnsActivity extends AppCompatActivity {
                     }
                 }
                 //sets the onClickListener for the tiles of the gridLayout
-                setOnClickListenerForGridTiles(gView,i,j);
+                setOnClickListenerForGridTiles(gView, i, j);
             }
         }
         return gView;
@@ -232,12 +232,12 @@ public class GameTurnsActivity extends AppCompatActivity {
 
     /**
      * sets the OnClickListener for the tiles of the GridLayout. is part of the loadBattleArea methode
+     *
      * @param gView
      * @param i
      * @param j
      */
-    private void setOnClickListenerForGridTiles(final GameBoardImageView[][] gView, int i, int j)
-    {
+    private void setOnClickListenerForGridTiles(final GameBoardImageView[][] gView, int i, int j) {
 
         //OnClickListener for the GridLayout. Calls the method shotOnEnemy in the GameController
         gView[i][j].setOnClickListener(new View.OnClickListener() {
