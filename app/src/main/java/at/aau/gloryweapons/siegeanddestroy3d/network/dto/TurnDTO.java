@@ -7,7 +7,6 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 import java.io.Serializable;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.converter.TurnTypeConverter;
 
 @JsonObject
