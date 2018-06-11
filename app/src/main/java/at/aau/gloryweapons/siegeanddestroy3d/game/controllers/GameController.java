@@ -15,7 +15,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKr
 public class GameController {
 
     private NetworkCommunicatorClient communicator;
-    private static int shotsFired = 0; // todo remove static ?
+    private int shotsFired = 0;
 
     public GameController() {
         communicator = GlobalGameSettings.getCurrent().isServer()
@@ -31,7 +31,7 @@ public class GameController {
      * @param row
      * @return
      */
-    public void shotOnEnemy(GameConfiguration game, final BattleArea enemyArea, User enemy, final int col, final int row, final CallbackObject<ReturnObject> callback) {
+    public void shotOnEnemy(final BattleArea enemyArea, User enemy, final int col, final int row, final CallbackObject<ReturnObject> callback) {
 
         final ReturnObject object = new ReturnObject();
         if (checkIfMyTurn()) {
@@ -45,15 +45,12 @@ public class GameController {
                             @Override
                             public void callback(TurnDTO t) {
                                 BattleAreaTile.TileType tile = null;
-                                switch (t.getType()) {
-                                    case NO_HIT:
-                                        tile = BattleAreaTile.TileType.NO_HIT;
-                                        enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.NO_HIT);
-                                        break;
-                                    case HIT:
-                                        tile = BattleAreaTile.TileType.SHIP_DESTROYED;
-                                        enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
-                                        break;
+                                if (t.getType() == TurnDTO.TurnType.NO_HIT) {
+                                    tile = BattleAreaTile.TileType.NO_HIT;
+                                    enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.NO_HIT);
+                                } else {
+                                    tile = BattleAreaTile.TileType.SHIP_DESTROYED;
+                                    enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
                                 }
                                 object.setTile(tile);
                                 callback.callback(object);
@@ -87,10 +84,11 @@ public class GameController {
      * @return
      */
     private boolean checkIfMyTurn() {
-        if (GlobalGameSettings.getCurrent().getUserOfCurrentTurn() != null)
-            if (GlobalGameSettings.getCurrent().getPlayerId() == GlobalGameSettings.getCurrent().getUserOfCurrentTurn().getId()) {
-                return true;
-            }
+        if (GlobalGameSettings.getCurrent().getUserOfCurrentTurn() != null && GlobalGameSettings.getCurrent().getPlayerId() == GlobalGameSettings.getCurrent().getUserOfCurrentTurn().getId()) {
+
+            return true;
+        }
+
         return false;
     }
 
