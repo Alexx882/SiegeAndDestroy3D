@@ -3,6 +3,7 @@ package at.aau.gloryweapons.siegeanddestroy3d.server;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,6 +24,13 @@ public class ServerController {
 
     private AtomicInteger id = new AtomicInteger(1);
     private ArrayList<String> names = new ArrayList<>();
+    private GameConfiguration gameConfig;
+    private ArrayList<User> users = new ArrayList<>(4);
+    private List<BattleArea> battleAreas = new ArrayList<>(4);
+    private List<CallbackObject<GameConfiguration>> callbacks = new ArrayList<>(4);
+    private int shots = 0;
+    private CallbackObject<User> turnOfFirstUserCallback;
+    private ArrayList<User> penaltyList = new ArrayList<>();
 
     /**
      * Checks if the name for an user is available.
@@ -57,13 +65,6 @@ public class ServerController {
     private int getId() {
         return id.getAndAdd(1);
     }
-
-    private GameConfiguration gameConfig;
-    private ArrayList<User> users = new ArrayList<>(4);
-    private List<BattleArea> battleAreas = new ArrayList<>(4);
-    private List<CallbackObject<GameConfiguration>> callbacks = new ArrayList<>(4);
-    private int shots = 0;
-    private CallbackObject<User> turnOfFirstUserCallback;
 
     public void registerForGameConfigCompletion(CallbackObject<User> callback) {
         // just overwrite old values, because we need it only once
@@ -129,7 +130,20 @@ public class ServerController {
     public User getUserForNextTurn() {
         // just loop through
         userIdxForCurrentTurn = (userIdxForCurrentTurn + 1) % users.size();
+        if (suspendATurn(users.get(userIdxForCurrentTurn))) {
+            getUserForNextTurn();
+        }
         return users.get(userIdxForCurrentTurn);
+    }
+
+    /**
+     * Checks if a user has to suspend a turn.
+     *
+     * @param user
+     * @return
+     */
+    private boolean suspendATurn(User user) {
+        return penaltyList.remove(user);
     }
 
     /**

@@ -1,7 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
-import android.telecom.Call;
 import android.util.Log;
 
 import com.esotericsoftware.kryonet.Client;
@@ -16,8 +15,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterCaughtDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingInfoDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
@@ -43,7 +42,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private CallbackObject<User> userNameCallback;
     private CallbackObject<TurnDTO> shotHitCallback;
     private CallbackObject<GameConfiguration> gameConfigCallback;
-    private CallbackObject<CheatingInfoDTO> cheatingInfoCallback;
+    private CallbackObject<User> cheaterSuspicionCallback;
 
     private static ClientGameHandlerKryoNet instance;
 
@@ -102,23 +101,12 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     }
 
     @Override
-    public void sendCheatingInfo() {
-        CheatingInfoDTO cheatingInfoDTO = new CheatingInfoDTO();
-        cheatingInfoDTO.setClientId(clientId);
-        sendToServer(cheatingInfoDTO);
+    public void sendCheatingSuspicion(CallbackObject<User> callback) {
+        cheaterSuspicionCallback = callback;
+        CheaterSuspicionDTO cheaterSuspicionDTO = new CheaterSuspicionDTO();
+        sendToServer(cheaterSuspicionDTO);
     }
 
-    @Override
-    public void registerCheaterCallback(CallbackObject<CheatingInfoDTO> cheatingInfoCallback) {
-        this.cheatingInfoCallback = cheatingInfoCallback;
-    }
-
-    @Override
-    public void cheaterCaught(int userID) {
-        CheaterCaughtDTO cheaterCaughtDTO = new CheaterCaughtDTO();
-        cheaterCaughtDTO.setUserID(userID);
-        sendToServer(cheaterCaughtDTO);
-    }
 
     @Override
     public void initClientGameHandler(final String ip, Activity activity, CallbackObject<HandshakeDTO> isConnectedCallback) {
@@ -178,14 +166,20 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
                         shotHitCallback.callback((TurnDTO) receivedObject);
                 } else if (receivedObject instanceof TurnInfoDTO) {
                     handleTurnInfo((TurnInfoDTO) receivedObject);
-                } else if (receivedObject instanceof CheatingInfoDTO) {
-                    handleCheatingInfo((CheatingInfoDTO) receivedObject);
-                }else {
+                }else if(receivedObject instanceof CheaterSuspicionResponseDTO){
+                    handleCheatingSuspicionResponse((CheaterSuspicionResponseDTO) receivedObject);
+                }else  {
                     Log.e(this.getClass().getName(), "Cannot read object: " + receivedObject.getClass().getName());
                 }
 
             }
         });
+    }
+
+    private void handleCheatingSuspicionResponse(CheaterSuspicionResponseDTO receivedObject) {
+        if (cheaterSuspicionCallback != null){
+            cheaterSuspicionCallback.callback(receivedObject.getUser());
+        }
     }
 
     private void handleUserResponse(UserNameResponseDTO user) {
@@ -224,9 +218,4 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         }.start();
     }
 
-    private void handleCheatingInfo(CheatingInfoDTO cheatingInfoDTO){
-        if (cheatingInfoDTO.getClientId() != clientId){
-            this.cheatingInfoCallback.callback(cheatingInfoDTO);
-        }
-    }
 }

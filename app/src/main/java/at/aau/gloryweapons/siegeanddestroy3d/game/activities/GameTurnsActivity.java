@@ -83,13 +83,14 @@ public class GameTurnsActivity extends AppCompatActivity {
         cheaterSuspectedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                controller.cheatingSuspicion(new CallbackObject<Boolean>() {
+                controller.cheatingSuspicion(new CallbackObject<User>() {
                     @Override
-                    public void callback(Boolean param) {
-                        if (param){
-                            Toast.makeText(GameTurnsActivity.this, "Cheater entdeckt!", Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(GameTurnsActivity.this, "Keiner hat gecheatet!", Toast.LENGTH_SHORT).show();
+                    public void callback(User param) {
+                        if (param.getId() != GlobalGameSettings.getCurrent().getPlayerId()) {
+                            Toast.makeText(GameTurnsActivity.this, param.getName() + " hat gecheatet!", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            Toast.makeText(GameTurnsActivity.this, "Keiner hat geschummelt, eine Runde aussetzten!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -164,7 +165,6 @@ public class GameTurnsActivity extends AppCompatActivity {
             public void callback(Boolean param) {
                 if (param == true) {
                     Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_SHORT).show();
-                    controller.sendCheatingUse();
                 }
             }
         });
