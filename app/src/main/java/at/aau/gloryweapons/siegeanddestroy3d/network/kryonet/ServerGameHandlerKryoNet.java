@@ -1,25 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
-import android.net.wifi.WifiManager;
-import android.text.format.Formatter;
-import android.util.Log;
-
-import com.koushikdutta.async.AsyncServer;
-import com.koushikdutta.async.AsyncServerSocket;
-import com.koushikdutta.async.AsyncSocket;
-import com.koushikdutta.async.ByteBufferList;
-import com.koushikdutta.async.DataEmitter;
-import com.koushikdutta.async.DataSink;
-import com.koushikdutta.async.Util;
-import com.koushikdutta.async.callback.CompletedCallback;
-import com.koushikdutta.async.callback.DataCallback;
-import com.koushikdutta.async.callback.ListenCallback;
-import com.koushikdutta.async.callback.WritableCallback;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import android.util.Log;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -36,6 +17,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
@@ -44,16 +26,12 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
 import at.aau.gloryweapons.siegeanddestroy3d.server.ServerController;
 
-import static android.content.Context.WIFI_SERVICE;
-
-public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, NetworkCommunicator {
+public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, NetworkCommunicatorClient {
     private Server kryoServer;
-    private KryonetHelper kryoHelper;
 
     //instance
     private static ServerGameHandlerKryoNet instance;
@@ -61,9 +39,8 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     //Client data list
     private HashMap<Integer, ClientData> clientDataMap;
 
-    //client name list
-    private UserCallBack userCallBack;
-
+    // callbacks
+    private CallbackObject<List<String>> userCallBack;
     CallbackObject<User> turnInfoUpdateCallback;
 
     private Activity activity;
@@ -84,7 +61,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     }
 
     @Override
-    public void initServerGameHandler(Activity activity, UserCallBack userCallBack) {
+    public void initServerGameHandler(Activity activity, CallbackObject<List<String>> userCallBack) {
         GlobalGameSettings.getCurrent().setServer(true);
 
         wrapperHelper = WrapperHelper.getInstance();
@@ -108,17 +85,9 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
                     handleConnection(connection, object);
                 }
             });
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            Log.e("KryoClient", "Error", ex);
         }
-    }
-
-    /**
-     * @param shotCount
-     */
-    @Override
-    public void sendShotCountToServer(int shotCount) {
-        serverController.sentShots(shotCount);
     }
 
     /**
@@ -126,6 +95,10 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
      */
     private void usernameListToUI() {
         final List<String> userList = new ArrayList<>();
+        // add name of host
+        if (GlobalGameSettings.getCurrent().getLocalUser() != null)
+            userList.add(GlobalGameSettings.getCurrent().getLocalUser().getName());
+        // add name of clients
         for (ClientData data : clientDataMap.values()) {
             if (data.getUser() != null) {
                 userList.add(data.getUser().getName());
@@ -133,14 +106,15 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
                 userList.add("client");
             }
         }
-        // TODO move to view.
-        activity.runOnUiThread(new Runnable() {
 
-            @Override
-            public void run() {
-                userCallBack.callback(userList);
-            }
-        });
+        // TODO move to view.
+        if (userCallBack != null)
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    userCallBack.callback(userList);
+                }
+            });
 
     }
 
@@ -157,10 +131,17 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
             handleTurnDTO((TurnDTO) receivedObject);
         } else if (receivedObject instanceof GameConfigurationRequestDTO) {
             handleGameConfigRequest((GameConfigurationRequestDTO) receivedObject);
+        } else if (receivedObject instanceof FinishRoundDTO) {
+            handleFinishRoundRequest((FinishRoundDTO) receivedObject);
         } else {
             Log.e(this.getClass().getName(), "cannot cast class");
         }
     }
+
+    private void handleFinishRoundRequest(FinishRoundDTO finish) {
+        sendNextTurnInfo();
+    }
+
 
     private void handleHandshakeDto(HandshakeDTO handshakeDTO, Connection clientConnection) {
         ClientData clientData = new ClientData();
@@ -232,21 +213,27 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         // send to clients
         sendToAllClients(turnInfo);
 
-        // send to server game instance
-        turnInfoUpdateCallback.callback(nextUser);
+        // save server game instance
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
     }
-    
+
     /**
      * Sends the info about the next turn to the clients.
      */
     private void sendNextTurnInfo() {
-        // TODO send the next turn info somewhere
         User nextUser = serverController.getUserForNextTurn();
 
         TurnInfoDTO turnInfo = new TurnInfoDTO();
         turnInfo.setPlayerNextTurn(nextUser);
 
         sendToAllClients(turnInfo);
+        //send to server
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
     }
 
     /**
@@ -298,7 +285,9 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     @Override
     public void sendNameToServer(String username, CallbackObject<User> callback) {
-        // TODO register this name
+        User user = serverController.checkName(username);
+        callback.callback(user);
+        usernameListToUI();
     }
 
     @Override
@@ -316,24 +305,27 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         // todo remove
     }
 
+    /**
+     * handles the shot from the serverplayer.
+     *
+     * @param area
+     * @param col
+     * @param row
+     * @param callback
+     */
     @Override
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
-        // TODO
+        TurnDTO hitType = new TurnDTO(TurnDTO.TurnType.SHOT, area);
+
+        hitType.setxCoordinates(row);
+        hitType.setyCoordinates(col);
+        hitType = serverController.checkShot(hitType);
+        callback.callback(hitType);
     }
 
     @Override
-    public void registerForTurnInfos(CallbackObject<User> nextUserCallback) {
-        this.turnInfoUpdateCallback = nextUserCallback;
-    }
-
-    /**
-     * Used to remember the client data for communication
-     */
-    private abstract class ClientDataCallbackObject<T> implements CallbackObject<T> {
-        protected ClientData clientData;
-
-        public ClientDataCallbackObject(ClientData clientData) {
-            this.clientData = clientData;
-        }
+    public void sendFinish() {
+        FinishRoundDTO finish = new FinishRoundDTO();
+        handleFinishRoundRequest(finish);
     }
 }

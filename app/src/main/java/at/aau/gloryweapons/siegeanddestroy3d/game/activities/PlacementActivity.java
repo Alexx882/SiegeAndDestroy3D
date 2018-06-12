@@ -21,7 +21,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
 
 public class PlacementActivity extends AppCompatActivity {
     private BoardRenderer gridRenderer;
@@ -67,6 +67,7 @@ public class PlacementActivity extends AppCompatActivity {
     private void switchToGameActivity(GameConfiguration gameConfig) {
         Intent switchActivityIntent = new Intent(this, GameTurnsActivity.class);
         switchActivityIntent.putExtra(GameConfiguration.INTENT_KEYWORD, gameConfig);
+        switchActivityIntent.putExtra(GlobalGameSettings.INTENT_KEYWORD, GlobalGameSettings.getCurrent());
         startActivity(switchActivityIntent);
 
         // remove this activity from the history stack - user shouldnt be able to get back to placement
@@ -242,7 +243,7 @@ public class PlacementActivity extends AppCompatActivity {
     }
 
     private void sendConfigurationToServer() {
-        NetworkCommunicator comm;
+        NetworkCommunicatorClient comm;
 
         // should be inited already
         if (GlobalGameSettings.getCurrent().isServer())

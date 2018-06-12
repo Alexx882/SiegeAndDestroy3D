@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,105 +20,128 @@ import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryoNet;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.UserCallBack;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
 public class NewGameActivity extends AppCompatActivity {
 
-    private Button _buttonHostGame;
-    private EditText _editTextPlayerName;
-    private EditText _editText;
+    private boolean appliedSettings = false;
+
+    private Button buttonHostGame;
+    private EditText editTextPlayerName;
+    private EditText editTextNumberShots;
     private ListView userListView;
+    private Switch switchSchummeln;
+
     private List<String> usersList;
     private ArrayAdapter<String> adapter;
 
-    // private NetworkCommunicatorServer serverGameHandlerWifi;
-    private NetworkCommunicatorServer serverGameHandlerAsyncComm;
+    private ServerGameHandlerKryoNet serverGameHandlerAsyncComm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_game);
 
-        //init Server
-        //ServerGameHandler.getInstance().initSimpleSocketServer();
-        /*
-        this.serverGameHandlerWifi = ServerGameHandlerWifi.getInstance();
-        serverGameHandlerWifi.initServerGameHandler(this, new UserCallBack() {
-            @Override
-            public void callback(List<String> users) {
-                listViewUpdater(users);
-            }
-        });
-        */
+        // start server
         serverGameHandlerAsyncComm = ServerGameHandlerKryoNet.getInstance();
-        serverGameHandlerAsyncComm.initServerGameHandler(this, new UserCallBack() {
+        serverGameHandlerAsyncComm.initServerGameHandler(this, new CallbackObject<List<String>>() {
             @Override
             public void callback(List<String> param) {
                 listViewUpdater(param);
             }
         });
 
-
         loadUiElements();
 
-        final WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-        final String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+        WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        // todo deprecated
+        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
 
-        TextView t = new TextView(this);
-
-        t = (TextView) findViewById(R.id.textViewIpHost);
+        TextView t = findViewById(R.id.textViewIpHost);
         t.setText(ip);
 
-
-        _buttonHostGame.setOnClickListener(new View.OnClickListener() {
+        buttonHostGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!appliedSettings)
+                    applySettings();
 
-                Editable name = _editTextPlayerName.getText();
-                if (!ValidationHelperClass.isUserNameValid(name != null ? name.toString() : null)) {
-                    showLongToast("Bitte geben Sie einen Usernamen ein");
-                    return;
-                }
-
-                Editable shot = _editText.getText();
-                if (!ValidationHelperClass.validShots(shot != null ? shot.toString() : null)) {
-                    showLongToast("Bitte geben Sie eine Zahl ein");
-                    return;
-
-                } else {
-
+                else {
                     // start placement for server
-                    serverGameHandlerAsyncComm.sendShotCountToServer(Integer.parseInt(shot.toString()));
-                    // todo name check for server
-                    User localuser = new User();
-                    localuser.setId(10);
-                    localuser.setName(name.toString());
-                    GlobalGameSettings.getCurrent().setLocalUser(localuser);
 
                     GlobalGameSettings.getCurrent()
                             // connected clients + this host
                             .setNumberPlayers(serverGameHandlerAsyncComm.getNumberOfConnectedPlayers() + 1);
+                    // todo disable new joins.
 
                     Intent intent = new Intent(NewGameActivity.this, PlacementActivity.class);
                     startActivity(intent);
 
+                    // close this activity
                     NewGameActivity.this.finish();
                 }
-
             }
-
         });
+    }
 
+    /**
+     * Applies the input from the user. Including the Username check.
+     */
+    private void applySettings() {
+        // check user input
+        Editable name = editTextPlayerName.getText();
+        if (!ValidationHelperClass.isUserNameValid(name != null ? name.toString() : null)) {
+            showLongToast("Bitte geben Sie einen Usernamen ein.");
+            return;
+        }
+
+        final Editable shot = editTextNumberShots.getText();
+        if (!ValidationHelperClass.validShots(shot != null ? shot.toString() : null)) {
+            showLongToast("Bitte geben Sie eine Zahl ein.");
+            return;
+        }
+
+        // name check for server
+        serverGameHandlerAsyncComm.sendNameToServer(name.toString(), new CallbackObject<User>() {
+            @Override
+            public void callback(User param) {
+                if (param == null) {
+                    // name is not valid
+                    Toast.makeText(NewGameActivity.this, "Username nicht verfügbar!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // apply input
+                GlobalGameSettings.getCurrent().setLocalUser(param);
+                GlobalGameSettings.getCurrent().setSchummelnEnabled(switchSchummeln.isChecked());
+                GlobalGameSettings.getCurrent().setNumberShots(Integer.parseInt(shot.toString()));
+
+                // update the button
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        buttonHostGame.setText("Spiel starten");
+                    }
+                });
+
+                // disable ui because its activated now.
+                editTextPlayerName.setEnabled(false);
+                editTextNumberShots.setEnabled(false);
+                switchSchummeln.setEnabled(false);
+
+                appliedSettings = true;
+            }
+        });
     }
 
     private void loadUiElements() {
-        _buttonHostGame = findViewById(R.id.buttonHostGame);
-        _editTextPlayerName = findViewById(R.id.editTextPlayerName);
-        _editText = findViewById(R.id.editText);
+        buttonHostGame = findViewById(R.id.buttonHostGame);
+        editTextPlayerName = findViewById(R.id.editTextPlayerName);
+        editTextNumberShots = findViewById(R.id.editTextNumberShots);
         userListView = findViewById(R.id.listViewUser);
+        switchSchummeln = findViewById(R.id.switchSchummeln);
 
         initAdapter();
     }
@@ -128,7 +152,7 @@ public class NewGameActivity extends AppCompatActivity {
 
     private void initAdapter() {
         usersList = new ArrayList<>();
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, usersList);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1, usersList);
 
         userListView.setAdapter(adapter);
     }

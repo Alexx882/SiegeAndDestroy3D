@@ -3,17 +3,6 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 import android.app.Activity;
 import android.util.Log;
 
-import com.koushikdutta.async.AsyncServer;
-import com.koushikdutta.async.AsyncSocket;
-import com.koushikdutta.async.ByteBufferList;
-import com.koushikdutta.async.DataEmitter;
-import com.koushikdutta.async.Util;
-import com.koushikdutta.async.callback.CompletedCallback;
-import com.koushikdutta.async.callback.ConnectCallback;
-import com.koushikdutta.async.callback.DataCallback;
-
-import java.net.InetSocketAddress;
-
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -26,6 +15,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.RequestDTO;
@@ -35,9 +25,9 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
-import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicator;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
 
-public class ClientGameHandlerKryoNet implements NetworkCommunicator {
+public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     private Client kryoClient;
     private KryonetHelper kryoHelper;
@@ -46,12 +36,10 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicator {
     private WrapperHelper wrapperHelper;
 
     // callbacks
-    // TODO check foreach if null before calling
     private CallbackObject<HandshakeDTO> isConnectedCallback;
     private CallbackObject<User> userNameCallback;
     private CallbackObject<TurnDTO> shotHitCallback;
     private CallbackObject<GameConfiguration> gameConfigCallback;
-    private CallbackObject<User> turnInfoCallback;
 
     private static ClientGameHandlerKryoNet instance;
 
@@ -97,16 +85,18 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicator {
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback) {
         shotHitCallback = callback;
         TurnDTO hitType = new TurnDTO(TurnDTO.TurnType.SHOT, area);
+
         hitType.setxCoordinates(row);
         hitType.setyCoordinates(col);
         sendToServer(hitType);
     }
 
     @Override
-    public void registerForTurnInfos(CallbackObject<User> nextUserCallback) {
-        this.turnInfoCallback = nextUserCallback;
+    public void sendFinish() {
+        FinishRoundDTO finish =new FinishRoundDTO();
+        sendToServer(finish);
     }
-	
+
     @Override
     public void initClientGameHandler(final String ip, Activity activity, CallbackObject<HandshakeDTO> isConnectedCallback) {
         GlobalGameSettings.getCurrent().setServer(false);
@@ -138,14 +128,14 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicator {
                     handshakeDTO.setConnectionEstablished(true);
                     sendToServer(handshakeDTO);
                 } catch (IOException ex) {
-                    ex.printStackTrace();
+                   Log.e("KryoClient", "Error", ex);
                 }
             }
         }.start();
     }
 
     private void initServerCallbackHandler() {
-        kryoClient.addListener(new Listener(){
+        kryoClient.addListener(new Listener() {
             public void received(Connection serverConnection, Object receivedObject) {
 
                 //json to object
@@ -160,8 +150,9 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicator {
                     handleUserResponse((UserNameResponseDTO) receivedObject);
                 } else if (receivedObject instanceof GameConfiguration) {
                     handleGameConfigResponse((GameConfiguration) receivedObject);
-                } else if (receivedObject instanceof TurnDTO){
-                    shotHitCallback.callback((TurnDTO)receivedObject);
+                } else if (receivedObject instanceof TurnDTO) {
+                    if (shotHitCallback != null)
+                        shotHitCallback.callback((TurnDTO) receivedObject);
                 } else if (receivedObject instanceof TurnInfoDTO) {
                     handleTurnInfo((TurnInfoDTO) receivedObject);
                 }
@@ -170,23 +161,26 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicator {
     }
 
     private void handleUserResponse(UserNameResponseDTO user) {
-        userNameCallback.callback(user.getNewUser());
+        if (userNameCallback != null)
+            userNameCallback.callback(user.getNewUser());
     }
 
     private void handleHandshakeResponse(HandshakeDTO handshakeDTO) {
         this.clientId = handshakeDTO.getClientId();
         Log.v(this.getClass().getName(), "handshake: " + handshakeDTO.isConnectionEstablished());
         Log.v(this.getClass().getName(), "handshake - new client ID: " + handshakeDTO.getClientId());
-        isConnectedCallback.callback(handshakeDTO);
+        if (isConnectedCallback != null)
+            isConnectedCallback.callback(handshakeDTO);
     }
 
     private void handleGameConfigResponse(GameConfiguration gameConfig) {
-        gameConfigCallback.callback(gameConfig);
+        if (gameConfigCallback != null)
+            gameConfigCallback.callback(gameConfig);
     }
 
     private void handleTurnInfo(TurnInfoDTO receivedObject) {
-        if (turnInfoCallback != null)
-            turnInfoCallback.callback(receivedObject.getPlayerNextTurn());
+        // save info in GGS
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(receivedObject.getPlayerNextTurn());
     }
 
     private void sendToServer(final RequestDTO object) {
@@ -195,8 +189,8 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicator {
         // send the client id with the request
         object.setClientId(clientId);
 
-        new Thread("send"){
-            public void run(){
+        new Thread("send") {
+            public void run() {
                 kryoClient.sendTCP(object);
             }
         }.start();

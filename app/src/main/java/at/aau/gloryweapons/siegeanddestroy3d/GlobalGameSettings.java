@@ -1,5 +1,7 @@
 package at.aau.gloryweapons.siegeanddestroy3d;
 
+import android.provider.Settings;
+
 import java.io.Serializable;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
@@ -12,6 +14,8 @@ public class GlobalGameSettings implements Serializable {
     private User localUser;
     private int numberPlayers;
     private User currentTurnUser;
+    private boolean schummelnEnabled;
+    private int numberShots;
 
     // fixed size of rows and cols
     private int numberRows = 8;
@@ -22,8 +26,8 @@ public class GlobalGameSettings implements Serializable {
     private int[] shipSizes = {3, 4, 2, 4};
 
     // network settings
-    private final String SERVICE_NAME = "sAd3D";
-    private final int port = 61616;
+    private static final String serviceName = "sAd3D";
+    private static final int port = 61616;
     private boolean isServer;
 
     private GlobalGameSettings() {
@@ -67,7 +71,7 @@ public class GlobalGameSettings implements Serializable {
     }
 
     public String getServiceName() {
-        return SERVICE_NAME;
+        return serviceName;
     }
 
     public int getPort() {
@@ -90,12 +94,38 @@ public class GlobalGameSettings implements Serializable {
         this.currentTurnUser = userOfCurrentTurn;
     }
 
-    private static GlobalGameSettings _current = null;
+    public boolean isSchummelnEnabled() {
+        return schummelnEnabled;
+    }
+
+    public void setSchummelnEnabled(boolean schummelnEnabled) {
+        this.schummelnEnabled = schummelnEnabled;
+    }
+
+    public int getNumberShots() {
+        return numberShots;
+    }
+
+    public void setNumberShots(int numberShots) {
+        this.numberShots = numberShots;
+    }
+
+    public static final String INTENT_KEYWORD ="GLOBALGAMESETTINGS_INTENT";
+    private static GlobalGameSettings instance = null;
 
     public static GlobalGameSettings getCurrent() {
-        if (_current == null)
-            _current = new GlobalGameSettings();
-
-        return _current;
+        if (instance == null)
+            instance = new GlobalGameSettings();
+        return instance;
     }
+
+    /**
+     * Workaround because changing activities doesnt take singletons very well.
+     *
+     * @param current
+     */
+    public static void setCurrent(GlobalGameSettings current) {
+        instance = current;
+    }
+
 }

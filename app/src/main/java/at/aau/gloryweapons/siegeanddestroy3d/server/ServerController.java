@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.security.auth.callback.Callback;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
@@ -94,7 +93,7 @@ public class ServerController {
             gameConfig = new GameConfiguration();
             gameConfig.setUserList(users);
             gameConfig.setBattleAreaList(battleAreas);
-            gameConfig.setShots(this.shots);
+            gameConfig.setShots(GlobalGameSettings.getCurrent().getNumberShots());
 
             // inform the clients about the game config
             for (CallbackObject<GameConfiguration> cb : callbacks)
@@ -104,7 +103,7 @@ public class ServerController {
             callbacks.clear();
 
             // also inform the clients about the first turn
-            if(turnOfFirstUserCallback != null)
+            if (turnOfFirstUserCallback != null)
                 turnOfFirstUserCallback.callback(getUserForFirstTurn());
         }
     }
@@ -118,7 +117,7 @@ public class ServerController {
      */
     public User getUserForFirstTurn() {
         // decide per random so nobody is preferred
-        userIdxForCurrentTurn = new Random().nextInt(users.size());
+        userIdxForCurrentTurn = 0;//new Random().nextInt(users.size());
         return users.get(userIdxForCurrentTurn);
     }
 
@@ -143,7 +142,7 @@ public class ServerController {
 
         BattleAreaTile tile = new BattleAreaTile();
         for (BattleArea area : battleAreas) {
-            if (hit.getUser().getId() == area.getUserId()) {
+            if (hit.getUserId() == area.getUserId()) {
 
                 tile = area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()];
                 tile = checkTile(tile);
