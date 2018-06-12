@@ -2,6 +2,7 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.interfaces;
 
 
 import android.app.Activity;
+import android.telecom.Call;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 
@@ -64,4 +66,13 @@ public interface NetworkCommunicatorClient {
      */
     public void sendFinish();
 
+
+    /**
+     * Sends information to the server that the cheating function has just been used.
+     */
+    public void sendCheatingInfo();
+
+    public void registerCheaterCallback(CallbackObject<CheatingInfoDTO> callback);
+
+    public void cheaterCaught(int userID);
 }

@@ -1,11 +1,17 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.controllers;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.ReturnObject;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterCaughtDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
@@ -16,11 +22,16 @@ public class GameController {
 
     private NetworkCommunicatorClient communicator;
     private int shotsFired = 0;
+    private HashMap<Long, Integer> cheaterInfoTimestamps;
 
     public GameController() {
         communicator = GlobalGameSettings.getCurrent().isServer()
                 ? ServerGameHandlerKryoNet.getInstance()
                 : ClientGameHandlerKryoNet.getInstance();
+
+        //cheater suspicion setup
+        cheaterInfoTimestamps = new HashMap<>();
+        cheaterData();
     }
 
     /**
@@ -106,5 +117,44 @@ public class GameController {
         } else {
             return false;
         }
+    }
+
+    public void sendCheatingUse(){
+        communicator.sendCheatingInfo();
+    }
+
+    public void cheatingSuspicion(CallbackObject<Boolean> cheatingSuspicionCallback) {
+        boolean caught = false;
+        long currentTime = System.currentTimeMillis();
+
+        if (cheaterInfoTimestamps.size() > 0){
+            Iterator<HashMap.Entry<Long, Integer>> iterator = cheaterInfoTimestamps.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<Long, Integer> entry = iterator.next();
+                long timeDiff = (currentTime - entry.getKey()) / 1000;
+                if (timeDiff > GlobalGameSettings.getCurrent().getCheaterSuspicionTime()){
+                    iterator.remove();
+                }else {
+                    caught = true;
+                    communicator.cheaterCaught(entry.getValue());
+                }
+
+            }
+        }
+
+        cheatingSuspicionCallback.callback(caught);
+    }
+
+
+    //save incoming cheater info
+    private void cheaterData(){
+        communicator.registerCheaterCallback(new CallbackObject<CheatingInfoDTO>() {
+            @Override
+            public void callback(CheatingInfoDTO param) {
+                long currentTime = System.currentTimeMillis();
+                int id = param.getClientId();
+                cheaterInfoTimestamps.put(currentTime, id);
+            }
+        });
     }
 }

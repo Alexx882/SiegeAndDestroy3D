@@ -17,6 +17,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
@@ -42,6 +43,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     // callbacks
     private CallbackObject<List<String>> userCallBack;
     CallbackObject<User> turnInfoUpdateCallback;
+    private CallbackObject<CheatingInfoDTO> cheatingInfoCallback;
 
     private Activity activity;
 
@@ -133,9 +135,18 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
             handleGameConfigRequest((GameConfigurationRequestDTO) receivedObject);
         } else if (receivedObject instanceof FinishRoundDTO) {
             handleFinishRoundRequest((FinishRoundDTO) receivedObject);
+        } else if (receivedObject instanceof CheatingInfoDTO) {
+            handleCheatingInfo((CheatingInfoDTO) receivedObject);
         } else {
             Log.e(this.getClass().getName(), "cannot cast class");
         }
+    }
+
+    private void handleCheatingInfo(CheatingInfoDTO receivedObject) {
+        if (cheatingInfoCallback != null) {
+            this.cheatingInfoCallback.callback(receivedObject);
+        }
+        sendToAllClients(receivedObject);
     }
 
     private void handleFinishRoundRequest(FinishRoundDTO finish) {
@@ -327,5 +338,22 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     public void sendFinish() {
         FinishRoundDTO finish = new FinishRoundDTO();
         handleFinishRoundRequest(finish);
+    }
+
+    @Override
+    public void sendCheatingInfo() {
+        CheatingInfoDTO cheatingInfoDTO = new CheatingInfoDTO();
+        cheatingInfoDTO.setClientId(GlobalGameSettings.getCurrent().getPlayerId());
+        handleCheatingInfo(cheatingInfoDTO);
+    }
+
+    @Override
+    public void registerCheaterCallback(CallbackObject<CheatingInfoDTO> callback) {
+        this.cheatingInfoCallback = callback;
+    }
+
+    @Override
+    public void cheaterCaught(int userID) {
+        //TODO  punish cheater
     }
 }
