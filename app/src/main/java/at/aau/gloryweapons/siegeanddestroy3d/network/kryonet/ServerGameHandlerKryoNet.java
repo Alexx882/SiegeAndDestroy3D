@@ -50,8 +50,6 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     private Activity activity;
 
-    private WrapperHelper wrapperHelper;
-
     private ServerController serverController;
 
     private ServerGameHandlerKryoNet() {
@@ -69,7 +67,6 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     public void initServerGameHandler(Activity activity, CallbackObject<List<String>> userCallBack) {
         GlobalGameSettings.getCurrent().setServer(true);
 
-        wrapperHelper = WrapperHelper.getInstance();
         this.activity = activity;
         this.userCallBack = userCallBack;
         this.clientDataMap = new HashMap<Integer, ClientData>();
@@ -326,7 +323,10 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     @Override
     public void resetNetwork() {
-        // todo remove
+        kryoServer = null;
+        activity = null;
+        serverController = null;
+        instance = null;
     }
 
     /**

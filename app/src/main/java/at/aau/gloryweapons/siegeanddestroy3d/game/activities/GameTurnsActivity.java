@@ -1,7 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.activities;
 
 import android.graphics.Color;
-import android.provider.Settings;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -349,6 +347,10 @@ public class GameTurnsActivity extends AppCompatActivity {
         gView[i][j].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // check if the game finished
+                if (GlobalGameSettings.getCurrent().isGameFinished())
+                    return;
+
                 final GameBoardImageView v = (GameBoardImageView) view;
                 Log.i("fish", "" + v.getBoardCol() + v.getBoardRow());
                 //controlls the returnvalue of controller.shotOnEnemy
@@ -409,5 +411,12 @@ public class GameTurnsActivity extends AppCompatActivity {
                 break;
         }
         return drawable;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (controller != null)
+            controller.cleanup();
+        super.onBackPressed();
     }
 }

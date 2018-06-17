@@ -33,10 +33,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunica
 public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     private Client kryoClient;
-    private KryonetHelper kryoHelper;
 
     private int clientId;
-    private WrapperHelper wrapperHelper;
 
     // callbacks
     private CallbackObject<HandshakeDTO> isConnectedCallback;
@@ -83,7 +81,8 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     @Override
     public void resetNetwork() {
-
+        kryoClient = null;
+        instance = null;
     }
 
     @Override
@@ -123,9 +122,6 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         com.esotericsoftware.minlog.Log.set(com.esotericsoftware.minlog.Log.LEVEL_DEBUG);
         Log.i(this.getClass().getName(), "init client connection...");
         Log.i(this.getClass().getName(), "try to connect to " + ip);
-
-        // init wrapper
-        wrapperHelper = WrapperHelper.getInstance();
 
         // init kryo
         kryoClient = new Client();
