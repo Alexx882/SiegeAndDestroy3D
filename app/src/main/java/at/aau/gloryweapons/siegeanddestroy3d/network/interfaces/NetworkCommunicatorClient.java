@@ -64,4 +64,9 @@ public interface NetworkCommunicatorClient {
      */
     public void sendFinish();
 
+
+    /**
+     * sends a request to the server, if another player cheats
+     */
+    public void sendCheatingSuspicion(CallbackObject<User> callback);
 }

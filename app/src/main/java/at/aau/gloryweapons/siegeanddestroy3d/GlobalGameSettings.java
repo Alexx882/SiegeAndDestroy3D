@@ -17,6 +17,9 @@ public class GlobalGameSettings implements Serializable {
     private boolean schummelnEnabled;
     private int numberShots;
 
+    //fix cheater suspicion time in seconds
+    private int cheaterSuspicionTime = 10;
+
     // fixed size of rows and cols
     private int numberRows = 8;
     private int numberCols = 8;
@@ -128,4 +131,7 @@ public class GlobalGameSettings implements Serializable {
         instance = current;
     }
 
+    public long getCheaterSuspicionTime() {
+        return cheaterSuspicionTime;
+    }
 }

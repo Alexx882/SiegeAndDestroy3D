@@ -36,6 +36,7 @@ public class GameTurnsActivity extends AppCompatActivity {
     private User actualUser = null;
     private BattleArea actualBattleArea = null;
     private boolean shooting = false;
+    private Button cheaterSuspectedButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +76,24 @@ public class GameTurnsActivity extends AppCompatActivity {
                 if (!controller.endTurn()) {
                     Toast.makeText(GameTurnsActivity.this, "first finish your turn", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        //Sets the onClickListner for the "Cheater Suspects Button"
+        cheaterSuspectedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                controller.cheatingSuspicion(new CallbackObject<User>() {
+                    @Override
+                    public void callback(User param) {
+                        if (param.getId() != GlobalGameSettings.getCurrent().getPlayerId()) {
+                            Toast.makeText(GameTurnsActivity.this, param.getName() + " hat gecheatet!", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            Toast.makeText(GameTurnsActivity.this, "Keiner hat geschummelt, eine Runde aussetzten!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
 

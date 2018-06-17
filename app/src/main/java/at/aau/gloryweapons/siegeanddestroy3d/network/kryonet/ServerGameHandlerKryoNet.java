@@ -3,6 +3,7 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 import android.app.Activity;
 import android.util.Log;
 
+import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -17,6 +18,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
@@ -133,9 +136,26 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
             handleGameConfigRequest((GameConfigurationRequestDTO) receivedObject);
         } else if (receivedObject instanceof FinishRoundDTO) {
             handleFinishRoundRequest((FinishRoundDTO) receivedObject);
+        } else if (receivedObject instanceof CheaterSuspicionDTO) {
+            handleCheatingSuspicion((CheaterSuspicionDTO) receivedObject);
         } else {
             Log.e(this.getClass().getName(), "cannot cast class");
         }
+    }
+
+    /**
+     * check if a user has cheated and send a user object back
+     * If no one has cheated, then the user has to suspend a round himself
+     *
+     * @param receivedObject
+     */
+    private void handleCheatingSuspicion(CheaterSuspicionDTO receivedObject) {
+        //TODO check and send response
+        // ClientData clientData = clientDataMap.get(receivedObject.getClientId());
+        // CheaterSuspicionResponseDTO cheaterSuspicionResponseDTO = new CheaterSuspicionResponseDTO();
+        // check
+        // cheaterSuspicionResponseDTO.setUser(???);
+        // sendToClient(clientData, cheaterSuspicionResponseDTO);
     }
 
     private void handleFinishRoundRequest(FinishRoundDTO finish) {
@@ -328,4 +348,12 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         FinishRoundDTO finish = new FinishRoundDTO();
         handleFinishRoundRequest(finish);
     }
+
+    @Override
+    public void sendCheatingSuspicion(CallbackObject<User> callback) {
+        //TODO handle cheating suspicion
+        // user suspend check
+        // callback.callback(user);
+    }
+
 }
