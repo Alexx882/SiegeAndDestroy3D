@@ -64,6 +64,12 @@ public interface NetworkCommunicatorClient {
      */
     public void sendFinish();
 
+    /**
+     * Register for updates about a winner.
+     *
+     * @param winnerCallback
+     */
+    public void registerForWinnerInfos(CallbackObject<User> winnerCallback);
 
     /**
      * sends a request to the server, if another player cheats

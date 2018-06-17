@@ -24,6 +24,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WinnerDTO;
 import de.javakaffee.kryoserializers.ArraysAsListSerializer;
 
 public class KryonetHelper {
@@ -58,5 +59,6 @@ public class KryonetHelper {
         kryo.register(FinishRoundDTO.class);
         kryo.register(CheaterSuspicionDTO.class);
         kryo.register(CheaterSuspicionResponseDTO.class);
+        kryo.register(WinnerDTO.class);
     }
 }

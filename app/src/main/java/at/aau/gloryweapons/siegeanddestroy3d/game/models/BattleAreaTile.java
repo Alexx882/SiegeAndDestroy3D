@@ -14,7 +14,6 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.TileTypeConve
 @JsonObject
 public class BattleAreaTile implements Serializable {
 
-
     public enum TileType {
         WATER,
         SHIP_START,
@@ -23,7 +22,6 @@ public class BattleAreaTile implements Serializable {
         SHIP_DESTROYED,
         NO_HIT
     }
-
 
     @JsonField(name = "h", typeConverter = OrientationConverter.class)
     private boolean horizontal = true;
@@ -48,4 +46,9 @@ public class BattleAreaTile implements Serializable {
         this.horizontal = horizontal;
     }
 
+    public boolean isAlive(){
+        return getType() == TileType.SHIP_START
+                || getType() == TileType.SHIP_MIDDLE
+                || getType() == TileType.SHIP_END;
+    }
 }

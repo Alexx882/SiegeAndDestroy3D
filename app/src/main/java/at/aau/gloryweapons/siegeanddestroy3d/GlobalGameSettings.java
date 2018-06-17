@@ -16,6 +16,7 @@ public class GlobalGameSettings implements Serializable {
     private User currentTurnUser;
     private boolean schummelnEnabled;
     private int numberShots;
+    private boolean gameFinished = false;
 
     //fix cheater suspicion time in seconds
     private int cheaterSuspicionTime = 10;
@@ -113,6 +114,18 @@ public class GlobalGameSettings implements Serializable {
         this.numberShots = numberShots;
     }
 
+    public long getCheaterSuspicionTime() {
+        return cheaterSuspicionTime;
+    }
+
+    public boolean isGameFinished() {
+        return this.gameFinished;
+    }
+
+    public void setGameFinished(boolean gameFinished) {
+        this.gameFinished = gameFinished;
+    }
+
     public static final String INTENT_KEYWORD ="GLOBALGAMESETTINGS_INTENT";
     private static GlobalGameSettings instance = null;
 
@@ -129,9 +142,5 @@ public class GlobalGameSettings implements Serializable {
      */
     public static void setCurrent(GlobalGameSettings current) {
         instance = current;
-    }
-
-    public long getCheaterSuspicionTime() {
-        return cheaterSuspicionTime;
     }
 }

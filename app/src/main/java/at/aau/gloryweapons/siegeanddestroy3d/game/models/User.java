@@ -14,6 +14,8 @@ public class User implements Serializable {
     @JsonField
     private String name;
 
+    private boolean isDefeated = false;
+
     public User(int uId, String uName) {
         id = uId;
         name = uName;
@@ -36,5 +38,13 @@ public class User implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isDefeated() {
+        return isDefeated;
+    }
+
+    public void setDefeated(boolean defeated) {
+        isDefeated = defeated;
     }
 }

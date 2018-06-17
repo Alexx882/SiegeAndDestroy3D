@@ -3,9 +3,7 @@ package at.aau.gloryweapons.siegeanddestroy3d.server;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -154,10 +152,9 @@ public class ServerController {
      */
     public TurnDTO checkShot(TurnDTO hit) {
 
-        BattleAreaTile tile = new BattleAreaTile();
+        BattleAreaTile tile;
         for (BattleArea area : battleAreas) {
             if (hit.getUserId() == area.getUserId()) {
-
                 tile = area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()];
                 tile = checkTile(tile);
                 if (tile.getType() == BattleAreaTile.TileType.NO_HIT) {
@@ -166,12 +163,12 @@ public class ServerController {
                 } else {
                     hit.setType(TurnDTO.TurnType.HIT);
                     area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                    checkBattleAreaForDefeat(area);
                 }
             }
         }
 
         return hit;
-
     }
 
     /**
@@ -211,6 +208,52 @@ public class ServerController {
     public void sentShots(int shots) {
 
         this.shots = shots;
+    }
+
+    /**
+     * Checks if the BattleArea is destroyed. Also updates the User to defeated.
+     *
+     * @param area
+     * @return
+     */
+    public boolean checkBattleAreaForDefeat(BattleArea area) {
+        if (area == null)
+            return false;
+
+        if (area.remainingFields() == 0) {
+            setUserDefeated(area.getUserId());
+            return true;
+        } else
+            return false;
+    }
+
+    public void setUserDefeated(int userId) {
+        for (User u : users)
+            if (u.getId() == userId)
+                u.setDefeated(true);
+    }
+
+    /**
+     * Checks if someone won already.
+     *
+     * @return User who won, null otherwise.
+     */
+    public User checkForWinner() {
+        User uNotDefeated = null;
+
+        // check for all users if they are defeated. If more than one is not defeated, there is no winner yet.
+        for (User u : users) {
+            if (!u.isDefeated())
+                if (uNotDefeated == null) {
+                    // this is the first one.
+                    uNotDefeated = u;
+                } else {
+                    // there was already another
+                    return null;
+                }
+        }
+
+        return uNotDefeated;
     }
 }
 

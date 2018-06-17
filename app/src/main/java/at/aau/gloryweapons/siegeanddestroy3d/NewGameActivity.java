@@ -167,9 +167,8 @@ public class NewGameActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-      /*  if (serverGameHandlerWifi != null){
-           serverGameHandlerWifi.resetNetwork();
-        }*/
+        if (serverGameHandlerAsyncComm != null)
+            serverGameHandlerAsyncComm.resetNetwork();
         super.onBackPressed();
     }
 }

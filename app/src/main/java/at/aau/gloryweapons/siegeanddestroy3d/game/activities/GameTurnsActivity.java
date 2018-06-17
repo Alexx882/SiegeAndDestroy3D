@@ -1,6 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.activities;
 
-import android.provider.Settings;
+import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
@@ -10,9 +10,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
@@ -37,6 +39,8 @@ public class GameTurnsActivity extends AppCompatActivity {
     private BattleArea actualBattleArea = null;
     private boolean shooting = false;
     private Button cheaterSuspectedButton;
+    private TextView textViewWinner;
+    private List<TextView> userLabels = new ArrayList<>(4);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,22 +84,23 @@ public class GameTurnsActivity extends AppCompatActivity {
         });
 
         //Sets the onClickListner for the "Cheater Suspects Button"
-        cheaterSuspectedButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controller.cheatingSuspicion(new CallbackObject<User>() {
-                    @Override
-                    public void callback(User param) {
-                        if (param.getId() != GlobalGameSettings.getCurrent().getPlayerId()) {
-                            Toast.makeText(GameTurnsActivity.this, param.getName() + " hat gecheatet!", Toast.LENGTH_SHORT).show();
-
-                        } else {
-                            Toast.makeText(GameTurnsActivity.this, "Keiner hat geschummelt, eine Runde aussetzten!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            }
-        });
+        // todo make work and extract from oncreate
+//        cheaterSuspectedButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                controller.cheatingSuspicion(new CallbackObject<User>() {
+//                    @Override
+//                    public void callback(User param) {
+//                        if (param.getId() != GlobalGameSettings.getCurrent().getPlayerId()) {
+//                            Toast.makeText(GameTurnsActivity.this, param.getName() + " hat gecheatet!", Toast.LENGTH_SHORT).show();
+//
+//                        } else {
+//                            Toast.makeText(GameTurnsActivity.this, "Keiner hat geschummelt, eine Runde aussetzten!", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                });
+//            }
+//        });
 
         //adding playerLabels to ConstraintLayout.
         ConstraintLayout userLayout = findViewById(R.id.UserLayout);
@@ -117,9 +122,44 @@ public class GameTurnsActivity extends AppCompatActivity {
             constraintSet.connect(v.getId(), ConstraintSet.TOP, userLayout.getId(), ConstraintSet.TOP, marginTop);
 
             constraintSet.applyTo(userLayout);
+
+            userLabels.add(v);
         }
 
         useSensorsforCheating();
+
+        textViewWinner = findViewById(R.id.textViewWinner);
+        registerForWinningInfos();
+    }
+
+    private void registerForWinningInfos() {
+        controller.registerForWinningInfos(new CallbackObject<User>() {
+            @Override
+            public void callback(final User winner) {
+                if (winner != null) {
+                    GlobalGameSettings.getCurrent().setGameFinished(true);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showWinner(winner);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * Shows the winner in the view.
+     *
+     * @param winner
+     */
+    private void showWinner(User winner) {
+        if (winner == null)
+            return;
+
+        textViewWinner.setTextColor(Color.GREEN);
+        textViewWinner.setText("Winner: " + winner.getName());
     }
 
     CheatEventListener cheatListener;
@@ -164,7 +204,7 @@ public class GameTurnsActivity extends AppCompatActivity {
             @Override
             public void callback(Boolean param) {
                 if (param == true) {
-                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_SHORT).show();
                     // to avoid exceptions
                     runOnUiThread(new Runnable() {
                         @Override
@@ -172,24 +212,25 @@ public class GameTurnsActivity extends AppCompatActivity {
                             startSchummeln();
                         }
                     });
-                }
-                else{runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        endSchummeln();
-                    }
-                });
-                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_SHORT).show();
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            endSchummeln();
+                        }
+                    });
+//                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
     private boolean schummelnAktiv = false;
+
     // TODO schummeln
-    private void startSchummeln(){
+    private void startSchummeln() {
         // if active user is the user, return
-        if(actualUser == null || actualUser.getId() == GlobalGameSettings.getCurrent().getPlayerId())
+        if (actualUser == null || actualUser.getId() == GlobalGameSettings.getCurrent().getPlayerId())
             return;
 
         schummelnAktiv = true;
@@ -204,7 +245,7 @@ public class GameTurnsActivity extends AppCompatActivity {
 
     // todo handle schummeln
     private void endSchummeln() {
-        if(!schummelnAktiv)
+        if (!schummelnAktiv)
             return;
 
         // todo aktuell durch schummeln angezeigtes schiff finden
@@ -306,6 +347,10 @@ public class GameTurnsActivity extends AppCompatActivity {
         gView[i][j].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // check if the game finished
+                if (GlobalGameSettings.getCurrent().isGameFinished())
+                    return;
+
                 final GameBoardImageView v = (GameBoardImageView) view;
                 Log.i("fish", "" + v.getBoardCol() + v.getBoardRow());
                 //controlls the returnvalue of controller.shotOnEnemy
@@ -366,5 +411,12 @@ public class GameTurnsActivity extends AppCompatActivity {
                 break;
         }
         return drawable;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (controller != null)
+            controller.cleanup();
+        super.onBackPressed();
     }
 }
