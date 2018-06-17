@@ -111,4 +111,7 @@ public class GameController {
     }
 
 
+    public void registerForWinningInfos(CallbackObject<User> winnerCallback) {
+        communicator.registerForWinnerInfos(winnerCallback);
+    }
 }

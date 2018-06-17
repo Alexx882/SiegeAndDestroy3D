@@ -28,8 +28,6 @@ public class BattleArea implements Serializable {
     @JsonIgnore
     private BattleAreaTile[][] battleAreaTiles;
 
-    private List<BasicShip> placedShips;
-
     /**
      * empty constructor for json mapping
      */
@@ -59,7 +57,6 @@ public class BattleArea implements Serializable {
         this.rows = nRows;
         this.columns = nColumns;
         this.battleAreaTiles = new BattleAreaTile[nRows][nColumns];
-        this.placedShips = new ArrayList<>(GlobalGameSettings.getCurrent().getNumberShips());
 
         // init tiles with water
         for (int i = 0; i < nRows; ++i)
@@ -202,7 +199,6 @@ public class BattleArea implements Serializable {
 
             // assign tile to the ship
             shipToPlace.getTiles()[i] = currentTile;
-            placedShips.add(shipToPlace);
 
             // update coordinates for next tile
             if (horizontalPlacement)
@@ -213,16 +209,16 @@ public class BattleArea implements Serializable {
     }
 
     /**
-     * Counts how many living ships remain on the area.
+     * Counts how many living tiles remain on the area.
      *
-     * @return Number of living ships.
+     * @return Number of remaining tiles.
      */
-    public int remainingShips() {
+    public int remainingFields() {
         int cnt = 0;
-        for (BasicShip ship : placedShips) {
-            if (ship.isAlive())
-                ++cnt;
-        }
+        for (BattleAreaTile[] row : battleAreaTiles)
+            for (BattleAreaTile t : row)
+                if (t.isAlive())
+                    ++cnt;
 
         return cnt;
     }

@@ -27,6 +27,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WinnerDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
@@ -45,6 +46,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     // callbacks
     private CallbackObject<List<String>> userCallBack;
     CallbackObject<User> turnInfoUpdateCallback;
+    private CallbackObject<User> winnerCallback;
 
     private Activity activity;
 
@@ -294,6 +296,8 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         hitType = serverController.checkShot(hitType);
         ClientData client = clientDataMap.get(hitType.getClientId());
         sendToClient(client, hitType);
+
+        checkPossibleWinning();
     }
 
     @Override
@@ -341,12 +345,33 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         hitType.setyCoordinates(col);
         hitType = serverController.checkShot(hitType);
         callback.callback(hitType);
+
+        checkPossibleWinning();
+    }
+
+    private void checkPossibleWinning() {
+        User winner = serverController.checkForWinner();
+        if (winner != null) {
+            // we have a winner :D
+            WinnerDTO wdto = new WinnerDTO();
+            wdto.setWinner(winner);
+
+            sendToAllClients(wdto);
+
+            if (winnerCallback != null)
+                winnerCallback.callback(winner);
+        }
     }
 
     @Override
     public void sendFinish() {
         FinishRoundDTO finish = new FinishRoundDTO();
         handleFinishRoundRequest(finish);
+    }
+
+    @Override
+    public void registerForWinnerInfos(CallbackObject<User> winnerCb) {
+        winnerCallback = winnerCb;
     }
 
     @Override
