@@ -6,7 +6,7 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
 @JsonObject
-public class FinishRoundDTO extends RequestDTO {
+public class FirstUserDTO extends RequestDTO {
     @JsonField
     private User u;
 

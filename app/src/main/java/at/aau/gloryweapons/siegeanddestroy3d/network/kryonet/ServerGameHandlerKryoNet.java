@@ -18,6 +18,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FirstUserDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
@@ -42,6 +43,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     // callbacks
     private CallbackObject<List<String>> userCallBack;
     CallbackObject<User> turnInfoUpdateCallback;
+    private CallbackObject<User> firstUserCallback;
 
     private Activity activity;
 
@@ -133,13 +135,23 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
             handleGameConfigRequest((GameConfigurationRequestDTO) receivedObject);
         } else if (receivedObject instanceof FinishRoundDTO) {
             handleFinishRoundRequest((FinishRoundDTO) receivedObject);
+        } else if (receivedObject instanceof FirstUserDTO) {
+            handleFirstUserRequest((FirstUserDTO)receivedObject);
         } else {
             Log.e(this.getClass().getName(), "cannot cast class");
         }
     }
 
+    private void handleFirstUserRequest (FirstUserDTO first)
+    {
+        first.setU(serverController.getUserForFirstTurn());
+        sendToClient(clientDataMap.get(first.getClientId()),first);
+    }
+
     private void handleFinishRoundRequest(FinishRoundDTO finish) {
-        sendNextTurnInfo();
+       User u = sendNextTurnInfo();
+       finish.setU(u);
+       sendToAllClients(finish);
     }
 
 
@@ -225,7 +237,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     /**
      * Sends the info about the next turn to the clients.
      */
-    private void sendNextTurnInfo() {
+    private User sendNextTurnInfo() {
         User nextUser = serverController.getUserForNextTurn();
 
         TurnInfoDTO turnInfo = new TurnInfoDTO();
@@ -234,6 +246,8 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         sendToAllClients(turnInfo);
         //send to server
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
+
+        return nextUser;
     }
 
     /**
@@ -324,8 +338,19 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     }
 
     @Override
-    public void sendFinish() {
+    public void sendFinish(CallbackObject<User> user) {
         FinishRoundDTO finish = new FinishRoundDTO();
-        handleFinishRoundRequest(finish);
+
+        User u = sendNextTurnInfo();
+        user.callback(u);
+        finish.setU(u);
+        sendToAllClients(finish);
+    }
+
+    @Override
+    public void sendFirstUserRequestToServer(CallbackObject<User> user) {
+        User u = new User();
+        u.setUser(serverController.getUserForFirstTurn());
+        user.callback(u);
     }
 }

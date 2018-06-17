@@ -36,12 +36,14 @@ public class GameTurnsActivity extends AppCompatActivity {
     private User actualUser = null;
     private BattleArea actualBattleArea = null;
     private boolean shooting = false;
+    TextView userTurn = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enemy_turn);
         GameBoardImageView[][] visualBoard = null;
+        userTurn =(TextView)findViewById(R.id.textViewUserTurn);
         // receive and set parameters
         gameSettings = (GameConfiguration) getIntent().getExtras().get(GameConfiguration.INTENT_KEYWORD);
         GlobalGameSettings.setCurrent((GlobalGameSettings) getIntent().getExtras().get(GlobalGameSettings.INTENT_KEYWORD));
@@ -52,10 +54,25 @@ public class GameTurnsActivity extends AppCompatActivity {
 
         final int nRows = GlobalGameSettings.getCurrent().getNumberRows();
         final int nCols = GlobalGameSettings.getCurrent().getNumberColumns();
+
+        controller.getStartingUser(new CallbackObject<User>() {
+            @Override
+            public void callback(final User param) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        userTurn.setText(param.getName());
+                    }
+                });
+
+            }
+        });
         //gets the right user
         for (User u : gameSettings.getUserList()) {
             if (u.getId() == GlobalGameSettings.getCurrent().getPlayerId()) {
                 actualUser = u;
+
             }
         }
 
@@ -67,6 +84,7 @@ public class GameTurnsActivity extends AppCompatActivity {
             }
         }
 
+
         //sets the OnClickListener for the Button to end the turn
         Button button = findViewById(R.id.buttonUpadteWater);
         button.setOnClickListener(new View.OnClickListener() {
@@ -74,6 +92,19 @@ public class GameTurnsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (!controller.endTurn()) {
                     Toast.makeText(GameTurnsActivity.this, "first finish your turn", Toast.LENGTH_SHORT).show();
+                }
+                else{
+
+                    User user= new User();
+                    for(User u :gameSettings.getUserList())
+                    {
+                        if(u.getId()==GlobalGameSettings.getCurrent().getUserOfCurrentTurn().getId())
+                        {
+                            userTurn.setText(u.getName());
+                        }
+                    }
+
+
                 }
             }
         });
@@ -144,7 +175,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         cheatListener.registerForChanges(new CallbackObject<Boolean>() {
             @Override
             public void callback(Boolean param) {
-                if (param == true) {
+                if (param) {
                     Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_SHORT).show();
                 }
             }

@@ -24,4 +24,5 @@ public interface NetworkCommunicatorServer {
      */
     public int getNumberOfConnectedPlayers();
 
+
 }

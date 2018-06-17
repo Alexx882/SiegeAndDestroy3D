@@ -61,7 +61,16 @@ public interface NetworkCommunicatorClient {
 
     /**
      * ends the turn
+     *
+     * @param user
      */
-    public void sendFinish();
+    public void sendFinish(CallbackObject<User> user);
+
+    /**
+     * ask for the starting user
+     *
+     * @param user
+     */
+    public void sendFirstUserRequestToServer(CallbackObject<User> user);
 
 }

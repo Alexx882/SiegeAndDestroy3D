@@ -24,12 +24,13 @@ public class GameController {
     }
 
     /**
-     * @param game
+     * checks the shot
+     *
      * @param enemyArea
      * @param enemy
      * @param col
      * @param row
-     * @return
+     * @param callback
      */
     public void shotOnEnemy(final BattleArea enemyArea, User enemy, final int col, final int row, final CallbackObject<ReturnObject> callback) {
 
@@ -100,11 +101,33 @@ public class GameController {
     public boolean endTurn() {
         if (shotsFired == GlobalGameSettings.getCurrent().getNumberShots()) {
             shotsFired = 0;
-            communicator.sendFinish();
+            CallbackObject<User> userCallback =new CallbackObject<User>() {
+                @Override
+                public void callback(User param) {
+
+                }
+            };
+            communicator.sendFinish(userCallback);
 
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     *
+     * @param callback
+     */
+    public void getStartingUser(final CallbackObject<User> callback) {
+        CallbackObject<User> userCallback = new CallbackObject<User>() {
+            @Override
+            public void callback(User param) {
+                callback.callback(param);
+            }
+        };
+        communicator.sendFirstUserRequestToServer(userCallback);
+
+
     }
 }

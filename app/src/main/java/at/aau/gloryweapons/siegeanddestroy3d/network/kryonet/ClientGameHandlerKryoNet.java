@@ -16,6 +16,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FirstUserDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.RequestDTO;
@@ -40,6 +41,8 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private CallbackObject<User> userNameCallback;
     private CallbackObject<TurnDTO> shotHitCallback;
     private CallbackObject<GameConfiguration> gameConfigCallback;
+    private CallbackObject<User> firstUserCallback;
+    private CallbackObject<User> actuelUserCallback;
 
     private static ClientGameHandlerKryoNet instance;
 
@@ -92,9 +95,17 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     }
 
     @Override
-    public void sendFinish() {
-        FinishRoundDTO finish =new FinishRoundDTO();
+    public void sendFinish(CallbackObject<User> user) {
+        actuelUserCallback = user;
+        FinishRoundDTO finish = new FinishRoundDTO();
         sendToServer(finish);
+    }
+
+    @Override
+    public void sendFirstUserRequestToServer(CallbackObject<User> user) {
+        FirstUserDTO first = new FirstUserDTO();
+        firstUserCallback = user;
+        sendToServer(first);
     }
 
     @Override
@@ -128,7 +139,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
                     handshakeDTO.setConnectionEstablished(true);
                     sendToServer(handshakeDTO);
                 } catch (IOException ex) {
-                   Log.e("KryoClient", "Error", ex);
+                    Log.e("KryoClient", "Error", ex);
                 }
             }
         }.start();
@@ -155,9 +166,26 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
                         shotHitCallback.callback((TurnDTO) receivedObject);
                 } else if (receivedObject instanceof TurnInfoDTO) {
                     handleTurnInfo((TurnInfoDTO) receivedObject);
+                } else if (receivedObject instanceof FirstUserDTO) {
+                    handleFirstUser((FirstUserDTO) receivedObject);
+                } else if (receivedObject instanceof FinishRoundDTO) {
+                    handleFinishRound((FinishRoundDTO) receivedObject);
                 }
             }
         });
+    }
+
+    private void handleFinishRound(FinishRoundDTO finish) {
+        if (actuelUserCallback != null) {
+            actuelUserCallback.callback(finish.getU());
+        }
+    }
+
+    private void handleFirstUser(FirstUserDTO first) {
+        if (firstUserCallback != null) {
+            firstUserCallback.callback(first.getU());
+        }
+
     }
 
     private void handleUserResponse(UserNameResponseDTO user) {
@@ -181,6 +209,9 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private void handleTurnInfo(TurnInfoDTO receivedObject) {
         // save info in GGS
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(receivedObject.getPlayerNextTurn());
+        if (actuelUserCallback != null) {
+            actuelUserCallback.callback(receivedObject.getPlayerNextTurn());
+        }
     }
 
     private void sendToServer(final RequestDTO object) {

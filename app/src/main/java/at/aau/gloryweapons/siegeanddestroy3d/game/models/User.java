@@ -37,4 +37,9 @@ public class User implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    public void setUser(User u) {
+        this.name = u.getName();
+        this.id = u.getId();
+    }
 }
