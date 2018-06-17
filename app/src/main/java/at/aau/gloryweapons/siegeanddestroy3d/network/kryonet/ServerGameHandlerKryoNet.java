@@ -323,10 +323,9 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     @Override
     public void resetNetwork() {
-        kryoServer = null;
-        activity = null;
-        serverController = null;
-        instance = null;
+        // todo reset and restart kryo
+        if (clientDataMap != null)
+            clientDataMap.clear();
     }
 
     /**

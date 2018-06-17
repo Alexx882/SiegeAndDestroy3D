@@ -81,8 +81,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     @Override
     public void resetNetwork() {
-        kryoClient = null;
-        instance = null;
+        // todo reset and restart kryo
     }
 
     @Override
