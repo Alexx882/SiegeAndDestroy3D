@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.TileTypeConverter;
 
 /**
@@ -27,46 +28,12 @@ public class BattleArea implements Serializable {
     @JsonIgnore
     private BattleAreaTile[][] battleAreaTiles;
 
-    @JsonField
-    private List<BattleAreaTile[]> forJsonBattleAreaTiles;
-
-    /**
-     *Hack for LoganSquare JSON
-     * @return      List<BattleAreaTile[]>
-     */
-    public List<BattleAreaTile[]> getForJsonBattleAreaTiles() {
-        if (battleAreaTiles == null){
-           return new ArrayList<>();
-        }
-        if (forJsonBattleAreaTiles == null){
-            forJsonBattleAreaTiles = new ArrayList<>();
-        }else {
-            forJsonBattleAreaTiles.clear();
-        }
-
-        for (int i = 0; i < battleAreaTiles.length; i++) {
-            forJsonBattleAreaTiles.add(battleAreaTiles[i]);
-        }
-        return forJsonBattleAreaTiles;
-    }
-
-    /**
-     * Hack for LoganSquare JSON
-     */
-    public void setForJsonBattleAreaTiles(List<BattleAreaTile[]> forJsonBattleAreaTiles) {
-        if (battleAreaTiles == null){
-            battleAreaTiles = new BattleAreaTile[rows][columns];
-        }
-        this.forJsonBattleAreaTiles = forJsonBattleAreaTiles;
-        for (int i = 0; i < battleAreaTiles.length; i++) {
-            battleAreaTiles[i] = forJsonBattleAreaTiles.get(i);
-        }
-    }
+    private List<BasicShip> placedShips;
 
     /**
      * empty constructor for json mapping
      */
-    public BattleArea(){
+    public BattleArea() {
 
     }
 
@@ -92,6 +59,7 @@ public class BattleArea implements Serializable {
         this.rows = nRows;
         this.columns = nColumns;
         this.battleAreaTiles = new BattleAreaTile[nRows][nColumns];
+        this.placedShips = new ArrayList<>(GlobalGameSettings.getCurrent().getNumberShips());
 
         // init tiles with water
         for (int i = 0; i < nRows; ++i)
@@ -234,6 +202,7 @@ public class BattleArea implements Serializable {
 
             // assign tile to the ship
             shipToPlace.getTiles()[i] = currentTile;
+            placedShips.add(shipToPlace);
 
             // update coordinates for next tile
             if (horizontalPlacement)
@@ -241,5 +210,20 @@ public class BattleArea implements Serializable {
             else
                 ++rowToPlace;
         }
+    }
+
+    /**
+     * Counts how many living ships remain on the area.
+     *
+     * @return Number of living ships.
+     */
+    public int remainingShips() {
+        int cnt = 0;
+        for (BasicShip ship : placedShips) {
+            if (ship.isAlive())
+                ++cnt;
+        }
+
+        return cnt;
     }
 }

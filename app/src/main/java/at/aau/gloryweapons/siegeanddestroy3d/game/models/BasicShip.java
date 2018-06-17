@@ -27,10 +27,7 @@ public class BasicShip implements Serializable {
 
     @JsonField(name = "h")
     private boolean horizontal = true;
-/*
-    @JsonField
-    private List<BattleAreaTile> forJsonTile;
-*/
+
     public BasicShip(int userId, int length, boolean horizontal) {
         this.userId = userId;
         this.length = length;
@@ -38,21 +35,9 @@ public class BasicShip implements Serializable {
         this.horizontal = horizontal;
     }
 
-    public BasicShip(){
-    }
-/*
-    public List<BattleAreaTile> getForJsonTile() {
-        if (tiles != null){
-            forJsonTile = new ArrayList<>(Arrays.asList(tiles));
-            }
-          return forJsonTile;
+    public BasicShip() {
     }
 
-    public void setForJsonTile(List<BattleAreaTile> forJsonTile) {
-        this.forJsonTile = forJsonTile;
-        tiles = this.forJsonTile.toArray(new BattleAreaTile[forJsonTile.size()]);
-    }
-*/
     public int getUserId() {
         return userId;
     }
@@ -72,7 +57,7 @@ public class BasicShip implements Serializable {
     /**
      * Toggles the orientation from horizontal to vertical and vice versa.
      */
-    public void toggleOrientation(){
+    public void toggleOrientation() {
         this.horizontal = !this.horizontal;
     }
 
@@ -90,5 +75,19 @@ public class BasicShip implements Serializable {
 
     public void setTiles(BattleAreaTile[] tiles) {
         this.tiles = tiles;
+    }
+
+    /**
+     * Checks if the ship is still alive.
+     *
+     * @return True if at least one Tile is not destroyed.
+     */
+    public boolean isAlive() {
+        for (BattleAreaTile t : tiles) {
+            if (t != null && t.getType() != BattleAreaTile.TileType.SHIP_DESTROYED)
+                return true;
+        }
+
+        return false;
     }
 }
