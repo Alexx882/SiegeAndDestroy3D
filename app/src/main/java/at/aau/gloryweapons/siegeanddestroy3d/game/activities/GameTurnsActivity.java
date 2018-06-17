@@ -164,10 +164,54 @@ public class GameTurnsActivity extends AppCompatActivity {
             @Override
             public void callback(Boolean param) {
                 if (param == true) {
+                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_LONG).show();
+                    // to avoid exceptions
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            startSchummeln();
+                        }
+                    });
+                }
+                else{runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        endSchummeln();
+                    }
+                });
                     Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    private boolean schummelnAktiv = false;
+    // TODO schummeln
+    private void startSchummeln(){
+        // if active user is the user, return
+        if(actualUser == null || actualUser.getId() == GlobalGameSettings.getCurrent().getPlayerId())
+            return;
+
+        schummelnAktiv = true;
+        User aktiverUser = actualUser;
+
+        // todo schwächstes schiff finden
+
+        // todo schiff anzeigen
+
+        // todo senden an den server, dass thisUser geschummelt hat
+    }
+
+    // todo handle schummeln
+    private void endSchummeln() {
+        if(!schummelnAktiv)
+            return;
+
+        // todo aktuell durch schummeln angezeigtes schiff finden
+
+        // todo schiff wieder verstecken
+
+        // todo server informieren dass schummeln beendet fuer timeout
     }
 
     @Override
