@@ -53,7 +53,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         GlobalGameSettings.getCurrent().setNumberShots(gameSettings.getShots());
 
         board = new BoardRenderer(this);
-        controller = new GameController();
+        controller = new GameController(quitGameMessage());
 
         final int nRows = GlobalGameSettings.getCurrent().getNumberRows();
         final int nCols = GlobalGameSettings.getCurrent().getNumberColumns();
@@ -130,6 +130,22 @@ public class GameTurnsActivity extends AppCompatActivity {
 
         textViewWinner = findViewById(R.id.textViewWinner);
         registerForWinningInfos();
+    }
+
+    private CallbackObject<Boolean> quitGameMessage() {
+        CallbackObject<Boolean> quitGameCallback = new CallbackObject<Boolean>() {
+            @Override
+            public void callback(Boolean param) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(GameTurnsActivity.this, "Der Server hat die Verbindung beendet!", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                });
+            }
+        };
+        return quitGameCallback;
     }
 
     private void registerForWinningInfos() {

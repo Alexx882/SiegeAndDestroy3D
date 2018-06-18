@@ -2,6 +2,7 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -20,6 +21,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionRespons
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.QuitGame;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.RequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
@@ -43,6 +45,8 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private CallbackObject<GameConfiguration> gameConfigCallback;
     private CallbackObject<User> cheaterSuspicionCallback;
     private CallbackObject<User> winnerCallback;
+    private CallbackObject<Boolean> quitCallback;
+    private Activity activity;
 
     private static ClientGameHandlerKryoNet instance;
 
@@ -81,7 +85,12 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     @Override
     public void resetNetwork() {
-        // todo reset and restart kryo
+        if (kryoClient.isConnected()){
+            QuitGame quitGame = new QuitGame();
+            sendToServer(quitGame);
+            kryoClient.close();
+            kryoClient.stop();
+        }
     }
 
     @Override
@@ -112,9 +121,15 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         sendToServer(cheaterSuspicionDTO);
     }
 
+    @Override
+    public void registerQuitInfo(CallbackObject<Boolean> quitCallback) {
+        this.quitCallback = quitCallback;
+    }
+
 
     @Override
     public void initClientGameHandler(final String ip, Activity activity, CallbackObject<HandshakeDTO> isConnectedCallback) {
+        this.activity = activity;
         GlobalGameSettings.getCurrent().setServer(false);
         this.isConnectedCallback = isConnectedCallback;
 
@@ -172,11 +187,19 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
                     handleCheatingSuspicionResponse((CheaterSuspicionResponseDTO) receivedObject);
                 } else if (receivedObject instanceof WinnerDTO) {
                     handleWinnerInfo((WinnerDTO) receivedObject);
+                } else if(receivedObject instanceof QuitGame){
+                    handleQuitGame();
                 } else {
                     Log.e(this.getClass().getName(), "Cannot read object: " + receivedObject.getClass().getName());
                 }
             }
         });
+    }
+
+    private void handleQuitGame() {
+        quitCallback.callback(true);
+        kryoClient.close();
+        kryoClient.stop();
     }
 
     private void handleCheatingSuspicionResponse(CheaterSuspicionResponseDTO receivedObject) {
