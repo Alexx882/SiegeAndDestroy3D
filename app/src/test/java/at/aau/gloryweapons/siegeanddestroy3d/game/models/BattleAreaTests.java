@@ -272,4 +272,92 @@ public class BattleAreaTests {
         Assert.assertTrue(ship.getTiles()[0].equals(tiles[1][1]));
         Assert.assertTrue(ship.getTiles()[1].equals(tiles[2][1]));
     }
+
+    @Test
+    public void canShipBePlaced_EmptyBoard_Valid() {
+        // vertical
+        BasicShip vertShip = new BasicShip(-1, 2, false);
+        Assert.assertTrue(area.canShipBePlaced(vertShip, 0, 0));
+        Assert.assertTrue(area.canShipBePlaced(vertShip, 0, 1));
+        Assert.assertTrue(area.canShipBePlaced(vertShip, 2, 2));
+
+        // horizontal
+        BasicShip horShip = new BasicShip(-1, 2, true);
+        Assert.assertTrue(area.canShipBePlaced(horShip, 0, 0));
+        Assert.assertTrue(area.canShipBePlaced(horShip, 1, 0));
+        Assert.assertTrue(area.canShipBePlaced(horShip, 2, 2));
+    }
+
+    @Test
+    public void canShipBePlaced_ShipOnBoard_Valid() {
+        // place another ship to block a part of the area
+        BasicShip blockShip = new BasicShip(-1, 2, true);
+        area.placeShip(blockShip, 0, 0);
+
+        BasicShip horShip = new BasicShip(-1, 2, true);
+        Assert.assertTrue(area.canShipBePlaced(horShip, 1, 0));
+        Assert.assertTrue(area.canShipBePlaced(horShip, 3, 1));
+        Assert.assertTrue(area.canShipBePlaced(horShip, 0, 2));
+    }
+
+    @Test
+    public void canShipBePlaced_EmptyBoard_Invalid() {
+        // vertical
+        BasicShip vertShip = new BasicShip(-1, 2, false);
+        Assert.assertFalse(area.canShipBePlaced(vertShip, -1, 0));
+        Assert.assertFalse(area.canShipBePlaced(vertShip, 0, -1));
+        Assert.assertFalse(area.canShipBePlaced(vertShip, 3, 0));
+
+        // vertical
+        BasicShip horShip = new BasicShip(-1, 2, true);
+        Assert.assertFalse(area.canShipBePlaced(horShip, -1, 0));
+        Assert.assertFalse(area.canShipBePlaced(horShip, 0, -1));
+        Assert.assertFalse(area.canShipBePlaced(horShip, 0, 3));
+    }
+
+    @Test
+    public void canShipBePlaced_ShipOnBoard_Invalid() {
+        // place another ship to block a part of the area
+        BasicShip blockShip = new BasicShip(-1, 2, true);
+        area.placeShip(blockShip, 0, 0);
+
+        BasicShip horShip = new BasicShip(-1, 2, true);
+        Assert.assertFalse(area.canShipBePlaced(horShip, 0, 0));
+        Assert.assertFalse(area.canShipBePlaced(horShip, 0, 1));
+    }
+
+    @Test
+    public void remainingFields_empty() {
+        Assert.assertEquals(0, area.remainingFields());
+    }
+
+    @Test
+    public void remainingFields_singleShip() {
+        BasicShip ship = new BasicShip(-1, 2, true);
+        area.placeShip(ship, 0, 0);
+        Assert.assertEquals(2, area.remainingFields());
+    }
+
+    @Test
+    public void remainingFields_partiallyDestroyedShip() {
+        BasicShip ship = new BasicShip(-1, 2, true);
+        area.placeShip(ship, 0, 0);
+
+        // set a tile to hit
+        area.getBattleAreaTiles()[0][1].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+
+        Assert.assertEquals(1, area.remainingFields());
+    }
+
+    @Test
+    public void remainingFields_destroyedShip() {
+        BasicShip ship = new BasicShip(-1, 2, true);
+        area.placeShip(ship, 0, 0);
+
+        // set all tiles to hit
+        area.getBattleAreaTiles()[0][0].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+        area.getBattleAreaTiles()[0][1].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+
+        Assert.assertEquals(0, area.remainingFields());
+    }
 }

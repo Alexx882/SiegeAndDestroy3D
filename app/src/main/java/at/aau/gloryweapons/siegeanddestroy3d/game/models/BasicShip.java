@@ -36,6 +36,7 @@ public class BasicShip implements Serializable {
     }
 
     public BasicShip() {
+        this.tiles = new BattleAreaTile[0];
     }
 
     public int getUserId() {
@@ -75,19 +76,5 @@ public class BasicShip implements Serializable {
 
     public void setTiles(BattleAreaTile[] tiles) {
         this.tiles = tiles;
-    }
-
-    /**
-     * Checks if the ship is still alive.
-     *
-     * @return True if at least one Tile is not destroyed.
-     */
-    public boolean isAlive() {
-        for (BattleAreaTile t : tiles) {
-            if (t != null && t.getType() != BattleAreaTile.TileType.SHIP_DESTROYED)
-                return true;
-        }
-
-        return false;
     }
 }
