@@ -1,31 +1,17 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonIgnore;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.TileTypeConverter;
 
 /**
  * Created by Alexander on 05.04.2018.
  */
-@JsonObject(serializeNullObjects = true, serializeNullCollectionElements = true)
 public class BattleArea implements Serializable {
-    @JsonField
     private int userId;
 
-    @JsonField
     private int rows;
 
-    @JsonField
     private int columns;
 
-    @JsonIgnore
     private BattleAreaTile[][] battleAreaTiles;
 
     /**
