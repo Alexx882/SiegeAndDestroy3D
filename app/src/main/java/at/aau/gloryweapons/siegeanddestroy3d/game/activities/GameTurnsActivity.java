@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
@@ -215,12 +217,13 @@ public class GameTurnsActivity extends AppCompatActivity {
      * register Sensors
      */
     public void useSensorsforCheating() {
+
         cheatListener = new CheatEventListener(this);
         cheatListener.registerForChanges(new CallbackObject<Boolean>() {
             @Override
             public void callback(Boolean param) {
-                if (param == true) {
-//                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_SHORT).show();
+                if (param == true && !schummelnAktiv) {
+
                     // to avoid exceptions
                     runOnUiThread(new Runnable() {
                         @Override
@@ -243,14 +246,37 @@ public class GameTurnsActivity extends AppCompatActivity {
 
     private boolean schummelnAktiv = false;
 
+    /**
+     * startet timer der endSchummeln nach cooldownInMs ms aufruft
+     * @param cooldownInMs
+     */
+    private void schummelCooldown(long cooldownInMs) {
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                endSchummeln();
+            }
+        };
+
+        Timer timer = new Timer();
+        timer.schedule(task, cooldownInMs);
+    }
+
     // TODO schummeln
     private void startSchummeln() {
         // if active user is the user, return
-        if (actualUser == null || actualUser.getId() == GlobalGameSettings.getCurrent().getPlayerId())
+        if (actualUser == null || actualUser.getId() == GlobalGameSettings.getCurrent().getPlayerId()) {
+            Toast.makeText(this, "Du kannst dich nicht selbst beschummeln!", Toast.LENGTH_SHORT);
             return;
+        }
+
+        Toast.makeText(this, "schummeln aktiv", Toast.LENGTH_SHORT);
 
         schummelnAktiv = true;
         User aktiverUser = actualUser;
+
+        //set cooldown
+        schummelCooldown(2000);
 
         // todo schwächstes schiff finden
 
