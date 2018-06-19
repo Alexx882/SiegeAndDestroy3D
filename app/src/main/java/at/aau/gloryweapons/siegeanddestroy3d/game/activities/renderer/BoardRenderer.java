@@ -6,7 +6,6 @@ import android.view.Gravity;
 import android.widget.GridLayout;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 
 /**
  * Renderer for the visual boards.
@@ -14,7 +13,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 public class BoardRenderer {
     private Context contextActivity;
 
-    public BoardRenderer(AppCompatActivity contextActivity) {
+    public BoardRenderer(Context contextActivity) {
         if (contextActivity == null)
             throw new IllegalArgumentException("contextActivity");
 
