@@ -1,9 +1,5 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.activities;
 
-import android.app.ActivityManager;
-import android.content.ComponentName;
-import android.content.Context;
-import android.provider.Settings;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
@@ -13,18 +9,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.controllers.GameController;
-import at.aau.gloryweapons.siegeanddestroy3d.game.activities.renderer.BoardRenderer;
-import at.aau.gloryweapons.siegeanddestroy3d.game.controllers.GlobalPlayer;
+import at.aau.gloryweapons.siegeanddestroy3d.game.activities.renderer.BoardRenderer;;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 
@@ -161,23 +154,12 @@ public class GameTurnsActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         cheatListener.unregisterSensors();
-        Context context = getApplicationContext();
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
-        if (!taskInfo.isEmpty()) {
-            ComponentName topActivity = taskInfo.get(0).topActivity;
-            if (!topActivity.getPackageName().equals(context.getPackageName())) {
-                //StopPlayer();
-                Toast.makeText(GameTurnsActivity.this, "YOU LEFT YOUR APP. MUSIC STOP", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         cheatListener.registerSensors();
-       // GlobalPlayer.StartPlayer();
     }
 
     /**
