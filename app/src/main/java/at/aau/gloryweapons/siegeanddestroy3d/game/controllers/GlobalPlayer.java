@@ -7,7 +7,7 @@ import android.view.View;
 
 import at.aau.gloryweapons.siegeanddestroy3d.R;
 
-public class GlobalPlayer extends AppCompatActivity {
+/*public class GlobalPlayer extends AppCompatActivity {
 
     public MediaPlayer mPlayer;
 
@@ -19,7 +19,7 @@ public class GlobalPlayer extends AppCompatActivity {
     }
 
     public void StartPlayer(View view){
-        MediaPlayer mPlayer = MediaPlayer.create(getApplicationContext(),R.raw.themesong);
+   //     MediaPlayer mPlayer = MediaPlayer.create(getApplicationContext(),R.raw.themesong);
 
         mPlayer.start();
 
@@ -32,4 +32,4 @@ public class GlobalPlayer extends AppCompatActivity {
             mPlayer.stop();//Stop playing the music
         }
     }
-}
+}*/
