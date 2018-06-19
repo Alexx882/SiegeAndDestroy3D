@@ -65,6 +65,9 @@ public class PlacementActivity extends AppCompatActivity {
             communicator = ServerGameHandlerKryoNet.getInstance();
         else
             communicator = ClientGameHandlerKryoNet.getInstance();
+            communicator.registerQuitInfo(quitGameMessage());
+
+
     }
 
     /**
@@ -343,6 +346,23 @@ public class PlacementActivity extends AppCompatActivity {
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
+
+    private CallbackObject<Boolean> quitGameMessage() {
+        CallbackObject<Boolean> quitGameCallback = new CallbackObject<Boolean>() {
+            @Override
+            public void callback(Boolean param) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showToast("Der Server hat die Verbindung beendet");
+                        onBackPressed();
+                    }
+                });
+            }
+        };
+        return quitGameCallback;
+    }
+
 
     @Override
     public void onBackPressed() {

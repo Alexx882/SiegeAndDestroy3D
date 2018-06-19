@@ -22,6 +22,11 @@ public class GameController {
                 : ClientGameHandlerKryoNet.getInstance();
     }
 
+    public GameController(CallbackObject<Boolean> endGame) {
+        this();
+        communicator.registerQuitInfo(endGame);
+    }
+
     /**
      * @param enemyArea
      * @param enemy

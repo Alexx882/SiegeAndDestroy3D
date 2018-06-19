@@ -18,6 +18,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.QuitGame;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.RequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.ResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
@@ -60,5 +61,6 @@ public class KryonetHelper {
         kryo.register(CheaterSuspicionDTO.class);
         kryo.register(CheaterSuspicionResponseDTO.class);
         kryo.register(WinnerDTO.class);
+        kryo.register(QuitGame.class);
     }
 }
