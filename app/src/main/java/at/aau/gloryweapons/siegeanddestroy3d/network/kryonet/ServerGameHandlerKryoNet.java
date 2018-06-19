@@ -1,6 +1,7 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
+import android.os.Handler;
 import android.util.Log;
 
 import com.esotericsoftware.kryonet.Client;
@@ -23,6 +24,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionRespons
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.QuitGame;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
@@ -323,9 +325,26 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     @Override
     public void resetNetwork() {
-        // todo reset and restart kryo
-        if (clientDataMap != null)
-            clientDataMap.clear();
+        sendQuitGame();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (clientDataMap != null){
+                    clientDataMap.clear();
+                }
+                kryoServer.close();
+                kryoServer.stop();
+                GlobalGameSettings.getCurrent().setServer(false);
+                instance = new ServerGameHandlerKryoNet();
+
+            }
+        }, 2000);
+
+    }
+
+    private void sendQuitGame() {
+        QuitGame quitGame = new QuitGame();
+        sendToAllClients(quitGame);
     }
 
     /**
@@ -378,6 +397,11 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         //TODO handle cheating suspicion
         // user suspend check
         // callback.callback(user);
+    }
+
+    @Override
+    public void registerQuitInfo(CallbackObject<Boolean> callback) {
+
     }
 
 }

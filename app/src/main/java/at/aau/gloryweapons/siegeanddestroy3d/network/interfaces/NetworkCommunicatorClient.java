@@ -75,4 +75,9 @@ public interface NetworkCommunicatorClient {
      * sends a request to the server, if another player cheats
      */
     public void sendCheatingSuspicion(CallbackObject<User> callback);
+
+    /**
+     * Registration of the callback if the server is closed.
+     */
+    public void registerQuitInfo(CallbackObject<Boolean> callback);
 }
