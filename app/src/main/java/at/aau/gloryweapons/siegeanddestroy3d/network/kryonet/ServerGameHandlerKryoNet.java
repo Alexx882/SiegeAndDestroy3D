@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Handler;
 import android.util.Log;
 
-import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -20,7 +19,6 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
@@ -30,7 +28,6 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WinnerDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
@@ -238,7 +235,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.w("KryoServer", e.getMessage(), e);
         }
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
     }

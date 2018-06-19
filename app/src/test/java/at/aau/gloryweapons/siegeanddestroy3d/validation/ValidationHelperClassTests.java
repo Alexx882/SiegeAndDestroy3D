@@ -44,6 +44,11 @@ public class ValidationHelperClassTests {
         Assert.assertEquals(false, ValidationHelperClass.isServerIpValid("192.168.-1.1"));
 
         Assert.assertEquals(false, ValidationHelperClass.isServerIpValid("Peter"));
+
+        Assert.assertFalse(ValidationHelperClass.isServerIpValid("192.168.1.1."));
+
+        Assert.assertFalse(ValidationHelperClass.isServerIpValid("192.168.hans.1"));
+        Assert.assertFalse(ValidationHelperClass.isServerIpValid("k.168.0.1"));
     }
 
     @Test
