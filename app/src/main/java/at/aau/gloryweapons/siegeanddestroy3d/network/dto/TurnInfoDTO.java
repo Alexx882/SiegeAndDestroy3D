@@ -6,10 +6,6 @@ public class TurnInfoDTO {
 
     private User playerNextTurn;
 
-    public TurnInfoDTO() {
-
-    }
-
     public User getPlayerNextTurn() {
         return this.playerNextTurn;
     }

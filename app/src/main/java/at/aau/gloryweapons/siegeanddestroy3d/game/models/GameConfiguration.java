@@ -12,10 +12,6 @@ public class GameConfiguration implements Serializable {
 
     private int shots;
 
-    public GameConfiguration() {
-
-    }
-
     public void setBattleAreaList(List<BattleArea> battleAreas) {
         this.battleAreaList = battleAreas;
     }

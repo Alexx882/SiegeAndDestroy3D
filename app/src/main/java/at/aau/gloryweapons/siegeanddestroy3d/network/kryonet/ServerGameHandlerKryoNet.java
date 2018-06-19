@@ -233,7 +233,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.w("KryoServer", e.getMessage(), e);
         }
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
     }
