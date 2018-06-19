@@ -49,4 +49,11 @@ dependencies {
     // https://mvnrepository.com/artifact/de.javakaffee/kryo-serializers
     implementation 'de.javakaffee:kryo-serializers:0.26'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.+'
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 }

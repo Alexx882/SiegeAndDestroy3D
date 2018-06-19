@@ -1,5 +1,8 @@
 package at.aau.gloryweapons.siegeanddestroy3d;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,8 +12,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.PlacementActivity;
+import at.aau.gloryweapons.siegeanddestroy3d.game.controllers.GlobalPlayer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
@@ -179,5 +186,27 @@ public class JoinGameActivity extends AppCompatActivity {
             clientCommunicator.resetNetwork();
         }
         super.onBackPressed();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        Context context = getApplicationContext();
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+        if (!taskInfo.isEmpty()) {
+            ComponentName topActivity = taskInfo.get(0).topActivity;
+            if (!topActivity.getPackageName().equals(context.getPackageName())) {
+           //     GlobalPlayer.StopPlayer();
+                Toast.makeText(JoinGameActivity.this, "YOU LEFT YOUR APP. MUSIC STOP", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+       // GlobalPlayer.StartPlayer();
     }
 }

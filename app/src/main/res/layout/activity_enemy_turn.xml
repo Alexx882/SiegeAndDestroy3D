@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    tools:context="at.aau.gloryweapons.siegeanddestroy3d.game.activities.GameTurnsActivity">
+    tools:context="at.aau.gloryweapons.siegeanddestroy3d.game.activities.GameTurnsActivity"
+    android:background="@drawable/enemy_turn">
 
         <GridLayout
             android:id="@+id/gridEnemyTurnBoard"

@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.hardware.sensor.proximity" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -47,13 +46,18 @@
             android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".sensors.ProximitySensorActivity"
-            android:screenOrientation="landscape"/>
-        <activity android:name=".sensors.TestSensorActivity"
-            android:screenOrientation="landscape"/>
-        <activity android:name=".sensors.AccelerometerSensorActivity"
+        <activity
+            android:name=".sensors.ProximitySensorActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".sensors.TestSensorActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".sensors.AccelerometerSensorActivity"
             android:screenOrientation="landscape">
-            ></activity>
+            >
+        </activity>
+        <activity android:name=".game.controllers.GlobalPlayer"></activity>
     </application>
 
 </manifest>

@@ -1,5 +1,8 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.activities;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,10 +13,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Arrays;
+import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
 import at.aau.gloryweapons.siegeanddestroy3d.game.activities.renderer.BoardRenderer;
+import at.aau.gloryweapons.siegeanddestroy3d.game.controllers.GlobalPlayer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
@@ -161,11 +166,11 @@ public class PlacementActivity extends AppCompatActivity {
 
             int row = 0;
             // first and last is fixed
-            addImageToGrid(previewGrid, R.drawable.ship_start, row, 0, orientationInDegrees);
-            addImageToGrid(previewGrid, R.drawable.ship_end, row, ship.getLength() - 1, orientationInDegrees);
+            addImageToGrid(previewGrid, R.drawable.shipbig_start, row, 0, orientationInDegrees);
+            addImageToGrid(previewGrid, R.drawable.shipbig_end, row, ship.getLength() - 1, orientationInDegrees);
             // rest is dynamic
             for (int i = 1; i < ship.getLength() - 1; ++i)
-                addImageToGrid(previewGrid, R.drawable.ship_middle, row, i, orientationInDegrees);
+                addImageToGrid(previewGrid, R.drawable.shipbig_middle, row, i, orientationInDegrees);
 
         } else {
             // place the ship vertically
@@ -174,11 +179,11 @@ public class PlacementActivity extends AppCompatActivity {
 
             int col = 0;
             // first and last is fixed
-            addImageToGrid(previewGrid, R.drawable.ship_start, 0, col, orientationInDegrees);
-            addImageToGrid(previewGrid, R.drawable.ship_end, ship.getLength() - 1, col, orientationInDegrees);
+            addImageToGrid(previewGrid, R.drawable.shipbig_start, 0, col, orientationInDegrees);
+            addImageToGrid(previewGrid, R.drawable.shipbig_end, ship.getLength() - 1, col, orientationInDegrees);
             // rest is dynamic
             for (int i = 1; i < ship.getLength() - 1; ++i)
-                addImageToGrid(previewGrid, R.drawable.ship_middle, i, col, orientationInDegrees);
+                addImageToGrid(previewGrid, R.drawable.shipbig_middle, i, col, orientationInDegrees);
         }
     }
 
@@ -286,11 +291,11 @@ public class PlacementActivity extends AppCompatActivity {
             // select correct image resource for position
             int imgResource;
             if (i == 0)
-                imgResource = R.drawable.ship_start;
+                imgResource = R.drawable.shipbig_start;
             else if (i == shipToPlace.getLength() - 1)
-                imgResource = R.drawable.ship_end;
+                imgResource = R.drawable.shipbig_end;
             else
-                imgResource = R.drawable.ship_middle;
+                imgResource = R.drawable.shipbig_middle;
 
             // set resource and rotate view
             if (shipToPlace.isHorizontal()) {
@@ -321,7 +326,7 @@ public class PlacementActivity extends AppCompatActivity {
         // set water
         for (int i = 0; i < nRows; ++i)
             for (int j = 0; j < nCols; ++j) {
-                visBoard[i][j] = addImageToGrid(grid, R.drawable.water, i, j, 0);
+                visBoard[i][j] = addImageToGrid(grid, R.drawable.water_tiles, i, j, 0);
 
                 // add click listener for the view
                 visBoard[i][j].setOnClickListener(new View.OnClickListener() {
@@ -343,4 +348,28 @@ public class PlacementActivity extends AppCompatActivity {
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
-}
+
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        Context context = getApplicationContext();
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+        if (!taskInfo.isEmpty()) {
+            ComponentName topActivity = taskInfo.get(0).topActivity;
+            if (!topActivity.getPackageName().equals(context.getPackageName())) {
+              //  GlobalPlayer.StopPlayer();
+                Toast.makeText(PlacementActivity.this, "YOU LEFT YOUR APP. MUSIC STOP", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+       // GlobalPlayer.StartPlayer();
+    }
+
+    }

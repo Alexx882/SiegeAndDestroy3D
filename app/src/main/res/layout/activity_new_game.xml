@@ -4,15 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewGameActivity">
+    tools:context=".NewGameActivity"
+    >
+
+    <pl.droidsonroids.gif.GifTextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/water_empty1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="0dp" />
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="170dp"
+        android:layout_width="296dp"
         android:layout_height="35dp"
-        android:layout_marginStart="84dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="28dp"
+        android:fontFamily="@font/press_start_2p"
         android:text="Neues Spiel anlegen"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,7 +33,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="96dp"
+        android:fontFamily="@font/press_start_2p"
         android:text="IP:"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,7 +45,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="132dp"
+        android:fontFamily="@font/press_start_2p"
         android:text="Name:"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,7 +57,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="216dp"
+        android:fontFamily="@font/press_start_2p"
         android:text="Schüsse:"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,8 +67,10 @@
         android:id="@+id/textViewIpHost"
         android:layout_width="170dp"
         android:layout_height="16dp"
-        android:layout_marginStart="52dp"
+        android:layout_marginStart="36dp"
         android:layout_marginTop="96dp"
+        android:fontFamily="@font/press_start_2p"
+        android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -59,11 +78,13 @@
         android:id="@+id/editTextNumberShots"
         android:layout_width="49dp"
         android:layout_height="38dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="204dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="199dp"
         android:ems="10"
+        android:fontFamily="@font/press_start_2p"
         android:inputType="numberSigned"
-        android:textSize="14sp"
+        android:textAlignment="center"
+        android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@+id/textView5"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -73,19 +94,23 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="172dp"
+        android:fontFamily="@font/press_start_2p"
         android:text="Schummeln:"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editTextPlayerName"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="124dp"
+        android:layout_width="126dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="120dp"
         android:ems="10"
+        android:fontFamily="@font/press_start_2p"
         android:inputType="textPersonName"
-        android:textSize="14sp"
+        android:textAlignment="center"
+        android:textSize="10sp"
         app:layout_constraintStart_toEndOf="@+id/textView3"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -96,7 +121,9 @@
         android:layout_marginBottom="40dp"
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
+        android:fontFamily="@font/press_start_2p"
         android:text="Einstellungen Speichern"
+        android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -104,13 +131,11 @@
     <ListView
         android:id="@+id/listViewUser"
         android:layout_width="232dp"
-        android:layout_height="300dp"
-        tools:layout_editor_absoluteX="352dp"
-        tools:layout_editor_absoluteY="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="248dp"
         android:layout_marginStart="350dp"
-        android:layout_marginTop="28dp"/>
+        android:layout_marginTop="28dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView4"
@@ -123,4 +148,5 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="350dp"
         android:layout_marginTop="20dp"/>
+
 </android.support.constraint.ConstraintLayout>
