@@ -23,21 +23,15 @@ public class TurnDTOTest {
     }
 
     @Test
-    public void TurnDTOBattleareaTest() {
-        BattleArea area = new BattleArea();
-        TurnDTO turn = new TurnDTO();
-        turn.setArea(area);
-        assertEquals(area, turn.getArea());
-    }
-
-    @Test
     public void TurnDTOUserIdTest() {
         BattleArea area = new BattleArea();
         area.setUserId(1);
         TurnDTO turn = new TurnDTO();
-        turn.setArea(area);
+        turn.setUserId(1);
         assertEquals(1, turn.getUserId());
 
+        turn = new TurnDTO(null, area);
+        assertEquals(1, turn.getUserId());
     }
 
     @Test

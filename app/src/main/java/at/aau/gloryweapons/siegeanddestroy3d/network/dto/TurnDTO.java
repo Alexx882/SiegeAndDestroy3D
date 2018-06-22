@@ -10,7 +10,7 @@ public class TurnDTO extends RequestDTO implements Serializable {
 
     private TurnType type;
 
-    private BattleArea area;
+    private int userId;
 
     private int yCoordinates;
 
@@ -25,8 +25,12 @@ public class TurnDTO extends RequestDTO implements Serializable {
     }
 
     public TurnDTO(TurnType type, BattleArea area) {
+        this(type, area.getUserId());
+    }
+
+    public TurnDTO(TurnType type, int playerId){
         this.type = type;
-        this.area = area;
+        this.userId = playerId;
     }
 
     public TurnDTO() {
@@ -56,16 +60,12 @@ public class TurnDTO extends RequestDTO implements Serializable {
         this.xCoordinates = xCoordinates;
     }
 
-    public BattleArea getArea() {
-        return area;
-    }
-
     public int getUserId() {
-        return area.getUserId();
+        return userId;
     }
 
-    public void setArea(BattleArea area) {
-        this.area = area;
+    public void setUserId(int userId){
+        this.userId = userId;
     }
 }
 

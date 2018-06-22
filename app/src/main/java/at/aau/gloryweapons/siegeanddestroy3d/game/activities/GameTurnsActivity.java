@@ -28,6 +28,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.ReturnObject;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.sensors.CheatEventListener;
 
@@ -48,7 +50,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enemy_turn);
         GameBoardImageView[][] visualBoard = null;
-        btnUserTurn =(TextView)findViewById(R.id.textViewUserTurn);
+        btnUserTurn = (TextView) findViewById(R.id.textViewUserTurn);
         textViewWinner = findViewById(R.id.textViewWinner);
 
         // receive and set parameters
@@ -172,19 +174,42 @@ public class GameTurnsActivity extends AppCompatActivity {
     }
 
     private void registerForCurrentUserUpdates() {
-        controller.registerForCurrentTurnUserUpdates(new CallbackObject<User>() {
+        controller.registerForCurrentTurnUserUpdates(new CallbackObject<TurnInfoDTO>() {
             @Override
-            public void callback(final User param) {
-                if(param != null) {
+            public void callback(final TurnInfoDTO ti) {
+                if (ti != null) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            btnUserTurn.setText(param.getName());
+                            btnUserTurn.setText(ti.getPlayerNextTurn().getName());
+
+                            updateLocalBattleArea(ti.getShots());
                         }
                     });
                 }
             }
         });
+    }
+
+    /**
+     * Updates the battle area for this user with the hits she has taken.
+     *
+     * @param shots
+     */
+    private void updateLocalBattleArea(List<TurnDTO> shots) {
+        for (BattleArea area : gameSettings.getBattleAreaList()) {
+            if (area.getUserId() == GlobalGameSettings.getCurrent().getPlayerId()) {
+                // local player area found
+                controller.updateBattleAreaFromShotList(area, shots);
+
+                if (area.equals(actualBattleArea))
+                    // reload if currently displayed
+                    loadBattleArea(area,
+                            GlobalGameSettings.getCurrent().getNumberRows(),
+                            GlobalGameSettings.getCurrent().getNumberColumns());
+            }
+        }
+
     }
 
     /**
