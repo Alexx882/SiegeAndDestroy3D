@@ -28,11 +28,13 @@ public class GameController {
     }
 
     /**
+     * checks the shot
+     *
      * @param enemyArea
      * @param enemy
      * @param col
      * @param row
-     * @return
+     * @param callback
      */
     public void shotOnEnemy(final BattleArea enemyArea, User enemy, final int col, final int row, final CallbackObject<ReturnObject> callback) {
 
@@ -122,5 +124,16 @@ public class GameController {
 
     public void cleanup() {
         communicator.resetNetwork();
+    }
+
+    /**
+     * Registers for current turn user updates and requests the first update from the server.
+     *
+     * @param currentTurnUserCallback
+     */
+    public void registerForCurrentTurnUserUpdates(CallbackObject<User> currentTurnUserCallback) {
+        communicator.registerForCurrentTurnUserUpdates(currentTurnUserCallback);
+
+        communicator.sendFirstUserRequestToServer();
     }
 }

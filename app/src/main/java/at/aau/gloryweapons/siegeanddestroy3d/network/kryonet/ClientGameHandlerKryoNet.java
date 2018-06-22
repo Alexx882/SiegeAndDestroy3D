@@ -19,6 +19,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FirstUserDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.QuitGame;
@@ -46,6 +47,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private CallbackObject<User> winnerCallback;
     private CallbackObject<Boolean> quitCallback;
     private Activity activity;
+    private CallbackObject<User> currentTurnUserUpdateCallback;
 
     private static ClientGameHandlerKryoNet instance;
 
@@ -84,7 +86,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     @Override
     public void resetNetwork() {
-        if (kryoClient.isConnected()){
+        if (kryoClient.isConnected()) {
             QuitGame quitGame = new QuitGame();
             sendToServer(quitGame);
             kryoClient.close();
@@ -125,6 +127,16 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         this.quitCallback = quitCallback;
     }
 
+    @Override
+    public void registerForCurrentTurnUserUpdates(CallbackObject<User> currentTurnUserCallback) {
+        this.currentTurnUserUpdateCallback = currentTurnUserCallback;
+    }
+
+    @Override
+    public void sendFirstUserRequestToServer() {
+        FirstUserDTO first = new FirstUserDTO();
+        sendToServer(first);
+    }
 
     @Override
     public void initClientGameHandler(final String ip, Activity activity, CallbackObject<HandshakeDTO> isConnectedCallback) {
@@ -165,9 +177,6 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         kryoClient.addListener(new Listener() {
             public void received(Connection serverConnection, Object receivedObject) {
 
-                //json to object
-//                Object receivedObject = wrapperHelper.jsonToObject(receivedMessage);
-
                 System.out.println("[Client] Received Message " + receivedObject.getClass().getName());
 
                 //map object
@@ -186,7 +195,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
                     handleCheatingSuspicionResponse((CheaterSuspicionResponseDTO) receivedObject);
                 } else if (receivedObject instanceof WinnerDTO) {
                     handleWinnerInfo((WinnerDTO) receivedObject);
-                } else if(receivedObject instanceof QuitGame){
+                } else if (receivedObject instanceof QuitGame) {
                     handleQuitGame();
                 } else {
                     Log.e(this.getClass().getName(), "Cannot read object: " + receivedObject.getClass().getName());
@@ -228,6 +237,11 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private void handleTurnInfo(TurnInfoDTO receivedObject) {
         // save info in GGS
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(receivedObject.getPlayerNextTurn());
+
+        // call the callback
+        if (currentTurnUserUpdateCallback != null) {
+            currentTurnUserUpdateCallback.callback(receivedObject.getPlayerNextTurn());
+        }
     }
 
     private void handleWinnerInfo(WinnerDTO receivedObject) {
@@ -247,5 +261,4 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
             }
         }.start();
     }
-
 }

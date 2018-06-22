@@ -60,9 +60,15 @@ public interface NetworkCommunicatorClient {
     public void sendShotOnEnemyToServer(BattleArea area, int col, int row, CallbackObject<TurnDTO> callback);
 
     /**
-     * ends the turn
+     * Ends the turn.
      */
     public void sendFinish();
+
+    /**
+     * Ask for the starting user.
+     * Response is consumed by registering to NetworkCommunicatorClient.registerForCurrentTurnUserUpdates().
+     */
+    public void sendFirstUserRequestToServer();
 
     /**
      * Register for updates about a winner.
@@ -80,4 +86,11 @@ public interface NetworkCommunicatorClient {
      * Registration of the callback if the server is closed.
      */
     public void registerQuitInfo(CallbackObject<Boolean> callback);
+
+    /**
+     * Register for updates about the user for the current turn.
+     *
+     * @param currentTurnUserCallback
+     */
+    void registerForCurrentTurnUserUpdates(CallbackObject<User> currentTurnUserCallback);
 }

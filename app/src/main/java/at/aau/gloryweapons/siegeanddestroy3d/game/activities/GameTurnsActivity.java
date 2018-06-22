@@ -41,12 +41,16 @@ public class GameTurnsActivity extends AppCompatActivity {
     private Button cheaterSuspectedButton;
     private TextView textViewWinner;
     private List<TextView> userLabels = new ArrayList<>(4);
+    TextView btnUserTurn = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enemy_turn);
         GameBoardImageView[][] visualBoard = null;
+        btnUserTurn =(TextView)findViewById(R.id.textViewUserTurn);
+        textViewWinner = findViewById(R.id.textViewWinner);
+
         // receive and set parameters
         gameSettings = (GameConfiguration) getIntent().getExtras().get(GameConfiguration.INTENT_KEYWORD);
         GlobalGameSettings.setCurrent((GlobalGameSettings) getIntent().getExtras().get(GlobalGameSettings.INTENT_KEYWORD));
@@ -57,6 +61,7 @@ public class GameTurnsActivity extends AppCompatActivity {
 
         final int nRows = GlobalGameSettings.getCurrent().getNumberRows();
         final int nCols = GlobalGameSettings.getCurrent().getNumberColumns();
+
         //gets the right user
         for (User u : gameSettings.getUserList()) {
             if (u.getId() == GlobalGameSettings.getCurrent().getPlayerId()) {
@@ -128,8 +133,9 @@ public class GameTurnsActivity extends AppCompatActivity {
 
         useSensorsforCheating();
 
-        textViewWinner = findViewById(R.id.textViewWinner);
         registerForWinningInfos();
+
+        registerForCurrentUserUpdates();
     }
 
     private CallbackObject<Boolean> quitGameMessage() {
@@ -158,6 +164,22 @@ public class GameTurnsActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             showWinner(winner);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void registerForCurrentUserUpdates() {
+        controller.registerForCurrentTurnUserUpdates(new CallbackObject<User>() {
+            @Override
+            public void callback(final User param) {
+                if(param != null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            btnUserTurn.setText(param.getName());
                         }
                     });
                 }
@@ -219,7 +241,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         cheatListener.registerForChanges(new CallbackObject<Boolean>() {
             @Override
             public void callback(Boolean param) {
-                if (param == true) {
+                if (param) {
 //                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_SHORT).show();
                     // to avoid exceptions
                     runOnUiThread(new Runnable() {

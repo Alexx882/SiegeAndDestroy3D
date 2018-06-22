@@ -41,4 +41,9 @@ public class User implements Serializable {
     public void setDefeated(boolean defeated) {
         isDefeated = defeated;
     }
+
+    public void setUser(User u) {
+        this.name = u.getName();
+        this.id = u.getId();
+    }
 }
