@@ -27,7 +27,6 @@ public class ServerController {
     private List<BattleArea> battleAreas = new ArrayList<>(4);
     private List<CallbackObject<GameConfiguration>> callbacks = new ArrayList<>(4);
     private int shots = 0;
-    private CallbackObject<User> turnOfFirstUserCallback;
     private ArrayList<User> penaltyList = new ArrayList<>();
 
     /**
@@ -64,11 +63,6 @@ public class ServerController {
         return id.getAndAdd(1);
     }
 
-    public void registerForGameConfigCompletion(CallbackObject<User> callback) {
-        // just overwrite old values, because we need it only once
-        turnOfFirstUserCallback = callback;
-    }
-
     /**
      * Adds the user and his battle area to the gameconfig.
      * If all connected players registered their areas the created gameconfig is returned in the callback.
@@ -100,10 +94,6 @@ public class ServerController {
                     cb.callback(gameConfig);
 
             callbacks.clear();
-
-            // also inform the clients about the first turn
-            if (turnOfFirstUserCallback != null)
-                turnOfFirstUserCallback.callback(getUserForFirstTurn());
         }
     }
 
@@ -115,6 +105,7 @@ public class ServerController {
      * @return The user to use first
      */
     public User getUserForFirstTurn() {
+        // todo
         // decide per random so nobody is preferred
         userIdxForCurrentTurn = 0;//new Random().nextInt(users.size());
         return users.get(userIdxForCurrentTurn);

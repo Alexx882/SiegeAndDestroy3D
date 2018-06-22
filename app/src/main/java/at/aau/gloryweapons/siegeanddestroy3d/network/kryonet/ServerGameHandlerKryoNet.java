@@ -2,6 +2,7 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -208,14 +209,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     }
 
     private void handleGameConfigRequest(GameConfigurationRequestDTO gameConfigRequestDto) {
-        // after the gameConfig finished the clients should get info about the first turn
-        // just overwrite every time, bc its just needed once
-        serverController.registerForGameConfigCompletion(new CallbackObject<User>() {
-            @Override
-            public void callback(User nextUser) {
-                sendFirstTurnInfo(nextUser);
-            }
-        });
+        // after the game config is finished clients will request the player for the first round themself
 
         // add data for every client
         serverController.addDataToGameConfig(gameConfigRequestDto.getUser(),
@@ -252,7 +246,9 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     /**
      * Broadcasts the user for the first turn to clients and server.
      */
-    private void sendFirstTurnInfo(User nextUser) {
+    private void sendFirstTurnInfo() {
+        User nextUser = serverController.getUserForFirstTurn();
+
         TurnInfoDTO turnInfo = new TurnInfoDTO();
         turnInfo.setPlayerNextTurn(nextUser);
 
@@ -405,6 +401,8 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     public void sendFirstUserRequestToServer() {
         // respond to the server
         User user = serverController.getUserForFirstTurn();
+
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(user);
 
         if (currentTurnUserCallback != null)
             currentTurnUserCallback.callback(user);

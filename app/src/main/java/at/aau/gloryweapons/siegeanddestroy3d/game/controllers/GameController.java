@@ -134,7 +134,6 @@ public class GameController {
     public void registerForCurrentTurnUserUpdates(CallbackObject<User> currentTurnUserCallback) {
         communicator.registerForCurrentTurnUserUpdates(currentTurnUserCallback);
 
-//        communicator.sendFirstUserRequestToServer();
-        // should be done automatically.
+        communicator.sendFirstUserRequestToServer();
     }
 }
