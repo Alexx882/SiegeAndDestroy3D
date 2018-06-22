@@ -202,11 +202,13 @@ public class GameTurnsActivity extends AppCompatActivity {
                 // local player area found
                 controller.updateBattleAreaFromShotList(area, shots);
 
+                // redraw if currently displayed
                 if (area.equals(actualBattleArea))
-                    // reload if currently displayed
                     loadBattleArea(area,
                             GlobalGameSettings.getCurrent().getNumberRows(),
                             GlobalGameSettings.getCurrent().getNumberColumns());
+
+                break;
             }
         }
 
