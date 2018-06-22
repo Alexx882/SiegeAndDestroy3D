@@ -87,7 +87,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     @Override
     public void resetNetwork() {
-        if (kryoClient.isConnected()){
+        if (kryoClient.isConnected()) {
             QuitGame quitGame = new QuitGame();
             sendToServer(quitGame);
             kryoClient.close();
@@ -197,14 +197,14 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
                     handleCheatingSuspicionResponse((CheaterSuspicionResponseDTO) receivedObject);
                 } else if (receivedObject instanceof WinnerDTO) {
                     handleWinnerInfo((WinnerDTO) receivedObject);
-                } else if(receivedObject instanceof QuitGame){
+                } else if (receivedObject instanceof QuitGame) {
                     handleQuitGame();
-                } else {
-                    Log.e(this.getClass().getName(), "Cannot read object: " + receivedObject.getClass().getName());
                 } else if (receivedObject instanceof FirstUserDTO) {
                     handleFirstUser((FirstUserDTO) receivedObject);
                 } else if (receivedObject instanceof FinishRoundDTO) {
                     handleFinishRound((FinishRoundDTO) receivedObject);
+                } else {
+                    Log.e(this.getClass().getName(), "Cannot read object: " + receivedObject.getClass().getName());
                 }
             }
         });
