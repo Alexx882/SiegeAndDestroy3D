@@ -105,13 +105,7 @@ public class GameController {
     public boolean endTurn() {
         if (shotsFired == GlobalGameSettings.getCurrent().getNumberShots()) {
             shotsFired = 0;
-            CallbackObject<User> userCallback =new CallbackObject<User>() {
-                @Override
-                public void callback(User param) {
-
-                }
-            };
-            communicator.sendFinish(userCallback);
+            communicator.sendFinish();
 
             return true;
         } else {
@@ -133,18 +127,14 @@ public class GameController {
     }
 
     /**
+     * Registers for current turn user updates and requests the first update from the server.
      *
-     * @param callback
+     * @param currentTurnUserCallback
      */
-    public void getStartingUser(final CallbackObject<User> callback) {
-        CallbackObject<User> userCallback = new CallbackObject<User>() {
-            @Override
-            public void callback(User param) {
-                callback.callback(param);
-            }
-        };
-        communicator.sendFirstUserRequestToServer(userCallback);
+    public void registerForCurrentTurnUserUpdates(CallbackObject<User> currentTurnUserCallback) {
+        communicator.registerForCurrentTurnUserUpdates(currentTurnUserCallback);
 
-
+//        communicator.sendFirstUserRequestToServer();
+        // should be done automatically.
     }
 }

@@ -41,14 +41,16 @@ public class GameTurnsActivity extends AppCompatActivity {
     private Button cheaterSuspectedButton;
     private TextView textViewWinner;
     private List<TextView> userLabels = new ArrayList<>(4);
-    TextView userTurn = null;
+    TextView btnUserTurn = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enemy_turn);
         GameBoardImageView[][] visualBoard = null;
-        userTurn =(TextView)findViewById(R.id.textViewUserTurn);
+        btnUserTurn =(TextView)findViewById(R.id.textViewUserTurn);
+        textViewWinner = findViewById(R.id.textViewWinner);
+
         // receive and set parameters
         gameSettings = (GameConfiguration) getIntent().getExtras().get(GameConfiguration.INTENT_KEYWORD);
         GlobalGameSettings.setCurrent((GlobalGameSettings) getIntent().getExtras().get(GlobalGameSettings.INTENT_KEYWORD));
@@ -60,24 +62,10 @@ public class GameTurnsActivity extends AppCompatActivity {
         final int nRows = GlobalGameSettings.getCurrent().getNumberRows();
         final int nCols = GlobalGameSettings.getCurrent().getNumberColumns();
 
-        controller.getStartingUser(new CallbackObject<User>() {
-            @Override
-            public void callback(final User param) {
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        userTurn.setText(param.getName());
-                    }
-                });
-
-            }
-        });
         //gets the right user
         for (User u : gameSettings.getUserList()) {
             if (u.getId() == GlobalGameSettings.getCurrent().getPlayerId()) {
                 actualUser = u;
-
             }
         }
 
@@ -89,7 +77,6 @@ public class GameTurnsActivity extends AppCompatActivity {
             }
         }
 
-
         //sets the OnClickListener for the Button to end the turn
         Button button = findViewById(R.id.buttonUpadteWater);
         button.setOnClickListener(new View.OnClickListener() {
@@ -97,19 +84,6 @@ public class GameTurnsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (!controller.endTurn()) {
                     Toast.makeText(GameTurnsActivity.this, "first finish your turn", Toast.LENGTH_SHORT).show();
-                }
-                else{
-
-                    User user= new User();
-                    for(User u :gameSettings.getUserList())
-                    {
-                        if(u.getId()==GlobalGameSettings.getCurrent().getUserOfCurrentTurn().getId())
-                        {
-                            userTurn.setText(u.getName());
-                        }
-                    }
-
-
                 }
             }
         });
@@ -159,8 +133,9 @@ public class GameTurnsActivity extends AppCompatActivity {
 
         useSensorsforCheating();
 
-        textViewWinner = findViewById(R.id.textViewWinner);
         registerForWinningInfos();
+
+        registerForCurrentUserUpdates();
     }
 
     private CallbackObject<Boolean> quitGameMessage() {
@@ -189,6 +164,22 @@ public class GameTurnsActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             showWinner(winner);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void registerForCurrentUserUpdates() {
+        controller.registerForCurrentTurnUserUpdates(new CallbackObject<User>() {
+            @Override
+            public void callback(final User param) {
+                if(param != null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            btnUserTurn.setText(param.getName());
                         }
                     });
                 }

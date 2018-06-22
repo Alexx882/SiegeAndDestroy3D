@@ -45,9 +45,8 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     // callbacks
     private CallbackObject<List<String>> userCallBack;
-    CallbackObject<User> turnInfoUpdateCallback;
+    private CallbackObject<User> currentTurnUserCallback;
     private CallbackObject<User> winnerCallback;
-    private CallbackObject<User> firstUserCallback;
 
     private Activity activity;
 
@@ -139,7 +138,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         } else if (receivedObject instanceof CheaterSuspicionDTO) {
             handleCheatingSuspicion((CheaterSuspicionDTO) receivedObject);
         } else if (receivedObject instanceof FirstUserDTO) {
-            handleFirstUserRequest((FirstUserDTO)receivedObject);
+            handleFirstUserRequest((FirstUserDTO) receivedObject);
         } else {
             Log.e(this.getClass().getName(), "cannot cast class");
         }
@@ -160,18 +159,17 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         // sendToClient(clientData, cheaterSuspicionResponseDTO);
     }
 
-    private void handleFirstUserRequest (FirstUserDTO first)
-    {
-        first.setU(serverController.getUserForFirstTurn());
-        sendToClient(clientDataMap.get(first.getClientId()),first);
+    private void handleFirstUserRequest(FirstUserDTO request) {
+        TurnInfoDTO response = new TurnInfoDTO();
+        response.setPlayerNextTurn(serverController.getUserForFirstTurn());
+
+        // send update to requesting client
+        sendToClient(clientDataMap.get(request.getClientId()), response);
     }
 
     private void handleFinishRoundRequest(FinishRoundDTO finish) {
-       User u = sendNextTurnInfo();
-       finish.setU(u);
-       sendToAllClients(finish);
+        sendNextTurnInfo();
     }
-
 
     private void handleHandshakeDto(HandshakeDTO handshakeDTO, Connection clientConnection) {
         ClientData clientData = new ClientData();
@@ -234,7 +232,25 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     }
 
     /**
-     * Sends the info about the first turn to the clients.
+     * Broadcasts the info that the round ended and the user for the next turn to clients and server.
+     */
+    private void sendNextTurnInfo() {
+        // inform everyone that the current round ended
+        User nextUser = serverController.getUserForNextTurn();
+
+        // send update to all clients
+        TurnInfoDTO response = new TurnInfoDTO();
+        response.setPlayerNextTurn(nextUser);
+        sendToAllClients(response);
+
+        // save for server
+        if (currentTurnUserCallback != null)
+            currentTurnUserCallback.callback(nextUser);
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
+    }
+
+    /**
+     * Broadcasts the user for the first turn to clients and server.
      */
     private void sendFirstTurnInfo(User nextUser) {
         TurnInfoDTO turnInfo = new TurnInfoDTO();
@@ -249,23 +265,10 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         } catch (InterruptedException e) {
             Log.w("KryoServer", e.getMessage(), e);
         }
+
+        if (currentTurnUserCallback != null)
+            currentTurnUserCallback.callback(nextUser);
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
-    }
-
-    /**
-     * Sends the info about the next turn to the clients.
-     */
-    private User sendNextTurnInfo() {
-        User nextUser = serverController.getUserForNextTurn();
-
-        TurnInfoDTO turnInfo = new TurnInfoDTO();
-        turnInfo.setPlayerNextTurn(nextUser);
-
-        sendToAllClients(turnInfo);
-        //send to server
-        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
-
-        return nextUser;
     }
 
     /**
@@ -340,7 +343,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (clientDataMap != null){
+                if (clientDataMap != null) {
                     clientDataMap.clear();
                 }
                 kryoServer.close();
@@ -393,20 +396,18 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     }
 
     @Override
-    public void sendFinish(CallbackObject<User> user) {
-        FinishRoundDTO finish = new FinishRoundDTO();
-
-        User u = sendNextTurnInfo();
-        user.callback(u);
-        finish.setU(u);
-        sendToAllClients(finish);
+    public void sendFinish() {
+        // update info about the turn
+        sendNextTurnInfo();
     }
 
     @Override
-    public void sendFirstUserRequestToServer(CallbackObject<User> user) {
-        User u = new User();
-        u.setUser(serverController.getUserForFirstTurn());
-        user.callback(u);
+    public void sendFirstUserRequestToServer() {
+        // respond to the server
+        User user = serverController.getUserForFirstTurn();
+
+        if (currentTurnUserCallback != null)
+            currentTurnUserCallback.callback(user);
     }
 
     @Override
@@ -424,6 +425,11 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     @Override
     public void registerQuitInfo(CallbackObject<Boolean> callback) {
 
+    }
+
+    @Override
+    public void registerForCurrentTurnUserUpdates(CallbackObject<User> currentTurnUserCallback) {
+        this.currentTurnUserCallback = currentTurnUserCallback;
     }
 
 }

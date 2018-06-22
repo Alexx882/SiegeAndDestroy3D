@@ -47,8 +47,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private CallbackObject<User> winnerCallback;
     private CallbackObject<Boolean> quitCallback;
     private Activity activity;
-    private CallbackObject<User> firstUserCallback;
-    private CallbackObject<User> actuelUserCallback;
+    private CallbackObject<User> currentTurnUserUpdateCallback;
 
     private static ClientGameHandlerKryoNet instance;
 
@@ -106,8 +105,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     }
 
     @Override
-    public void sendFinish(CallbackObject<User> user) {
-        actuelUserCallback = user;
+    public void sendFinish() {
         FinishRoundDTO finish = new FinishRoundDTO();
         sendToServer(finish);
     }
@@ -129,11 +127,14 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         this.quitCallback = quitCallback;
     }
 
+    @Override
+    public void registerForCurrentTurnUserUpdates(CallbackObject<User> currentTurnUserCallback) {
+        this.currentTurnUserUpdateCallback = currentTurnUserCallback;
+    }
 
     @Override
-    public void sendFirstUserRequestToServer(CallbackObject<User> user) {
+    public void sendFirstUserRequestToServer() {
         FirstUserDTO first = new FirstUserDTO();
-        firstUserCallback = user;
         sendToServer(first);
     }
 
@@ -176,9 +177,6 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         kryoClient.addListener(new Listener() {
             public void received(Connection serverConnection, Object receivedObject) {
 
-                //json to object
-//                Object receivedObject = wrapperHelper.jsonToObject(receivedMessage);
-
                 System.out.println("[Client] Received Message " + receivedObject.getClass().getName());
 
                 //map object
@@ -199,10 +197,6 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
                     handleWinnerInfo((WinnerDTO) receivedObject);
                 } else if (receivedObject instanceof QuitGame) {
                     handleQuitGame();
-                } else if (receivedObject instanceof FirstUserDTO) {
-                    handleFirstUser((FirstUserDTO) receivedObject);
-                } else if (receivedObject instanceof FinishRoundDTO) {
-                    handleFinishRound((FinishRoundDTO) receivedObject);
                 } else {
                     Log.e(this.getClass().getName(), "Cannot read object: " + receivedObject.getClass().getName());
                 }
@@ -220,19 +214,6 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         if (cheaterSuspicionCallback != null) {
             cheaterSuspicionCallback.callback(receivedObject.getUser());
         }
-    }
-
-    private void handleFinishRound(FinishRoundDTO finish) {
-        if (actuelUserCallback != null) {
-            actuelUserCallback.callback(finish.getU());
-        }
-    }
-
-    private void handleFirstUser(FirstUserDTO first) {
-        if (firstUserCallback != null) {
-            firstUserCallback.callback(first.getU());
-        }
-
     }
 
     private void handleUserResponse(UserNameResponseDTO user) {
@@ -256,8 +237,10 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private void handleTurnInfo(TurnInfoDTO receivedObject) {
         // save info in GGS
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(receivedObject.getPlayerNextTurn());
-        if (actuelUserCallback != null) {
-            actuelUserCallback.callback(receivedObject.getPlayerNextTurn());
+
+        // call the callback
+        if (currentTurnUserUpdateCallback != null) {
+            currentTurnUserUpdateCallback.callback(receivedObject.getPlayerNextTurn());
         }
     }
 
