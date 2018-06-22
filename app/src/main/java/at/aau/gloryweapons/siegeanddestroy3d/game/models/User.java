@@ -1,18 +1,14 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
-
 import java.io.Serializable;
 
-@JsonObject
 public class User implements Serializable {
 
-    @JsonField
     private int id;
 
-    @JsonField
     private String name;
+
+    private boolean isDefeated = false;
 
     public User(int uId, String uName) {
         id = uId;
@@ -36,6 +32,14 @@ public class User implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isDefeated() {
+        return isDefeated;
+    }
+
+    public void setDefeated(boolean defeated) {
+        isDefeated = defeated;
     }
 
     public void setUser(User u) {

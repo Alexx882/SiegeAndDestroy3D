@@ -4,7 +4,6 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -23,6 +22,13 @@ public class ServerController {
 
     private AtomicInteger id = new AtomicInteger(1);
     private ArrayList<String> names = new ArrayList<>();
+    private GameConfiguration gameConfig;
+    private ArrayList<User> users = new ArrayList<>(4);
+    private List<BattleArea> battleAreas = new ArrayList<>(4);
+    private List<CallbackObject<GameConfiguration>> callbacks = new ArrayList<>(4);
+    private int shots = 0;
+    private CallbackObject<User> turnOfFirstUserCallback;
+    private ArrayList<User> penaltyList = new ArrayList<>();
 
     /**
      * Checks if the name for an user is available.
@@ -57,13 +63,6 @@ public class ServerController {
     private int getId() {
         return id.getAndAdd(1);
     }
-
-    private GameConfiguration gameConfig;
-    private ArrayList<User> users = new ArrayList<>(4);
-    private List<BattleArea> battleAreas = new ArrayList<>(4);
-    private List<CallbackObject<GameConfiguration>> callbacks = new ArrayList<>(4);
-    private int shots = 0;
-    private CallbackObject<User> turnOfFirstUserCallback;
 
     public void registerForGameConfigCompletion(CallbackObject<User> callback) {
         // just overwrite old values, because we need it only once
@@ -129,7 +128,20 @@ public class ServerController {
     public User getUserForNextTurn() {
         // just loop through
         userIdxForCurrentTurn = (userIdxForCurrentTurn + 1) % users.size();
+        if (suspendATurn(users.get(userIdxForCurrentTurn))) {
+            getUserForNextTurn();
+        }
         return users.get(userIdxForCurrentTurn);
+    }
+
+    /**
+     * Checks if a user has to suspend a turn.
+     *
+     * @param user
+     * @return
+     */
+    private boolean suspendATurn(User user) {
+        return penaltyList.remove(user);
     }
 
     /**
@@ -140,10 +152,9 @@ public class ServerController {
      */
     public TurnDTO checkShot(TurnDTO hit) {
 
-        BattleAreaTile tile = new BattleAreaTile();
+        BattleAreaTile tile;
         for (BattleArea area : battleAreas) {
             if (hit.getUserId() == area.getUserId()) {
-
                 tile = area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()];
                 tile = checkTile(tile);
                 if (tile.getType() == BattleAreaTile.TileType.NO_HIT) {
@@ -152,12 +163,12 @@ public class ServerController {
                 } else {
                     hit.setType(TurnDTO.TurnType.HIT);
                     area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                    checkBattleAreaForDefeat(area);
                 }
             }
         }
 
         return hit;
-
     }
 
     /**
@@ -197,6 +208,52 @@ public class ServerController {
     public void sentShots(int shots) {
 
         this.shots = shots;
+    }
+
+    /**
+     * Checks if the BattleArea is destroyed. Also updates the User to defeated.
+     *
+     * @param area
+     * @return
+     */
+    public boolean checkBattleAreaForDefeat(BattleArea area) {
+        if (area == null)
+            return false;
+
+        if (area.remainingFields() == 0) {
+            setUserDefeated(area.getUserId());
+            return true;
+        } else
+            return false;
+    }
+
+    public void setUserDefeated(int userId) {
+        for (User u : users)
+            if (u.getId() == userId)
+                u.setDefeated(true);
+    }
+
+    /**
+     * Checks if someone won already.
+     *
+     * @return User who won, null otherwise.
+     */
+    public User checkForWinner() {
+        User uNotDefeated = null;
+
+        // check for all users if they are defeated. If more than one is not defeated, there is no winner yet.
+        for (User u : users) {
+            if (!u.isDefeated())
+                if (uNotDefeated == null) {
+                    // this is the first one.
+                    uNotDefeated = u;
+                } else {
+                    // there was already another
+                    return null;
+                }
+        }
+
+        return uNotDefeated;
     }
 }
 

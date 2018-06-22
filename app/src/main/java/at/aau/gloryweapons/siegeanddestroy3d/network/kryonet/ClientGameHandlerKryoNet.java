@@ -2,6 +2,7 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -15,32 +16,37 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FirstUserDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.QuitGame;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.RequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WinnerDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
 
 public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     private Client kryoClient;
-    private KryonetHelper kryoHelper;
 
     private int clientId;
-    private WrapperHelper wrapperHelper;
 
     // callbacks
     private CallbackObject<HandshakeDTO> isConnectedCallback;
     private CallbackObject<User> userNameCallback;
     private CallbackObject<TurnDTO> shotHitCallback;
     private CallbackObject<GameConfiguration> gameConfigCallback;
+    private CallbackObject<User> cheaterSuspicionCallback;
+    private CallbackObject<User> winnerCallback;
+    private CallbackObject<Boolean> quitCallback;
+    private Activity activity;
     private CallbackObject<User> firstUserCallback;
     private CallbackObject<User> actuelUserCallback;
 
@@ -81,7 +87,12 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     @Override
     public void resetNetwork() {
-
+        if (kryoClient.isConnected()){
+            QuitGame quitGame = new QuitGame();
+            sendToServer(quitGame);
+            kryoClient.close();
+            kryoClient.stop();
+        }
     }
 
     @Override
@@ -102,6 +113,24 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     }
 
     @Override
+    public void registerForWinnerInfos(CallbackObject<User> winnerCb) {
+        winnerCallback = winnerCb;
+    }
+
+    @Override
+    public void sendCheatingSuspicion(CallbackObject<User> callback) {
+        cheaterSuspicionCallback = callback;
+        CheaterSuspicionDTO cheaterSuspicionDTO = new CheaterSuspicionDTO();
+        sendToServer(cheaterSuspicionDTO);
+    }
+
+    @Override
+    public void registerQuitInfo(CallbackObject<Boolean> quitCallback) {
+        this.quitCallback = quitCallback;
+    }
+
+
+    @Override
     public void sendFirstUserRequestToServer(CallbackObject<User> user) {
         FirstUserDTO first = new FirstUserDTO();
         firstUserCallback = user;
@@ -110,15 +139,13 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     @Override
     public void initClientGameHandler(final String ip, Activity activity, CallbackObject<HandshakeDTO> isConnectedCallback) {
+        this.activity = activity;
         GlobalGameSettings.getCurrent().setServer(false);
         this.isConnectedCallback = isConnectedCallback;
 
         com.esotericsoftware.minlog.Log.set(com.esotericsoftware.minlog.Log.LEVEL_DEBUG);
         Log.i(this.getClass().getName(), "init client connection...");
         Log.i(this.getClass().getName(), "try to connect to " + ip);
-
-        // init wrapper
-        wrapperHelper = WrapperHelper.getInstance();
 
         // init kryo
         kryoClient = new Client();
@@ -166,6 +193,14 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
                         shotHitCallback.callback((TurnDTO) receivedObject);
                 } else if (receivedObject instanceof TurnInfoDTO) {
                     handleTurnInfo((TurnInfoDTO) receivedObject);
+                } else if (receivedObject instanceof CheaterSuspicionResponseDTO) {
+                    handleCheatingSuspicionResponse((CheaterSuspicionResponseDTO) receivedObject);
+                } else if (receivedObject instanceof WinnerDTO) {
+                    handleWinnerInfo((WinnerDTO) receivedObject);
+                } else if(receivedObject instanceof QuitGame){
+                    handleQuitGame();
+                } else {
+                    Log.e(this.getClass().getName(), "Cannot read object: " + receivedObject.getClass().getName());
                 } else if (receivedObject instanceof FirstUserDTO) {
                     handleFirstUser((FirstUserDTO) receivedObject);
                 } else if (receivedObject instanceof FinishRoundDTO) {
@@ -173,6 +208,18 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
                 }
             }
         });
+    }
+
+    private void handleQuitGame() {
+        quitCallback.callback(true);
+        kryoClient.close();
+        kryoClient.stop();
+    }
+
+    private void handleCheatingSuspicionResponse(CheaterSuspicionResponseDTO receivedObject) {
+        if (cheaterSuspicionCallback != null) {
+            cheaterSuspicionCallback.callback(receivedObject.getUser());
+        }
     }
 
     private void handleFinishRound(FinishRoundDTO finish) {
@@ -212,6 +259,11 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         if (actuelUserCallback != null) {
             actuelUserCallback.callback(receivedObject.getPlayerNextTurn());
         }
+    }
+
+    private void handleWinnerInfo(WinnerDTO receivedObject) {
+        if (winnerCallback != null)
+            winnerCallback.callback(receivedObject.getWinner());
     }
 
     private void sendToServer(final RequestDTO object) {

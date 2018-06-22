@@ -1,6 +1,7 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
+import android.os.Handler;
 import android.util.Log;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -17,15 +18,17 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FirstUserDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.QuitGame;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WinnerDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorServer;
@@ -43,11 +46,10 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     // callbacks
     private CallbackObject<List<String>> userCallBack;
     CallbackObject<User> turnInfoUpdateCallback;
+    private CallbackObject<User> winnerCallback;
     private CallbackObject<User> firstUserCallback;
 
     private Activity activity;
-
-    private WrapperHelper wrapperHelper;
 
     private ServerController serverController;
 
@@ -66,7 +68,6 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     public void initServerGameHandler(Activity activity, CallbackObject<List<String>> userCallBack) {
         GlobalGameSettings.getCurrent().setServer(true);
 
-        wrapperHelper = WrapperHelper.getInstance();
         this.activity = activity;
         this.userCallBack = userCallBack;
         this.clientDataMap = new HashMap<Integer, ClientData>();
@@ -135,11 +136,28 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
             handleGameConfigRequest((GameConfigurationRequestDTO) receivedObject);
         } else if (receivedObject instanceof FinishRoundDTO) {
             handleFinishRoundRequest((FinishRoundDTO) receivedObject);
+        } else if (receivedObject instanceof CheaterSuspicionDTO) {
+            handleCheatingSuspicion((CheaterSuspicionDTO) receivedObject);
         } else if (receivedObject instanceof FirstUserDTO) {
             handleFirstUserRequest((FirstUserDTO)receivedObject);
         } else {
             Log.e(this.getClass().getName(), "cannot cast class");
         }
+    }
+
+    /**
+     * check if a user has cheated and send a user object back
+     * If no one has cheated, then the user has to suspend a round himself
+     *
+     * @param receivedObject
+     */
+    private void handleCheatingSuspicion(CheaterSuspicionDTO receivedObject) {
+        //TODO check and send response
+        // ClientData clientData = clientDataMap.get(receivedObject.getClientId());
+        // CheaterSuspicionResponseDTO cheaterSuspicionResponseDTO = new CheaterSuspicionResponseDTO();
+        // check
+        // cheaterSuspicionResponseDTO.setUser(???);
+        // sendToClient(clientData, cheaterSuspicionResponseDTO);
     }
 
     private void handleFirstUserRequest (FirstUserDTO first)
@@ -229,7 +247,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.w("KryoServer", e.getMessage(), e);
         }
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
     }
@@ -288,6 +306,8 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         hitType = serverController.checkShot(hitType);
         ClientData client = clientDataMap.get(hitType.getClientId());
         sendToClient(client, hitType);
+
+        checkPossibleWinning();
     }
 
     @Override
@@ -316,7 +336,26 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     @Override
     public void resetNetwork() {
-        // todo remove
+        sendQuitGame();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (clientDataMap != null){
+                    clientDataMap.clear();
+                }
+                kryoServer.close();
+                kryoServer.stop();
+                GlobalGameSettings.getCurrent().setServer(false);
+                instance = new ServerGameHandlerKryoNet();
+
+            }
+        }, 2000);
+
+    }
+
+    private void sendQuitGame() {
+        QuitGame quitGame = new QuitGame();
+        sendToAllClients(quitGame);
     }
 
     /**
@@ -335,6 +374,22 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         hitType.setyCoordinates(col);
         hitType = serverController.checkShot(hitType);
         callback.callback(hitType);
+
+        checkPossibleWinning();
+    }
+
+    private void checkPossibleWinning() {
+        User winner = serverController.checkForWinner();
+        if (winner != null) {
+            // we have a winner :D
+            WinnerDTO wdto = new WinnerDTO();
+            wdto.setWinner(winner);
+
+            sendToAllClients(wdto);
+
+            if (winnerCallback != null)
+                winnerCallback.callback(winner);
+        }
     }
 
     @Override
@@ -353,4 +408,22 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         u.setUser(serverController.getUserForFirstTurn());
         user.callback(u);
     }
+
+    @Override
+    public void registerForWinnerInfos(CallbackObject<User> winnerCb) {
+        winnerCallback = winnerCb;
+    }
+
+    @Override
+    public void sendCheatingSuspicion(CallbackObject<User> callback) {
+        //TODO handle cheating suspicion
+        // user suspend check
+        // callback.callback(user);
+    }
+
+    @Override
+    public void registerQuitInfo(CallbackObject<Boolean> callback) {
+
+    }
+
 }

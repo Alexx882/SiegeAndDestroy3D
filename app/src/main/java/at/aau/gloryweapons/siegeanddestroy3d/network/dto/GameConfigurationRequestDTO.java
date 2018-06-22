@@ -1,8 +1,5 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.dto;
 
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
-
 import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
@@ -13,16 +10,11 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
  * Created by Alexander on 12.05.2018.
  */
 
-@JsonObject
 public class GameConfigurationRequestDTO extends RequestDTO {
-
-    @JsonField
     private User user;
 
-    @JsonField
     private BattleArea battleArea;
 
-    @JsonField
     private List<BasicShip> placedShips;
 
     public User getUser() {

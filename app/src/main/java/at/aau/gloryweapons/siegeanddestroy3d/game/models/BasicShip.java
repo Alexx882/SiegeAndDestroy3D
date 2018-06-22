@@ -1,36 +1,19 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonIgnore;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.TileTypeConverter;
 
 /**
  * Created by Alexander on 05.04.2018.
  */
-@JsonObject
 public class BasicShip implements Serializable {
-    @JsonField
     private int userId = -1;
 
-    @JsonField
     private int length = 0;
 
-    @JsonIgnore
     private BattleAreaTile[] tiles;
 
-    @JsonField(name = "h")
     private boolean horizontal = true;
-/*
-    @JsonField
-    private List<BattleAreaTile> forJsonTile;
-*/
+
     public BasicShip(int userId, int length, boolean horizontal) {
         this.userId = userId;
         this.length = length;
@@ -38,21 +21,10 @@ public class BasicShip implements Serializable {
         this.horizontal = horizontal;
     }
 
-    public BasicShip(){
-    }
-/*
-    public List<BattleAreaTile> getForJsonTile() {
-        if (tiles != null){
-            forJsonTile = new ArrayList<>(Arrays.asList(tiles));
-            }
-          return forJsonTile;
+    public BasicShip() {
+        this.tiles = new BattleAreaTile[0];
     }
 
-    public void setForJsonTile(List<BattleAreaTile> forJsonTile) {
-        this.forJsonTile = forJsonTile;
-        tiles = this.forJsonTile.toArray(new BattleAreaTile[forJsonTile.size()]);
-    }
-*/
     public int getUserId() {
         return userId;
     }
@@ -72,7 +44,7 @@ public class BasicShip implements Serializable {
     /**
      * Toggles the orientation from horizontal to vertical and vice versa.
      */
-    public void toggleOrientation(){
+    public void toggleOrientation() {
         this.horizontal = !this.horizontal;
     }
 

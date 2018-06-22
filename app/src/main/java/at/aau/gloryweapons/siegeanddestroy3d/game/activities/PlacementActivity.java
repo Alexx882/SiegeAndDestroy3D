@@ -41,6 +41,8 @@ public class PlacementActivity extends AppCompatActivity {
     Button btnRestartPlacement;
     TextView txtInformation;
 
+    private NetworkCommunicatorClient communicator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +59,15 @@ public class PlacementActivity extends AppCompatActivity {
 
         // let the user place the ships
         initShipPlacementProcess();
+
+        // should be inited already
+        if (GlobalGameSettings.getCurrent().isServer())
+            communicator = ServerGameHandlerKryoNet.getInstance();
+        else
+            communicator = ClientGameHandlerKryoNet.getInstance();
+            communicator.registerQuitInfo(quitGameMessage());
+
+
     }
 
     /**
@@ -243,21 +254,13 @@ public class PlacementActivity extends AppCompatActivity {
     }
 
     private void sendConfigurationToServer() {
-        NetworkCommunicatorClient comm;
-
-        // should be inited already
-        if (GlobalGameSettings.getCurrent().isServer())
-            comm = ServerGameHandlerKryoNet.getInstance();
-        else
-            comm = ClientGameHandlerKryoNet.getInstance();
-
         CallbackObject<GameConfiguration> callback = new CallbackObject<GameConfiguration>() {
             @Override
             public void callback(GameConfiguration param) {
                 switchToGameActivity(param);
             }
         };
-        comm.sendGameConfigurationToServer(GlobalGameSettings.getCurrent().getLocalUser(), playerBoard, Arrays.asList(ships), callback);
+        communicator.sendGameConfigurationToServer(GlobalGameSettings.getCurrent().getLocalUser(), playerBoard, Arrays.asList(ships), callback);
     }
 
     /**
@@ -342,5 +345,29 @@ public class PlacementActivity extends AppCompatActivity {
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private CallbackObject<Boolean> quitGameMessage() {
+        CallbackObject<Boolean> quitGameCallback = new CallbackObject<Boolean>() {
+            @Override
+            public void callback(Boolean param) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showToast("Der Server hat die Verbindung beendet");
+                        onBackPressed();
+                    }
+                });
+            }
+        };
+        return quitGameCallback;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (communicator != null)
+            communicator.resetNetwork();
+        super.onBackPressed();
     }
 }

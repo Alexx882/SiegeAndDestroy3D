@@ -1,7 +1,5 @@
 package at.aau.gloryweapons.siegeanddestroy3d;
 
-import android.provider.Settings;
-
 import java.io.Serializable;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
@@ -16,6 +14,10 @@ public class GlobalGameSettings implements Serializable {
     private User currentTurnUser;
     private boolean schummelnEnabled;
     private int numberShots;
+    private boolean gameFinished = false;
+
+    //fix cheater suspicion time in seconds
+    private int cheaterSuspicionTime = 10;
 
     // fixed size of rows and cols
     private int numberRows = 8;
@@ -26,9 +28,9 @@ public class GlobalGameSettings implements Serializable {
     private int[] shipSizes = {3, 4, 2, 4};
 
     // network settings
-    private static final String serviceName = "sAd3D";
-    private static final int port = 61616;
-    private boolean isServer;
+    private static final String SERVICE_NAME = "sAd3D";
+    private static final int PORT = 61616;
+    private boolean isServer = false;
 
     private GlobalGameSettings() {
 
@@ -71,11 +73,11 @@ public class GlobalGameSettings implements Serializable {
     }
 
     public String getServiceName() {
-        return serviceName;
+        return SERVICE_NAME;
     }
 
     public int getPort() {
-        return port;
+        return PORT;
     }
 
     public boolean isServer() {
@@ -110,6 +112,18 @@ public class GlobalGameSettings implements Serializable {
         this.numberShots = numberShots;
     }
 
+    public long getCheaterSuspicionTime() {
+        return cheaterSuspicionTime;
+    }
+
+    public boolean isGameFinished() {
+        return this.gameFinished;
+    }
+
+    public void setGameFinished(boolean gameFinished) {
+        this.gameFinished = gameFinished;
+    }
+
     public static final String INTENT_KEYWORD ="GLOBALGAMESETTINGS_INTENT";
     private static GlobalGameSettings instance = null;
 
@@ -127,5 +141,4 @@ public class GlobalGameSettings implements Serializable {
     public static void setCurrent(GlobalGameSettings current) {
         instance = current;
     }
-
 }

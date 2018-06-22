@@ -3,7 +3,6 @@ package at.aau.gloryweapons.siegeanddestroy3d.game.controllers;
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.ReturnObject;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
@@ -21,6 +20,11 @@ public class GameController {
         communicator = GlobalGameSettings.getCurrent().isServer()
                 ? ServerGameHandlerKryoNet.getInstance()
                 : ClientGameHandlerKryoNet.getInstance();
+    }
+
+    public GameController(CallbackObject<Boolean> endGame) {
+        this();
+        communicator.registerQuitInfo(endGame);
     }
 
     /**
@@ -113,6 +117,19 @@ public class GameController {
         } else {
             return false;
         }
+    }
+
+    public void cheatingSuspicion(final CallbackObject<User> cheatingSuspicionCallback) {
+        communicator.sendCheatingSuspicion(cheatingSuspicionCallback);
+    }
+
+
+    public void registerForWinningInfos(CallbackObject<User> winnerCallback) {
+        communicator.registerForWinnerInfos(winnerCallback);
+    }
+
+    public void cleanup() {
+        communicator.resetNetwork();
     }
 
     /**
