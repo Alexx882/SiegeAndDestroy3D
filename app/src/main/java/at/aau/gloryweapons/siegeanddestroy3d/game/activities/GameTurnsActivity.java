@@ -41,6 +41,7 @@ public class GameTurnsActivity extends AppCompatActivity {
     private BattleArea actualBattleArea = null;
     private boolean shooting = false;
     private Button cheaterSuspectedButton;
+    private Button applyShotsButton;
     private TextView textViewWinner;
     private List<TextView> userLabels = new ArrayList<>(4);
     TextView btnUserTurn = null;
@@ -80,8 +81,8 @@ public class GameTurnsActivity extends AppCompatActivity {
         }
 
         //sets the OnClickListener for the Button to end the turn
-        Button button = findViewById(R.id.buttonUpadteWater);
-        button.setOnClickListener(new View.OnClickListener() {
+        applyShotsButton = findViewById(R.id.buttonUpadteWater);
+        applyShotsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!controller.endTurn()) {
@@ -90,6 +91,7 @@ public class GameTurnsActivity extends AppCompatActivity {
             }
         });
 
+        cheaterSuspectedButton = findViewById(R.id.buttonCheaterSuspect);
         //Sets the onClickListner for the "Cheater Suspects Button"
         // todo make work and extract from oncreate
 //        cheaterSuspectedButton.setOnClickListener(new View.OnClickListener() {
@@ -166,11 +168,17 @@ public class GameTurnsActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             showWinner(winner);
+                            disableButtons();
                         }
                     });
                 }
             }
         });
+    }
+
+    private void disableButtons(){
+        applyShotsButton.setEnabled(false);
+        cheaterSuspectedButton.setEnabled(false);
     }
 
     private void registerForCurrentUserUpdates() {
