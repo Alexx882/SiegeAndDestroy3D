@@ -363,6 +363,7 @@ public class GameTurnsActivity extends AppCompatActivity {
                     orientation = 90;
                 }
                 if (area.getUserId() != GlobalGameSettings.getCurrent().getPlayerId()) {
+                    orientation=0;
                     switch (tiles[i][j].getType()) {
                         case SHIP_DESTROYED:
                             gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_destroyed, i, j, orientation);
