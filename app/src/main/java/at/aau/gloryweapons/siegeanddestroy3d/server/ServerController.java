@@ -13,6 +13,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
@@ -29,6 +31,7 @@ public class ServerController {
     private int shots = 0;
     private CallbackObject<User> turnOfFirstUserCallback;
     private ArrayList<User> penaltyList = new ArrayList<>();
+    private ArrayList<CheatingDTO> cheaterList = new ArrayList<>();
 
     /**
      * Checks if the name for an user is available.
@@ -132,6 +135,10 @@ public class ServerController {
             getUserForNextTurn();
         }
         return users.get(userIdxForCurrentTurn);
+    }
+
+    public void addCheating(CheatingDTO cheatingDTO){
+        cheaterList.add(cheatingDTO);
     }
 
     /**
@@ -255,5 +262,46 @@ public class ServerController {
 
         return uNotDefeated;
     }
+
+    /**
+     * blaming for cheating is available for 10 sec. Penalty List - the cheater
+     * or the one who blamed someone
+     * @param userId
+     * @param callbackObject
+     */
+    public void checkCheating(int userId, CallbackObject<CheatingDTO> callbackObject) {
+        CheatingDTO currentCheater =null;
+        long currentTime = System.currentTimeMillis();
+        for (CheatingDTO cheater: cheaterList) {
+            if ((cheater.getIncomingServerTimeStamp() - currentTime)< 10000){
+                currentCheater = cheater;
+                User user = getUserByID(cheater.getClientId());
+                penaltyList.add(user);
+            }
+
+        }
+
+        if (currentCheater != null){
+            callbackObject.callback(currentCheater);
+        }else {
+            User user = getUserByID(userId);
+            if (user != null ){
+                penaltyList.add(user);
+            }
+            callbackObject.callback(null);
+        }
+
+    }
+
+    private User getUserByID(int id){
+        for (User user : users ) {
+            if (user != null &&id == user.getId()){
+                return user;
+            }
+        }
+        return null;
+    }
+
+
 }
 

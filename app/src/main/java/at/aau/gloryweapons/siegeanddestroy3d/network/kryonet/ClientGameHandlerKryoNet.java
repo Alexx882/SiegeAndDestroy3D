@@ -18,6 +18,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
@@ -46,6 +47,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private CallbackObject<User> cheaterSuspicionCallback;
     private CallbackObject<User> winnerCallback;
     private CallbackObject<Boolean> quitCallback;
+    private CallbackObject<Boolean> cheatingCallback;
     private Activity activity;
 
     private static ClientGameHandlerKryoNet instance;
@@ -124,6 +126,14 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     @Override
     public void registerQuitInfo(CallbackObject<Boolean> quitCallback) {
         this.quitCallback = quitCallback;
+    }
+
+    //sends cheating to server
+    @Override
+    public void sendCheatingToServer(CallbackObject<Boolean> callback) {
+        this.cheatingCallback = callback;
+        CheatingDTO cheatingDTO = new CheatingDTO();
+        sendToServer(cheatingDTO);
     }
 
 

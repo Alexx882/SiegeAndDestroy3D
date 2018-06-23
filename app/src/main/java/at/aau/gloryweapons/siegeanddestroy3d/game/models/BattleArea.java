@@ -1,5 +1,7 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
+import android.util.Log;
+
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonIgnore;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
@@ -7,6 +9,7 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.TileTypeConverter;
@@ -27,6 +30,9 @@ public class BattleArea implements Serializable {
 
     @JsonIgnore
     private BattleAreaTile[][] battleAreaTiles;
+
+    //ship List to load the ships
+    private List<ShipContainer> shipList = new ArrayList<>();
 
     /**
      * empty constructor for json mapping
@@ -184,6 +190,13 @@ public class BattleArea implements Serializable {
 
         boolean horizontalPlacement = shipToPlace.isHorizontal();
 
+        //add ship to list
+        ShipContainer container = new ShipContainer();
+        container.setRow(rowToPlace);
+        container.setCol(colToPlace);
+        container.setShip(shipToPlace);
+        shipList.add(container);
+
         // place the ship by setting the tiles
         for (int i = 0; i < shipToPlace.getLength(); ++i) {
             BattleAreaTile currentTile = battleAreaTiles[rowToPlace][colToPlace];
@@ -221,5 +234,66 @@ public class BattleArea implements Serializable {
                     ++cnt;
 
         return cnt;
+    }
+
+    //searches in the Container for the weakest ship and returns it
+    public ShipContainer findWeakestShip() {
+        ShipContainer containerWeakestShip = null;
+
+        for (ShipContainer shipDetails: shipList) {
+            checkShip(shipDetails);
+            if (containerWeakestShip != null && containerWeakestShip.getCurrentLength() > shipDetails.getCurrentLength() && shipDetails.getCurrentLength() != 0 ){
+                containerWeakestShip = shipDetails;
+            }else if (containerWeakestShip == null && shipDetails.getCurrentLength() > 0){
+                containerWeakestShip = shipDetails;
+            }
+        }
+
+        return containerWeakestShip;
+    }
+
+    /**
+     * gets Ship, checks if horizontal oder vertical - gets Row and Col
+     * checks if alive (no water, not already hit)
+     * @param shipDetails
+     */
+    private void checkShip(ShipContainer shipDetails) {
+        List<Integer> randomPosition = new ArrayList<>();
+        BasicShip ship = shipDetails.getShip();
+        int currentLength = 0;
+        for (int i = 0; i < ship.getLength(); i++) {
+            if (ship.isHorizontal()){
+                if (battleAreaTiles[shipDetails.getRow()][shipDetails.getCol() + i].isAlive()){
+                    currentLength++;
+                    randomPosition.add(shipDetails.getCol() + i);
+                }
+            }else {
+                if (battleAreaTiles[shipDetails.getRow() + i][shipDetails.getCol()].isAlive()){
+                    currentLength++;
+                    randomPosition.add(shipDetails.getRow() + i);
+                }
+            }
+        }
+        //set alive length
+        shipDetails.setCurrentLength(currentLength);
+
+        //set random position for cheating
+        if (currentLength > 0){
+            setRandom(randomPosition,shipDetails );
+        }
+    }
+
+    //finding a random point of attack
+    private void setRandom(List<Integer> randomPosition, ShipContainer container){
+        Random random = new Random();
+        int index = random.nextInt(randomPosition.size());
+
+        if (container.getShip().isHorizontal()){
+            container.setRowCheating(container.getRow());
+            container.setColCheating(randomPosition.get(index));
+        }else {
+            container.setColCheating(container.getCol());
+            container.setRowCheating(randomPosition.get(index));
+        }
     }
 }

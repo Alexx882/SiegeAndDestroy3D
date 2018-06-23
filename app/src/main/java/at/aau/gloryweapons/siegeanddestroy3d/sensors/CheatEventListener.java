@@ -19,6 +19,8 @@ public class CheatEventListener implements SensorEventListener {
     private float mAccelCurrent;
     private float mAccelLast;
 
+    private float currentState;
+
     CallbackObject<Boolean> callback;
 
     @Override
@@ -26,7 +28,7 @@ public class CheatEventListener implements SensorEventListener {
         if (proximityActivated(sensorEvent, 4) || accelerometerActivated(sensorEvent, 3)) {
             callback.callback(true);
         }
-        callback.callback(false);
+        //callback.callback(false);
     }
 
     @Override
@@ -67,9 +69,15 @@ public class CheatEventListener implements SensorEventListener {
 
     private boolean proximityActivated(SensorEvent event, int sensitivity) {
         if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-            if (event.values[0] >= -sensitivity && event.values[0] <= sensitivity) {
+            if (currentState < event.values[0]){
+                return false;
+            }else{
                 return true;
             }
+            /*
+            if (event.values[0] >= -sensitivity && event.values[0] <= sensitivity) {
+                return true;
+            }*/
         }
         return false;
     }

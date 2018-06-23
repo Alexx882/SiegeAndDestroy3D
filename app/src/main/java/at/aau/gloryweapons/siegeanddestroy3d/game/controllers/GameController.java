@@ -123,4 +123,12 @@ public class GameController {
     public void cleanup() {
         communicator.resetNetwork();
     }
+
+    /**
+     * sends cheating to server
+     * @param callback
+     */
+    public void sendCheating(CallbackObject<Boolean> callback){
+        communicator.sendCheatingToServer(callback);
+    }
 }

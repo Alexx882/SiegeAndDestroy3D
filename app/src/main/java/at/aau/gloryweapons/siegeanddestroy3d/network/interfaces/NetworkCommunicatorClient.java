@@ -80,4 +80,6 @@ public interface NetworkCommunicatorClient {
      * Registration of the callback if the server is closed.
      */
     public void registerQuitInfo(CallbackObject<Boolean> callback);
+
+    void sendCheatingToServer(CallbackObject<Boolean> callback);
 }
