@@ -28,6 +28,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.ReturnObject;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.sensors.CheatEventListener;
 
@@ -39,17 +41,16 @@ public class GameTurnsActivity extends AppCompatActivity {
     private BattleArea actualBattleArea = null;
     private boolean shooting = false;
     private Button cheaterSuspectedButton;
-    private TextView textViewWinner;
+    private Button applyShotsButton;
     private List<TextView> userLabels = new ArrayList<>(4);
-    TextView btnUserTurn = null;
+    TextView textViewUserTurn = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enemy_turn);
         GameBoardImageView[][] visualBoard = null;
-        btnUserTurn =(TextView)findViewById(R.id.textViewUserTurn);
-        textViewWinner = findViewById(R.id.textViewWinner);
+        textViewUserTurn = (TextView) findViewById(R.id.textViewUserTurn);
 
         // receive and set parameters
         gameSettings = (GameConfiguration) getIntent().getExtras().get(GameConfiguration.INTENT_KEYWORD);
@@ -78,8 +79,8 @@ public class GameTurnsActivity extends AppCompatActivity {
         }
 
         //sets the OnClickListener for the Button to end the turn
-        Button button = findViewById(R.id.buttonUpadteWater);
-        button.setOnClickListener(new View.OnClickListener() {
+        applyShotsButton = findViewById(R.id.buttonApplyShots);
+        applyShotsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!controller.endTurn()) {
@@ -88,6 +89,7 @@ public class GameTurnsActivity extends AppCompatActivity {
             }
         });
 
+        cheaterSuspectedButton = findViewById(R.id.buttonCheaterSuspect);
         //Sets the onClickListner for the "Cheater Suspects Button"
         // todo make work and extract from oncreate
 //        cheaterSuspectedButton.setOnClickListener(new View.OnClickListener() {
@@ -123,7 +125,8 @@ public class GameTurnsActivity extends AppCompatActivity {
             constraintSet.clone(userLayout);
 
             int marginTop = 8 + i * 95;
-            constraintSet.connect(v.getId(), ConstraintSet.RIGHT, userLayout.getId(), ConstraintSet.RIGHT, 250);
+            constraintSet.connect(v.getId(), ConstraintSet.RIGHT, userLayout.getId(), ConstraintSet.RIGHT, 20);
+            constraintSet.connect(v.getId(), ConstraintSet.LEFT, userLayout.getId(), ConstraintSet.LEFT, 20);
             constraintSet.connect(v.getId(), ConstraintSet.TOP, userLayout.getId(), ConstraintSet.TOP, marginTop);
 
             constraintSet.applyTo(userLayout);
@@ -164,6 +167,7 @@ public class GameTurnsActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             showWinner(winner);
+                            disableButtons();
                         }
                     });
                 }
@@ -171,20 +175,50 @@ public class GameTurnsActivity extends AppCompatActivity {
         });
     }
 
+    private void disableButtons() {
+        applyShotsButton.setEnabled(false);
+        cheaterSuspectedButton.setEnabled(false);
+    }
+
     private void registerForCurrentUserUpdates() {
-        controller.registerForCurrentTurnUserUpdates(new CallbackObject<User>() {
+        controller.registerForCurrentTurnUserUpdates(new CallbackObject<TurnInfoDTO>() {
             @Override
-            public void callback(final User param) {
-                if(param != null) {
+            public void callback(final TurnInfoDTO ti) {
+                if (ti != null) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            btnUserTurn.setText(param.getName());
+                            textViewUserTurn.setText("Zug von: " + ti.getPlayerNextTurn().getName());
+
+                            updateLocalBattleArea(ti.getShots());
                         }
                     });
                 }
             }
         });
+    }
+
+    /**
+     * Updates the battle area for this user with the hits she has taken.
+     *
+     * @param shots
+     */
+    private void updateLocalBattleArea(List<TurnDTO> shots) {
+        for (BattleArea area : gameSettings.getBattleAreaList()) {
+            if (area.getUserId() == GlobalGameSettings.getCurrent().getPlayerId()) {
+                // local player area found
+                controller.updateBattleAreaFromShotList(area, shots);
+
+                // redraw if currently displayed
+                if (area.equals(actualBattleArea))
+                    loadBattleArea(area,
+                            GlobalGameSettings.getCurrent().getNumberRows(),
+                            GlobalGameSettings.getCurrent().getNumberColumns());
+
+                break;
+            }
+        }
+
     }
 
     /**
@@ -196,8 +230,8 @@ public class GameTurnsActivity extends AppCompatActivity {
         if (winner == null)
             return;
 
-        textViewWinner.setTextColor(Color.GREEN);
-        textViewWinner.setText("Winner: " + winner.getName());
+        textViewUserTurn.setTextColor(Color.GREEN);
+        textViewUserTurn.setText("Gewinner: " + winner.getName());
     }
 
     CheatEventListener cheatListener;

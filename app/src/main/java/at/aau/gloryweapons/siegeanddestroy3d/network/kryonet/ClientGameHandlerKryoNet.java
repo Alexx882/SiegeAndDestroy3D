@@ -46,8 +46,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private CallbackObject<User> cheaterSuspicionCallback;
     private CallbackObject<User> winnerCallback;
     private CallbackObject<Boolean> quitCallback;
-    private Activity activity;
-    private CallbackObject<User> currentTurnUserUpdateCallback;
+    private CallbackObject<TurnInfoDTO> currentTurnUserUpdateCallback;
 
     private static ClientGameHandlerKryoNet instance;
 
@@ -128,7 +127,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     }
 
     @Override
-    public void registerForCurrentTurnUserUpdates(CallbackObject<User> currentTurnUserCallback) {
+    public void registerForCurrentTurnUserUpdates(CallbackObject<TurnInfoDTO> currentTurnUserCallback) {
         this.currentTurnUserUpdateCallback = currentTurnUserCallback;
     }
 
@@ -140,7 +139,6 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     @Override
     public void initClientGameHandler(final String ip, Activity activity, CallbackObject<HandshakeDTO> isConnectedCallback) {
-        this.activity = activity;
         GlobalGameSettings.getCurrent().setServer(false);
         this.isConnectedCallback = isConnectedCallback;
 
@@ -240,7 +238,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
         // call the callback
         if (currentTurnUserUpdateCallback != null) {
-            currentTurnUserUpdateCallback.callback(receivedObject.getPlayerNextTurn());
+            currentTurnUserUpdateCallback.callback(receivedObject);
         }
     }
 

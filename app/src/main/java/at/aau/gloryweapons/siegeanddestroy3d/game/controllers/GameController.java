@@ -1,10 +1,13 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.controllers;
 
+import java.util.List;
+
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.ReturnObject;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
@@ -131,9 +134,13 @@ public class GameController {
      *
      * @param currentTurnUserCallback
      */
-    public void registerForCurrentTurnUserUpdates(CallbackObject<User> currentTurnUserCallback) {
+    public void registerForCurrentTurnUserUpdates(CallbackObject<TurnInfoDTO> currentTurnUserCallback) {
         communicator.registerForCurrentTurnUserUpdates(currentTurnUserCallback);
 
         communicator.sendFirstUserRequestToServer();
+    }
+
+    public void updateBattleAreaFromShotList(BattleArea area, List<TurnDTO> shots) {
+        GameControllerHelperClass.updateBattleAreaFromShotList(area, shots);
     }
 }

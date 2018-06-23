@@ -46,7 +46,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     // callbacks
     private CallbackObject<List<String>> userCallBack;
-    private CallbackObject<User> currentTurnUserCallback;
+    private CallbackObject<TurnInfoDTO> currentTurnUserCallback;
     private CallbackObject<User> winnerCallback;
 
     private Activity activity;
@@ -226,20 +226,24 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     }
 
     /**
-     * Broadcasts the info that the round ended and the user for the next turn to clients and server.
+     * Broadcasts the info that the round ended to clients and server.
+     * Also sends the user for the next turn and all shots from the current round.
      */
     private void sendNextTurnInfo() {
         // inform everyone that the current round ended
         User nextUser = serverController.getUserForNextTurn();
+        List<TurnDTO> currentShots = serverController.getCurrentShots();
 
-        // send update to all clients
         TurnInfoDTO response = new TurnInfoDTO();
         response.setPlayerNextTurn(nextUser);
+        response.setShots(currentShots);
+
+        // send update to all clients
         sendToAllClients(response);
 
         // save for server
         if (currentTurnUserCallback != null)
-            currentTurnUserCallback.callback(nextUser);
+            currentTurnUserCallback.callback(response);
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
     }
 
@@ -263,7 +267,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         }
 
         if (currentTurnUserCallback != null)
-            currentTurnUserCallback.callback(nextUser);
+            currentTurnUserCallback.callback(turnInfo);
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(nextUser);
     }
 
@@ -381,9 +385,13 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         User winner = serverController.checkForWinner();
         if (winner != null) {
             // we have a winner :D
+
+            // send latest shot list
+            sendNextTurnInfo();
+
+            // inform everyone
             WinnerDTO wdto = new WinnerDTO();
             wdto.setWinner(winner);
-
             sendToAllClients(wdto);
 
             if (winnerCallback != null)
@@ -404,8 +412,11 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(user);
 
-        if (currentTurnUserCallback != null)
-            currentTurnUserCallback.callback(user);
+        if (currentTurnUserCallback != null) {
+            TurnInfoDTO ti = new TurnInfoDTO();
+            ti.setPlayerNextTurn(user);
+            currentTurnUserCallback.callback(ti);
+        }
     }
 
     @Override
@@ -426,7 +437,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     }
 
     @Override
-    public void registerForCurrentTurnUserUpdates(CallbackObject<User> currentTurnUserCallback) {
+    public void registerForCurrentTurnUserUpdates(CallbackObject<TurnInfoDTO> currentTurnUserCallback) {
         this.currentTurnUserCallback = currentTurnUserCallback;
     }
 

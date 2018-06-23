@@ -28,6 +28,7 @@ public class ServerController {
     private List<CallbackObject<GameConfiguration>> callbacks = new ArrayList<>(4);
     private int shots = 0;
     private ArrayList<User> penaltyList = new ArrayList<>();
+    private List<TurnDTO> currentShots = new ArrayList<>(GlobalGameSettings.getCurrent().getNumberShots());
 
     /**
      * Checks if the name for an user is available.
@@ -136,12 +137,13 @@ public class ServerController {
     }
 
     /**
-     * checks the tile and sets the type of the TurnDTO
+     * checks the tile and sets the type of the TurnDTO.
      *
      * @param hit
      * @return
      */
     public TurnDTO checkShot(TurnDTO hit) {
+        // todo @patrick logik abstrahieren in 2. methode checkShot(hit, arealist=battleAreas) und die da testen.
 
         BattleAreaTile tile;
         for (BattleArea area : battleAreas) {
@@ -159,7 +161,36 @@ public class ServerController {
             }
         }
 
+        addShotToList(hit);
+
         return hit;
+    }
+
+    /**
+     * Add the shot to use later.
+     *
+     * @param shot
+     */
+    public void addShotToList(TurnDTO shot) {
+        if(currentShots.size() == GlobalGameSettings.getCurrent().getNumberShots())
+            // has to be new round
+            currentShots.clear();
+
+        currentShots.add(shot);
+    }
+
+    /**
+     * Returns the list of current shots.
+     */
+    public List<TurnDTO> getCurrentShots() {
+        return this.currentShots;
+    }
+
+    /**
+     * Clears the list.
+     */
+    public void resetCurrentShots() {
+        this.currentShots.clear();
     }
 
     /**
@@ -189,16 +220,6 @@ public class ServerController {
         }
         return tile;
 
-    }
-
-    /**
-     * saves Shots in gameConfig
-     *
-     * @param shots
-     */
-    public void sentShots(int shots) {
-
-        this.shots = shots;
     }
 
     /**

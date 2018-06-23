@@ -11,6 +11,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 
 /**
  * The Interface for a Object used to communicate with the server.
@@ -92,5 +93,5 @@ public interface NetworkCommunicatorClient {
      *
      * @param currentTurnUserCallback
      */
-    void registerForCurrentTurnUserUpdates(CallbackObject<User> currentTurnUserCallback);
+    void registerForCurrentTurnUserUpdates(CallbackObject<TurnInfoDTO> currentTurnUserCallback);
 }
