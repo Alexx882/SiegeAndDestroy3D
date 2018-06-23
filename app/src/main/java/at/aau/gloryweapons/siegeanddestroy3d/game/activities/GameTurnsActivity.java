@@ -42,17 +42,15 @@ public class GameTurnsActivity extends AppCompatActivity {
     private boolean shooting = false;
     private Button cheaterSuspectedButton;
     private Button applyShotsButton;
-    private TextView textViewWinner;
     private List<TextView> userLabels = new ArrayList<>(4);
-    TextView btnUserTurn = null;
+    TextView textViewUserTurn = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enemy_turn);
         GameBoardImageView[][] visualBoard = null;
-        btnUserTurn = (TextView) findViewById(R.id.textViewUserTurn);
-        textViewWinner = findViewById(R.id.textViewWinner);
+        textViewUserTurn = (TextView) findViewById(R.id.textViewUserTurn);
 
         // receive and set parameters
         gameSettings = (GameConfiguration) getIntent().getExtras().get(GameConfiguration.INTENT_KEYWORD);
@@ -81,7 +79,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         }
 
         //sets the OnClickListener for the Button to end the turn
-        applyShotsButton = findViewById(R.id.buttonUpadteWater);
+        applyShotsButton = findViewById(R.id.buttonApplyShots);
         applyShotsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,7 +125,8 @@ public class GameTurnsActivity extends AppCompatActivity {
             constraintSet.clone(userLayout);
 
             int marginTop = 8 + i * 95;
-            constraintSet.connect(v.getId(), ConstraintSet.RIGHT, userLayout.getId(), ConstraintSet.RIGHT, 250);
+            constraintSet.connect(v.getId(), ConstraintSet.RIGHT, userLayout.getId(), ConstraintSet.RIGHT, 20);
+            constraintSet.connect(v.getId(), ConstraintSet.LEFT, userLayout.getId(), ConstraintSet.LEFT, 20);
             constraintSet.connect(v.getId(), ConstraintSet.TOP, userLayout.getId(), ConstraintSet.TOP, marginTop);
 
             constraintSet.applyTo(userLayout);
@@ -176,7 +175,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         });
     }
 
-    private void disableButtons(){
+    private void disableButtons() {
         applyShotsButton.setEnabled(false);
         cheaterSuspectedButton.setEnabled(false);
     }
@@ -189,7 +188,7 @@ public class GameTurnsActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            btnUserTurn.setText(ti.getPlayerNextTurn().getName());
+                            textViewUserTurn.setText("Zug von: " + ti.getPlayerNextTurn().getName());
 
                             updateLocalBattleArea(ti.getShots());
                         }
@@ -231,8 +230,8 @@ public class GameTurnsActivity extends AppCompatActivity {
         if (winner == null)
             return;
 
-        textViewWinner.setTextColor(Color.GREEN);
-        textViewWinner.setText("Winner: " + winner.getName());
+        textViewUserTurn.setTextColor(Color.GREEN);
+        textViewUserTurn.setText("Gewinner: " + winner.getName());
     }
 
     CheatEventListener cheatListener;
