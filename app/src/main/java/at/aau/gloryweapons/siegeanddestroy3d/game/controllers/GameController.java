@@ -42,47 +42,101 @@ public class GameController {
     public void shotOnEnemy(final BattleArea enemyArea, User enemy, final int col, final int row, final CallbackObject<ReturnObject> callback) {
 
         final ReturnObject object = new ReturnObject();
-        if (checkIfMyTurn()) {
-            if (enemy.getId() != GlobalGameSettings.getCurrent().getPlayerId()) {
-                if (enemyArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.SHIP_DESTROYED && enemyArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.NO_HIT) {
-                    if (shotsFired < GlobalGameSettings.getCurrent().getNumberShots()) {
+        String message = null;
 
-                        shotsFired++;
 
-                        communicator.sendShotOnEnemyToServer(enemyArea, col, row, new CallbackObject<TurnDTO>() {
-                            @Override
-                            public void callback(TurnDTO t) {
-                                BattleAreaTile.TileType tile = null;
-                                if (t.getType() == TurnDTO.TurnType.NO_HIT) {
-                                    tile = BattleAreaTile.TileType.NO_HIT;
-                                    enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.NO_HIT);
-                                } else {
-                                    tile = BattleAreaTile.TileType.SHIP_DESTROYED;
-                                    enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
-                                }
-                                object.setTile(tile);
-                                callback.callback(object);
-
-                            }
-                        });
-                        return;
-                    } else {
-                        object.setI(1);
-                        object.setMessage("alle Schüsse abgegeben. runde beenden");
-                    }
-                } else {
-                    object.setI(2);
-                    object.setMessage("dieses Feld ist bereits zerstört");
-                }
-            } else {
-                object.setI(3);
-                object.setMessage("nix selbstmord. nein :3");
-            }
-        } else {
+        message = checkIfMyTurn();
+        if (message != null) {
             object.setI(4);
-            object.setMessage("du nix dran");
+            object.setMessage(message);
+        }
+
+
+        message = checkIfSuicide(enemy);
+        if (message != null && object.getMessage() == null) {
+            object.setI(3);
+            object.setMessage(message);
+        }
+
+
+        message = checkIfTileDestroyed(enemyArea, col, row);
+        if (message != null && object.getMessage() == null) {
+            object.setI(2);
+            object.setMessage(message);
+        }
+
+        message = checkIfShots();
+        if (message != null && object.getMessage() == null) {
+            object.setI(2);
+            object.setMessage(message);
+        }
+
+        if (checkIfMyTurn() == null && checkIfSuicide(enemy) == null && checkIfTileDestroyed(enemyArea, col, row) == null && checkIfShots() == null) {
+
+            shotsFired++;
+
+            communicator.sendShotOnEnemyToServer(enemyArea, col, row, new CallbackObject<TurnDTO>() {
+                @Override
+                public void callback(TurnDTO t) {
+                    BattleAreaTile.TileType tile = null;
+                    if (t.getType() == TurnDTO.TurnType.NO_HIT) {
+                        tile = BattleAreaTile.TileType.NO_HIT;
+                        enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.NO_HIT);
+                    } else {
+                        tile = BattleAreaTile.TileType.SHIP_DESTROYED;
+                        enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                    }
+                    object.setTile(tile);
+                    callback.callback(object);
+
+                }
+            });
+            return;
         }
         callback.callback(object);
+    }
+
+    /**
+     * check if shots left
+     *
+     * @return
+     */
+    public String checkIfShots() {
+        if (shotsFired < GlobalGameSettings.getCurrent().getNumberShots()) {
+            return null;
+        } else {
+            return "alle Schüsse abgegeben. runde beenden";
+        }
+    }
+
+    /**
+     * checks if the Field is already destroyed
+     *
+     * @param enemyArea
+     * @param col
+     * @param row
+     * @return
+     */
+    public String checkIfTileDestroyed(BattleArea enemyArea, int col, int row) {
+        if (enemyArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.SHIP_DESTROYED && enemyArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.NO_HIT) {
+            return null;
+        } else {
+            return "dieses Feld ist bereits zerstört";
+        }
+    }
+
+    /**
+     * checks if the player tries to shoot himself
+     *
+     * @param enemy
+     * @return
+     */
+    public String checkIfSuicide(User enemy) {
+        if (enemy.getId() != GlobalGameSettings.getCurrent().getPlayerId()) {
+            return null;
+        } else {
+            return "kein Selbstbeschuss";
+        }
 
     }
 
@@ -91,13 +145,13 @@ public class GameController {
      *
      * @return
      */
-    private boolean checkIfMyTurn() {
+    public String checkIfMyTurn() {
         if (GlobalGameSettings.getCurrent().getUserOfCurrentTurn() != null && GlobalGameSettings.getCurrent().getPlayerId() == GlobalGameSettings.getCurrent().getUserOfCurrentTurn().getId()) {
 
-            return true;
+            return null;
         }
 
-        return false;
+        return "Nicht deine Runde";
     }
 
     /**

@@ -2,7 +2,6 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;

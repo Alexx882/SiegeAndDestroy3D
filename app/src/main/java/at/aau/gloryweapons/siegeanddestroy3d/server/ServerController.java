@@ -26,7 +26,6 @@ public class ServerController {
     private ArrayList<User> users = new ArrayList<>(4);
     private List<BattleArea> battleAreas = new ArrayList<>(4);
     private List<CallbackObject<GameConfiguration>> callbacks = new ArrayList<>(4);
-    private int shots = 0;
     private ArrayList<User> penaltyList = new ArrayList<>();
     private List<TurnDTO> currentShots = new ArrayList<>(GlobalGameSettings.getCurrent().getNumberShots());
 
