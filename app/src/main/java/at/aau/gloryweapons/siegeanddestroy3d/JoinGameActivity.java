@@ -35,6 +35,8 @@ public class JoinGameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_join_game);
         loadUiElements();
 
+        GlobalGameSettings.getCurrent().setGameFinished(false);
+
         btnJoinGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

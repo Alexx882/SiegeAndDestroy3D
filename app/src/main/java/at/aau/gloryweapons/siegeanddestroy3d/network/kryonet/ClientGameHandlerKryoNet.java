@@ -20,6 +20,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FirstUserDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.QuitGame;
@@ -47,8 +48,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private CallbackObject<User> cheaterSuspicionCallback;
     private CallbackObject<User> winnerCallback;
     private CallbackObject<Boolean> quitCallback;
-    private CallbackObject<Boolean> cheatingCallback;
-    private Activity activity;
+    private CallbackObject<TurnInfoDTO> currentTurnUserUpdateCallback;
 
     private static ClientGameHandlerKryoNet instance;
 
@@ -128,6 +128,16 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         this.quitCallback = quitCallback;
     }
 
+    @Override
+    public void registerForCurrentTurnUserUpdates(CallbackObject<TurnInfoDTO> currentTurnUserCallback) {
+        this.currentTurnUserUpdateCallback = currentTurnUserCallback;
+    }
+
+    @Override
+    public void sendFirstUserRequestToServer() {
+        FirstUserDTO first = new FirstUserDTO();
+        sendToServer(first);
+    }
     //sends cheating to server
     @Override
     public void sendCheatingToServer(CallbackObject<Boolean> callback) {
@@ -239,6 +249,11 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private void handleTurnInfo(TurnInfoDTO receivedObject) {
         // save info in GGS
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(receivedObject.getPlayerNextTurn());
+
+        // call the callback
+        if (currentTurnUserUpdateCallback != null) {
+            currentTurnUserUpdateCallback.callback(receivedObject);
+        }
     }
 
     private void handleWinnerInfo(WinnerDTO receivedObject) {

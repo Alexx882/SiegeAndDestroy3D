@@ -31,6 +31,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.ReturnObject;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.ShipContainer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.sensors.CheatEventListener;
 
@@ -42,15 +44,18 @@ public class GameTurnsActivity extends AppCompatActivity {
     private BattleArea actualBattleArea = null;
     private boolean shooting = false;
     private Button cheaterSuspectedButton;
-    private TextView textViewWinner;
+    private Button applyShotsButton;
     private List<TextView> userLabels = new ArrayList<>(4);
     private GameBoardImageView[][] currentBoardView;
+    TextView textViewUserTurn = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enemy_turn);
         GameBoardImageView[][] visualBoard = null;
+        textViewUserTurn = (TextView) findViewById(R.id.textViewUserTurn);
+
         // receive and set parameters
         gameSettings = (GameConfiguration) getIntent().getExtras().get(GameConfiguration.INTENT_KEYWORD);
         GlobalGameSettings.setCurrent((GlobalGameSettings) getIntent().getExtras().get(GlobalGameSettings.INTENT_KEYWORD));
@@ -61,6 +66,7 @@ public class GameTurnsActivity extends AppCompatActivity {
 
         final int nRows = GlobalGameSettings.getCurrent().getNumberRows();
         final int nCols = GlobalGameSettings.getCurrent().getNumberColumns();
+
         //gets the right user
         for (User u : gameSettings.getUserList()) {
             if (u.getId() == GlobalGameSettings.getCurrent().getPlayerId()) {
@@ -77,8 +83,8 @@ public class GameTurnsActivity extends AppCompatActivity {
         }
 
         //sets the OnClickListener for the Button to end the turn
-        Button button = findViewById(R.id.buttonUpadteWater);
-        button.setOnClickListener(new View.OnClickListener() {
+        applyShotsButton = findViewById(R.id.buttonApplyShots);
+        applyShotsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!controller.endTurn()) {
@@ -105,7 +111,8 @@ public class GameTurnsActivity extends AppCompatActivity {
             constraintSet.clone(userLayout);
 
             int marginTop = 8 + i * 95;
-            constraintSet.connect(v.getId(), ConstraintSet.RIGHT, userLayout.getId(), ConstraintSet.RIGHT, 250);
+            constraintSet.connect(v.getId(), ConstraintSet.RIGHT, userLayout.getId(), ConstraintSet.RIGHT, 20);
+            constraintSet.connect(v.getId(), ConstraintSet.LEFT, userLayout.getId(), ConstraintSet.LEFT, 20);
             constraintSet.connect(v.getId(), ConstraintSet.TOP, userLayout.getId(), ConstraintSet.TOP, marginTop);
 
             constraintSet.applyTo(userLayout);
@@ -117,6 +124,8 @@ public class GameTurnsActivity extends AppCompatActivity {
 
         textViewWinner = findViewById(R.id.textViewWinner);
         registerForWinningInfos();
+
+        registerForCurrentUserUpdates();
     }
 
     private void registerCheaterSuspicion() {
@@ -169,11 +178,58 @@ public class GameTurnsActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             showWinner(winner);
+                            disableButtons();
                         }
                     });
                 }
             }
         });
+    }
+
+    private void disableButtons() {
+        applyShotsButton.setEnabled(false);
+        cheaterSuspectedButton.setEnabled(false);
+    }
+
+    private void registerForCurrentUserUpdates() {
+        controller.registerForCurrentTurnUserUpdates(new CallbackObject<TurnInfoDTO>() {
+            @Override
+            public void callback(final TurnInfoDTO ti) {
+                if (ti != null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textViewUserTurn.setText("Zug von: " + ti.getPlayerNextTurn().getName());
+
+                            updateLocalBattleArea(ti.getShots());
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * Updates the battle area for this user with the hits she has taken.
+     *
+     * @param shots
+     */
+    private void updateLocalBattleArea(List<TurnDTO> shots) {
+        for (BattleArea area : gameSettings.getBattleAreaList()) {
+            if (area.getUserId() == GlobalGameSettings.getCurrent().getPlayerId()) {
+                // local player area found
+                controller.updateBattleAreaFromShotList(area, shots);
+
+                // redraw if currently displayed
+                if (area.equals(actualBattleArea))
+                    loadBattleArea(area,
+                            GlobalGameSettings.getCurrent().getNumberRows(),
+                            GlobalGameSettings.getCurrent().getNumberColumns());
+
+                break;
+            }
+        }
+
     }
 
     /**
@@ -185,8 +241,8 @@ public class GameTurnsActivity extends AppCompatActivity {
         if (winner == null)
             return;
 
-        textViewWinner.setTextColor(Color.GREEN);
-        textViewWinner.setText("Winner: " + winner.getName());
+        textViewUserTurn.setTextColor(Color.GREEN);
+        textViewUserTurn.setText("Gewinner: " + winner.getName());
     }
 
     CheatEventListener cheatListener;
@@ -226,7 +282,6 @@ public class GameTurnsActivity extends AppCompatActivity {
      * register Sensors
      */
     public void useSensorsforCheating() {
-
         cheatListener = new CheatEventListener(this);
         cheatListener.registerForChanges(new CallbackObject<Boolean>() {
             @Override
@@ -368,6 +423,7 @@ public class GameTurnsActivity extends AppCompatActivity {
                     orientation = 90;
                 }
                 if (area.getUserId() != GlobalGameSettings.getCurrent().getPlayerId()) {
+                    orientation=0;
                     switch (tiles[i][j].getType()) {
                         case SHIP_DESTROYED:
                             gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_destroyed, i, j, orientation);

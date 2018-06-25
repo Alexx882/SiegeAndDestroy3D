@@ -32,6 +32,7 @@ public class ServerController {
     private CallbackObject<User> turnOfFirstUserCallback;
     private ArrayList<User> penaltyList = new ArrayList<>();
     private ArrayList<CheatingDTO> cheaterList = new ArrayList<>();
+    private List<TurnDTO> currentShots = new ArrayList<>(GlobalGameSettings.getCurrent().getNumberShots());
 
     /**
      * Checks if the name for an user is available.
@@ -67,11 +68,6 @@ public class ServerController {
         return id.getAndAdd(1);
     }
 
-    public void registerForGameConfigCompletion(CallbackObject<User> callback) {
-        // just overwrite old values, because we need it only once
-        turnOfFirstUserCallback = callback;
-    }
-
     /**
      * Adds the user and his battle area to the gameconfig.
      * If all connected players registered their areas the created gameconfig is returned in the callback.
@@ -103,10 +99,6 @@ public class ServerController {
                     cb.callback(gameConfig);
 
             callbacks.clear();
-
-            // also inform the clients about the first turn
-            if (turnOfFirstUserCallback != null)
-                turnOfFirstUserCallback.callback(getUserForFirstTurn());
         }
     }
 
@@ -118,6 +110,7 @@ public class ServerController {
      * @return The user to use first
      */
     public User getUserForFirstTurn() {
+        // todo
         // decide per random so nobody is preferred
         userIdxForCurrentTurn = 0;//new Random().nextInt(users.size());
         return users.get(userIdxForCurrentTurn);
@@ -152,12 +145,13 @@ public class ServerController {
     }
 
     /**
-     * checks the tile and sets the type of the TurnDTO
+     * checks the tile and sets the type of the TurnDTO.
      *
      * @param hit
      * @return
      */
     public TurnDTO checkShot(TurnDTO hit) {
+        // todo @patrick logik abstrahieren in 2. methode checkShot(hit, arealist=battleAreas) und die da testen.
 
         BattleAreaTile tile;
         for (BattleArea area : battleAreas) {
@@ -175,7 +169,36 @@ public class ServerController {
             }
         }
 
+        addShotToList(hit);
+
         return hit;
+    }
+
+    /**
+     * Add the shot to use later.
+     *
+     * @param shot
+     */
+    public void addShotToList(TurnDTO shot) {
+        if(currentShots.size() == GlobalGameSettings.getCurrent().getNumberShots())
+            // has to be new round
+            currentShots.clear();
+
+        currentShots.add(shot);
+    }
+
+    /**
+     * Returns the list of current shots.
+     */
+    public List<TurnDTO> getCurrentShots() {
+        return this.currentShots;
+    }
+
+    /**
+     * Clears the list.
+     */
+    public void resetCurrentShots() {
+        this.currentShots.clear();
     }
 
     /**
@@ -205,16 +228,6 @@ public class ServerController {
         }
         return tile;
 
-    }
-
-    /**
-     * saves Shots in gameConfig
-     *
-     * @param shots
-     */
-    public void sentShots(int shots) {
-
-        this.shots = shots;
     }
 
     /**

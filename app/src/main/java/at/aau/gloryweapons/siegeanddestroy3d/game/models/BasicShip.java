@@ -1,31 +1,17 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonIgnore;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.converter.TileTypeConverter;
 
 /**
  * Created by Alexander on 05.04.2018.
  */
-@JsonObject
 public class BasicShip implements Serializable {
-    @JsonField
     private int userId = -1;
 
-    @JsonField
     private int length = 0;
 
-    @JsonIgnore
     private BattleAreaTile[] tiles;
 
-    @JsonField(name = "h")
     private boolean horizontal = true;
 
     public BasicShip(int userId, int length, boolean horizontal) {
@@ -36,6 +22,7 @@ public class BasicShip implements Serializable {
     }
 
     public BasicShip() {
+        this.tiles = new BattleAreaTile[0];
     }
 
     public int getUserId() {
@@ -75,19 +62,5 @@ public class BasicShip implements Serializable {
 
     public void setTiles(BattleAreaTile[] tiles) {
         this.tiles = tiles;
-    }
-
-    /**
-     * Checks if the ship is still alive.
-     *
-     * @return True if at least one Tile is not destroyed.
-     */
-    public boolean isAlive() {
-        for (BattleAreaTile t : tiles) {
-            if (t != null && t.getType() != BattleAreaTile.TileType.SHIP_DESTROYED)
-                return true;
-        }
-
-        return false;
     }
 }

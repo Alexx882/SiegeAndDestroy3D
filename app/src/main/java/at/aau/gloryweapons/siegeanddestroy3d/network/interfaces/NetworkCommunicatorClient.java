@@ -11,6 +11,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 
 /**
  * The Interface for a Object used to communicate with the server.
@@ -65,6 +66,12 @@ public interface NetworkCommunicatorClient {
     public void sendFinish();
 
     /**
+     * Ask for the starting user.
+     * Response is consumed by registering to NetworkCommunicatorClient.registerForCurrentTurnUserUpdates().
+     */
+    public void sendFirstUserRequestToServer();
+
+    /**
      * Register for updates about a winner.
      *
      * @param winnerCallback
@@ -80,6 +87,13 @@ public interface NetworkCommunicatorClient {
      * Registration of the callback if the server is closed.
      */
     public void registerQuitInfo(CallbackObject<Boolean> callback);
+
+    /**
+     * Register for updates about the user for the current turn.
+     *
+     * @param currentTurnUserCallback
+     */
+    void registerForCurrentTurnUserUpdates(CallbackObject<TurnInfoDTO> currentTurnUserCallback);
 
     void sendCheatingToServer(CallbackObject<Boolean> callback);
 }

@@ -2,7 +2,7 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.dto;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
-public class FinishRoundDTO extends RequestDTO {
+public class FirstUserDTO extends RequestDTO {
     private User u;
 
     public User getU() {

@@ -44,6 +44,8 @@ public class NewGameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_game);
 
+        GlobalGameSettings.getCurrent().setGameFinished(false);
+
         // start server
         serverGameHandlerAsyncComm = ServerGameHandlerKryoNet.getInstance();
         serverGameHandlerAsyncComm.initServerGameHandler(this, new CallbackObject<List<String>>() {

@@ -1,30 +1,19 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.dto;
 
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonIgnore;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
-
 import java.io.Serializable;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.converter.TurnTypeConverter;
 
-@JsonObject
 public class TurnDTO extends RequestDTO implements Serializable {
 
-    @JsonIgnore
     private static final long serialVersionUID = 1459083456079L;
 
-    @JsonField(typeConverter = TurnTypeConverter.class)
     private TurnType type;
 
-    @JsonField
-    private BattleArea area;
+    private int userId;
 
-    @JsonField
     private int yCoordinates;
 
-    @JsonField
     private int xCoordinates;
 
     public enum TurnType {
@@ -36,8 +25,12 @@ public class TurnDTO extends RequestDTO implements Serializable {
     }
 
     public TurnDTO(TurnType type, BattleArea area) {
+        this(type, area.getUserId());
+    }
+
+    public TurnDTO(TurnType type, int playerId){
         this.type = type;
-        this.area = area;
+        this.userId = playerId;
     }
 
     public TurnDTO() {
@@ -67,16 +60,12 @@ public class TurnDTO extends RequestDTO implements Serializable {
         this.xCoordinates = xCoordinates;
     }
 
-    public BattleArea getArea() {
-        return area;
-    }
-
     public int getUserId() {
-        return area.getUserId();
+        return userId;
     }
 
-    public void setArea(BattleArea area) {
-        this.area = area;
+    public void setUserId(int userId){
+        this.userId = userId;
     }
 }
 

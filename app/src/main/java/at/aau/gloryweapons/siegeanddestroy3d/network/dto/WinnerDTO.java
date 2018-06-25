@@ -9,7 +9,6 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 public class WinnerDTO {
     private User winner;
 
-
     public User getWinner() {
         return winner;
     }

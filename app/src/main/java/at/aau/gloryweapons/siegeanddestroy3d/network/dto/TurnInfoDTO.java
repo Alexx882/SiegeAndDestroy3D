@@ -1,19 +1,13 @@
 package at.aau.gloryweapons.siegeanddestroy3d.network.dto;
 
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
+import java.util.List;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
-@JsonObject
 public class TurnInfoDTO {
 
-    @JsonField
     private User playerNextTurn;
-
-    public TurnInfoDTO() {
-
-    }
+    private List<TurnDTO> currentShots;
 
     public User getPlayerNextTurn() {
         return this.playerNextTurn;
@@ -21,5 +15,13 @@ public class TurnInfoDTO {
 
     public void setPlayerNextTurn(User playerNextTurn) {
         this.playerNextTurn = playerNextTurn;
+    }
+
+    public List<TurnDTO> getShots() {
+        return currentShots;
+    }
+
+    public void setShots(List<TurnDTO> shots) {
+        this.currentShots = shots;
     }
 }

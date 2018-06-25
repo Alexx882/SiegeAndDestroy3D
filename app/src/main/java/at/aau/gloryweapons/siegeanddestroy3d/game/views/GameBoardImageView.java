@@ -1,9 +1,7 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.views;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.util.AttributeSet;
-import android.widget.ImageView;
+
 
 /**
  * This custom ImageView is used for the game board.
@@ -14,16 +12,6 @@ public class GameBoardImageView extends android.support.v7.widget.AppCompatImage
 
     public GameBoardImageView(Context context, int boardRow, int boardCol) {
         super(context);
-        setBoardLocation(boardRow, boardCol);
-    }
-
-    public GameBoardImageView(Context context, AttributeSet attrs, int boardRow, int boardCol) {
-        super(context, attrs);
-        setBoardLocation(boardRow, boardCol);
-    }
-
-    public GameBoardImageView(Context context, AttributeSet attrs, int defStyleAttr, int boardRow, int boardCol) {
-        super(context, attrs, defStyleAttr);
         setBoardLocation(boardRow, boardCol);
     }
 
