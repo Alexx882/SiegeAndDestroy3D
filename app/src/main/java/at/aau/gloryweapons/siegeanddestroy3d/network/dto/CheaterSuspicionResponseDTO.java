@@ -3,13 +3,13 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.dto;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
 public class CheaterSuspicionResponseDTO {
-    private User user;
+    private User userWhoCheats;
 
-    public User getUser() {
-        return user;
+    public User getUserWhoCheats() {
+        return userWhoCheats;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserWhoCheats(User userWhoCheats) {
+        this.userWhoCheats = userWhoCheats;
     }
 }

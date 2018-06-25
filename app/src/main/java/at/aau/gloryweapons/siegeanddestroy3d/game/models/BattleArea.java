@@ -1,6 +1,9 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Alexander on 05.04.2018.

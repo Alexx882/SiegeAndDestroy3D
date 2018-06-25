@@ -16,7 +16,9 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FirstUserDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.InstructionDTO;
@@ -64,7 +66,10 @@ public class KryonetHelper {
         kryo.register(CheaterSuspicionResponseDTO.class);
         kryo.register(WinnerDTO.class);
         kryo.register(QuitGame.class);
+        kryo.register(FirstUserDTO.class);
         kryo.register(ShipContainer.class);
         kryo.register(CheatingDTO.class);
+        kryo.register(CheatingResponseDTO.class);
+        kryo.register(CheaterSuspicionResponseDTO.class);
     }
 }

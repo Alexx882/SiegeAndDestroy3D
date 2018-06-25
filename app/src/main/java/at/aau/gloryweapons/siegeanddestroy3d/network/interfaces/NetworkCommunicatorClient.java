@@ -9,6 +9,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.HandshakeDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
@@ -81,7 +83,7 @@ public interface NetworkCommunicatorClient {
     /**
      * sends a request to the server, if another player cheats
      */
-    public void sendCheatingSuspicion(CallbackObject<User> callback);
+    public void sendCheatingSuspicion(CallbackObject<CheaterSuspicionResponseDTO> callback);
 
     /**
      * Registration of the callback if the server is closed.
@@ -95,5 +97,5 @@ public interface NetworkCommunicatorClient {
      */
     void registerForCurrentTurnUserUpdates(CallbackObject<TurnInfoDTO> currentTurnUserCallback);
 
-    void sendCheatingToServer(CallbackObject<Boolean> callback);
+    void sendCheatingToServer(CallbackObject<CheatingResponseDTO> callback);
 }

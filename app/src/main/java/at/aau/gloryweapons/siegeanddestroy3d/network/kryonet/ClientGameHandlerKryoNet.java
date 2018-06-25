@@ -2,7 +2,6 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -19,6 +18,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FirstUserDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
@@ -30,7 +30,6 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameRequestDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.UserNameResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WinnerDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.WrapperHelper;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.NetworkCommunicatorClient;
 
@@ -45,10 +44,11 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     private CallbackObject<User> userNameCallback;
     private CallbackObject<TurnDTO> shotHitCallback;
     private CallbackObject<GameConfiguration> gameConfigCallback;
-    private CallbackObject<User> cheaterSuspicionCallback;
+    private CallbackObject<CheaterSuspicionResponseDTO> cheaterSuspicionCallback;
     private CallbackObject<User> winnerCallback;
     private CallbackObject<Boolean> quitCallback;
     private CallbackObject<TurnInfoDTO> currentTurnUserUpdateCallback;
+    private CallbackObject<CheatingResponseDTO> cheatingCallback;
 
     private static ClientGameHandlerKryoNet instance;
 
@@ -117,7 +117,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     }
 
     @Override
-    public void sendCheatingSuspicion(CallbackObject<User> callback) {
+    public void sendCheatingSuspicion(CallbackObject<CheaterSuspicionResponseDTO> callback) {
         cheaterSuspicionCallback = callback;
         CheaterSuspicionDTO cheaterSuspicionDTO = new CheaterSuspicionDTO();
         sendToServer(cheaterSuspicionDTO);
@@ -140,7 +140,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
     }
     //sends cheating to server
     @Override
-    public void sendCheatingToServer(CallbackObject<Boolean> callback) {
+    public void sendCheatingToServer(CallbackObject<CheatingResponseDTO> callback) {
         this.cheatingCallback = callback;
         CheatingDTO cheatingDTO = new CheatingDTO();
         sendToServer(cheatingDTO);
@@ -149,7 +149,6 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     @Override
     public void initClientGameHandler(final String ip, Activity activity, CallbackObject<HandshakeDTO> isConnectedCallback) {
-        this.activity = activity;
         GlobalGameSettings.getCurrent().setServer(false);
         this.isConnectedCallback = isConnectedCallback;
 
@@ -209,11 +208,19 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
                     handleWinnerInfo((WinnerDTO) receivedObject);
                 } else if(receivedObject instanceof QuitGame){
                     handleQuitGame();
-                } else {
+                } else if(receivedObject instanceof  CheatingResponseDTO){
+                    handleCheatingResponse((CheatingResponseDTO) receivedObject);
+                }else {
                     Log.e(this.getClass().getName(), "Cannot read object: " + receivedObject.getClass().getName());
                 }
             }
         });
+    }
+
+    private void handleCheatingResponse(CheatingResponseDTO receivedObject) {
+        if (cheatingCallback == null)
+            return;
+        cheatingCallback.callback(receivedObject);
     }
 
     private void handleQuitGame() {
@@ -224,7 +231,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
     private void handleCheatingSuspicionResponse(CheaterSuspicionResponseDTO receivedObject) {
         if (cheaterSuspicionCallback != null) {
-            cheaterSuspicionCallback.callback(receivedObject.getUser());
+            cheaterSuspicionCallback.callback(receivedObject);
         }
     }
 

@@ -2,7 +2,6 @@ package at.aau.gloryweapons.siegeanddestroy3d.network.kryonet;
 
 import android.app.Activity;
 import android.os.Handler;
-import android.provider.Settings;
 import android.util.Log;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
@@ -22,6 +22,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FinishRoundDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.FirstUserDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.GameConfigurationRequestDTO;
@@ -51,6 +52,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     private CallbackObject<TurnInfoDTO> currentTurnUserCallback;
     private CallbackObject<User> winnerCallback;
     private CallbackObject<User> cheaterSuspicionCallback;
+    private CallbackObject<CheatingResponseDTO> cheatingResponseDTOCallbackObject;
 
     private Activity activity;
 
@@ -153,6 +155,8 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     private void handleCheating(CheatingDTO receivedObject) {
         long timestamp = System.currentTimeMillis();
         receivedObject.setIncomingServerTimeStamp(timestamp);
+        int serverControllerID = clientDataMap.get(receivedObject.getClientId()).getUser().getId();
+        receivedObject.setServerControllerId(serverControllerID);
         serverController.addCheating(receivedObject);
     }
 
@@ -163,20 +167,29 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
      * @param receivedObject
      */
     private void handleCheatingSuspicion(final CheaterSuspicionDTO receivedObject) {
-        //TODO check and send response
         final ClientData clientData = clientDataMap.get(receivedObject.getClientId());
-        final CheaterSuspicionResponseDTO cheaterSuspicionResponseDTO = new CheaterSuspicionResponseDTO();
 
         // check
-        serverController.checkCheating(receivedObject.getClientId(), new CallbackObject<CheatingDTO>() {
+        serverController.checkCheating(clientData.getUser(), new CallbackObject<CheaterSuspicionResponseDTO>() {
             @Override
-            public void callback(CheatingDTO param) {
-                if (param != null && param.getClientId() != 0 ){
-                    cheaterSuspicionResponseDTO.setUser(clientDataMap.get(param.getClientId()).getUser());
-                }else {
-                    cheaterSuspicionResponseDTO.setUser(clientDataMap.get(receivedObject.getClientId()).getUser());
+            public void callback(CheaterSuspicionResponseDTO param) {
+                sendToClient(clientData, param);
+
+                if (param.getUserWhoCheats() != null){
+                    //for server user
+                    if (param.getUserWhoCheats().getId() == GlobalGameSettings.getCurrent().getLocalUser().getId()
+                            && cheatingResponseDTOCallbackObject != null ){
+                        CheatingResponseDTO cheatingResponseDTO = new CheatingResponseDTO();
+                        cheatingResponseDTO.setGotCaught(true);
+                        cheatingResponseDTO.setCaughtByUser(clientData.getUser());
+                        cheatingResponseDTOCallbackObject.callback(cheatingResponseDTO);
+                    }else {
+                        //for client
+                        ClientData cheaterClientData= clientDataMap.get(param.getUserWhoCheats().getId());
+                        cheatingResponseToClient(clientData.getUser(),cheaterClientData);
+                    }
+
                 }
-                sendToClient(clientData, cheaterSuspicionResponseDTO);
             }
         });
     }
@@ -448,15 +461,15 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     }
 
     @Override
-    public void sendCheatingSuspicion(final CallbackObject<User> callback) {
-        int id = GlobalGameSettings.getCurrent().getPlayerId();
-
-        serverController.checkCheating(id, new CallbackObject<CheatingDTO>() {
+    public void sendCheatingSuspicion(final CallbackObject<CheaterSuspicionResponseDTO> callback) {
+        serverController.checkCheating(GlobalGameSettings.getCurrent().getLocalUser(), new CallbackObject<CheaterSuspicionResponseDTO>() {
             @Override
-            public void callback(CheatingDTO param) {
-                if (param != null ){
-                    ClientData data = clientDataMap.get(param.getClientId());
-                    callback.callback(data.getUser());
+            public void callback(CheaterSuspicionResponseDTO param) {
+                callback.callback(param);
+
+                if (param.getUserWhoCheats() != null){
+                    ClientData clientData = getClientDataByID(param.getUserWhoCheats().getId());
+                    cheatingResponseToClient(GlobalGameSettings.getCurrent().getLocalUser(), clientData);
                 }
             }
         });
@@ -474,11 +487,31 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     //initializes a new CheatingDTO - sets ClientID and the timestamp
     @Override
-    public void sendCheatingToServer(CallbackObject<Boolean> callback) {
+    public void sendCheatingToServer(CallbackObject<CheatingResponseDTO> callback) {
+        cheatingResponseDTOCallbackObject = callback;
         CheatingDTO cheatingDTO = new CheatingDTO();
         cheatingDTO.setClientId(GlobalGameSettings.getCurrent().getPlayerId());
         cheatingDTO.setIncomingServerTimeStamp(System.currentTimeMillis());
+        cheatingDTO.setServerControllerId(GlobalGameSettings.getCurrent().getPlayerId());
         serverController.addCheating(cheatingDTO);
+    }
+
+    private void cheatingResponseToClient(User caughtByUser, ClientData sendToClientData ){
+        if (sendToClientData == null)
+            return;
+        CheatingResponseDTO cheatingResponseDTO = new CheatingResponseDTO();
+        cheatingResponseDTO.setGotCaught(true);
+        cheatingResponseDTO.setCaughtByUser(caughtByUser);
+        sendToClient(sendToClientData, cheatingResponseDTO);
+    }
+    
+    private ClientData getClientDataByID(int serverControllerId){
+        for (Map.Entry<Integer,ClientData> entry: clientDataMap.entrySet()) {
+            if (entry.getValue().getUser().getId() == serverControllerId){
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 
 }

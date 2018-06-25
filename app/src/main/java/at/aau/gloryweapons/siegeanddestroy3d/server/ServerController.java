@@ -13,8 +13,9 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
@@ -141,8 +142,15 @@ public class ServerController {
      * @return
      */
     private boolean suspendATurn(User user) {
-        return penaltyList.remove(user);
-    }
+        for (int i = 0; i < penaltyList.size(); i++) {
+            if (user.getId() == penaltyList.get(i).getId()){
+                penaltyList.remove(i);
+                return true;
+            }
+        }
+        return false;
+  }
+
 
     /**
      * checks the tile and sets the type of the TurnDTO.
@@ -279,29 +287,34 @@ public class ServerController {
     /**
      * blaming for cheating is available for 10 sec. Penalty List - the cheater
      * or the one who blamed someone
-     * @param userId
+     * @param user
      * @param callbackObject
      */
-    public void checkCheating(int userId, CallbackObject<CheatingDTO> callbackObject) {
-        CheatingDTO currentCheater =null;
+    public void checkCheating(User user, CallbackObject<CheaterSuspicionResponseDTO> callbackObject) {
+        CheaterSuspicionResponseDTO cheaterSuspicionResponseDTO = new CheaterSuspicionResponseDTO();
         long currentTime = System.currentTimeMillis();
+
+        //checks if a user has cheated in the last 10 seconds
         for (CheatingDTO cheater: cheaterList) {
-            if ((cheater.getIncomingServerTimeStamp() - currentTime)< 10000){
-                currentCheater = cheater;
-                User user = getUserByID(cheater.getClientId());
-                penaltyList.add(user);
+            if ((currentTime - cheater.getIncomingServerTimeStamp()) < (GlobalGameSettings.getCurrent().getCheaterSuspicionTime()* 1000)){
+                User userWhoCheats = getUserByID(cheater.getServerControllerId());
+                cheaterSuspicionResponseDTO.setUserWhoCheats(userWhoCheats);
+                penaltyList.add(userWhoCheats);
             }
 
         }
 
-        if (currentCheater != null){
-            callbackObject.callback(currentCheater);
+        //remove old cheater
+        cheaterList.clear();
+
+        //processing the callback
+        if (cheaterSuspicionResponseDTO.getUserWhoCheats() != null){
+            callbackObject.callback(cheaterSuspicionResponseDTO);
         }else {
-            User user = getUserByID(userId);
             if (user != null ){
                 penaltyList.add(user);
             }
-            callbackObject.callback(null);
+            callbackObject.callback(cheaterSuspicionResponseDTO);
         }
 
     }
@@ -314,7 +327,6 @@ public class ServerController {
         }
         return null;
     }
-
 
 }
 
