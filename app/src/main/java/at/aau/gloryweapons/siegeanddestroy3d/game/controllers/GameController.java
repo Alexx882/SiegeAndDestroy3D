@@ -1,11 +1,15 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.ReturnObject;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.ShipContainer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingResponseDTO;
@@ -207,4 +211,69 @@ public class GameController {
     public void sendCheating(CallbackObject<CheatingResponseDTO> callback){
         communicator.sendCheatingToServer(callback);
     }
+
+
+    //searches in the Container for the weakest ship and returns it
+    public ShipContainer findWeakestShip(BattleArea battleArea) {
+        ShipContainer containerWeakestShip = null;
+
+        for (ShipContainer shipDetails: battleArea.getShipList()) {
+            checkShip(shipDetails, battleArea);
+            if (containerWeakestShip != null && containerWeakestShip.getCurrentLength() > shipDetails.getCurrentLength() && shipDetails.getCurrentLength() != 0 ){
+                containerWeakestShip = shipDetails;
+            }else if (containerWeakestShip == null && shipDetails.getCurrentLength() > 0){
+                containerWeakestShip = shipDetails;
+            }
+        }
+
+        return containerWeakestShip;
+    }
+
+    /**
+     * gets Ship, checks if horizontal oder vertical - gets Row and Col
+     * checks if alive (no water, not already hit)
+     * @param shipDetails
+     */
+    public void checkShip(ShipContainer shipDetails, BattleArea battleArea) {
+        BattleAreaTile[][] battleAreaTiles = battleArea.getBattleAreaTiles();
+
+        List<Integer> randomPosition = new ArrayList<>();
+        BasicShip ship = shipDetails.getShip();
+        int currentLength = 0;
+        for (int i = 0; i < ship.getLength(); i++) {
+            if (ship.isHorizontal()){
+                if (battleAreaTiles[shipDetails.getRow()][shipDetails.getCol() + i].isAlive()){
+                    currentLength++;
+                    randomPosition.add(shipDetails.getCol() + i);
+                }
+            }else {
+                if (battleAreaTiles[shipDetails.getRow() + i][shipDetails.getCol()].isAlive()){
+                    currentLength++;
+                    randomPosition.add(shipDetails.getRow() + i);
+                }
+            }
+        }
+        //set alive length
+        shipDetails.setCurrentLength(currentLength);
+
+        //set random position for cheating
+        if (currentLength > 0){
+            setRandom(randomPosition,shipDetails );
+        }
+    }
+
+    //finding a random point of attack
+    private void setRandom(List<Integer> randomPosition, ShipContainer container){
+        Random random = new Random();
+        int index = random.nextInt(randomPosition.size());
+
+        if (container.getShip().isHorizontal()){
+            container.setRowCheating(container.getRow());
+            container.setColCheating(randomPosition.get(index));
+        }else {
+            container.setColCheating(container.getCol());
+            container.setRowCheating(randomPosition.get(index));
+        }
+    }
+
 }
