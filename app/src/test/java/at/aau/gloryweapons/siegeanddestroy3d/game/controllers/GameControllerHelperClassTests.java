@@ -1,7 +1,5 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.controllers;
 
-import android.service.quicksettings.Tile;
-
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -117,8 +115,8 @@ public class GameControllerHelperClassTests {
         // apply shots
         GameControllerHelperClass.updateBattleAreaFromShotList(area, shots);
         Assert.assertEquals(1, area.remainingFields());
-        Assert.assertEquals(1, countShotsOnArea(area, BattleAreaTile.TileType.SHIP_DESTROYED));
-        Assert.assertEquals(2, countShotsOnArea(area, BattleAreaTile.TileType.NO_HIT));
+        Assert.assertEquals(1, countHitsOnArea(area));
+        Assert.assertEquals(2, countNumberOnArea(area, BattleAreaTile.TileType.NO_HIT));
     }
 
     @Test
@@ -139,8 +137,8 @@ public class GameControllerHelperClassTests {
         // apply shots
         GameControllerHelperClass.updateBattleAreaFromShotList(area, shots);
         Assert.assertEquals(2, area.remainingFields());
-        Assert.assertEquals(0, countShotsOnArea(area, BattleAreaTile.TileType.SHIP_DESTROYED));
-        Assert.assertEquals(0, countShotsOnArea(area, BattleAreaTile.TileType.NO_HIT));
+        Assert.assertEquals(0, countHitsOnArea(area));
+        Assert.assertEquals(0, countNumberOnArea(area, BattleAreaTile.TileType.NO_HIT));
     }
 
     @Test
@@ -163,8 +161,8 @@ public class GameControllerHelperClassTests {
         // apply shots
         GameControllerHelperClass.updateBattleAreaFromShotList(area, shots);
         Assert.assertEquals(1, area.remainingFields());
-        Assert.assertEquals(1, countShotsOnArea(area, BattleAreaTile.TileType.SHIP_DESTROYED));
-        Assert.assertEquals(1, countShotsOnArea(area, BattleAreaTile.TileType.NO_HIT));
+        Assert.assertEquals(1, countHitsOnArea(area));
+        Assert.assertEquals(1, countNumberOnArea(area, BattleAreaTile.TileType.NO_HIT));
     }
 
     @Test
@@ -191,8 +189,8 @@ public class GameControllerHelperClassTests {
         // apply shots
         GameControllerHelperClass.updateBattleAreaFromShotList(area, shots);
         Assert.assertEquals(2, area.remainingFields());
-        Assert.assertEquals(0, countShotsOnArea(area, BattleAreaTile.TileType.SHIP_DESTROYED));
-        Assert.assertEquals(0, countShotsOnArea(area, BattleAreaTile.TileType.NO_HIT));
+        Assert.assertEquals(0, countHitsOnArea(area));
+        Assert.assertEquals(0, countNumberOnArea(area, BattleAreaTile.TileType.NO_HIT));
     }
 
     private TurnDTO createShot(int userId, TurnDTO.TurnType type, int x, int y) {
@@ -205,12 +203,24 @@ public class GameControllerHelperClassTests {
         return shot;
     }
 
-    private int countShotsOnArea(BattleArea area, BattleAreaTile.TileType type) {
+    private int countNumberOnArea(BattleArea area, BattleAreaTile.TileType type) {
         int cnt = 0;
 
         for (BattleAreaTile[] tileRow : area.getBattleAreaTiles()) {
             for (BattleAreaTile tile : tileRow) {
                 if (tile.getType() == type)
+                    ++cnt;
+            }
+        }
+        return cnt;
+    }
+
+    private int countHitsOnArea(BattleArea area){
+        int cnt = 0;
+
+        for (BattleAreaTile[] tileRow : area.getBattleAreaTiles()) {
+            for (BattleAreaTile tile : tileRow) {
+                if (tile.isDestroyed())
                     ++cnt;
             }
         }

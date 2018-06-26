@@ -24,8 +24,8 @@ public class ReturnObjectTest {
     @Test
     public void ReturnObjectTileTestDestroyed() {
         ReturnObject r = new ReturnObject();
-        r.setTile(BattleAreaTile.TileType.SHIP_DESTROYED);
-        assertEquals(BattleAreaTile.TileType.SHIP_DESTROYED, r.getTile());
+        r.setTile(BattleAreaTile.TileType.SHIP_START_DESTROYED);
+        assertEquals(BattleAreaTile.TileType.SHIP_START_DESTROYED, r.getTile());
     }
 
     @Test

@@ -136,7 +136,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         cheaterSuspectedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               controller.cheatingSuspicion(new CallbackObject<CheaterSuspicionResponseDTO>() {
+                controller.cheatingSuspicion(new CallbackObject<CheaterSuspicionResponseDTO>() {
                     @Override
                     public void callback(CheaterSuspicionResponseDTO param) {
                         if (param.getUserWhoCheats() != null) {
@@ -235,7 +235,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         if (winner == null)
             return;
 
-        textViewUserTurn.setTextColor(Color.GREEN);
+        textViewUserTurn.setTextColor(Color.RED);
         textViewUserTurn.setText("Gewinner: " + winner.getName());
     }
 
@@ -316,7 +316,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         }
 
         // finds the weakest ship
-        if (currentCheat == null){
+        if (currentCheat == null) {
             currentCheat = actualBattleArea.findWeakestShip();
         }
 
@@ -337,11 +337,9 @@ public class GameTurnsActivity extends AppCompatActivity {
     }
 
     /**
-     *
-     * @param shipContainer
-     * gets the Rows and Cols from the Battle Area and calls the timer
+     * @param shipContainer gets the Rows and Cols from the Battle Area and calls the timer
      */
-    private void showShipForShortTime(ShipContainer shipContainer){
+    private void showShipForShortTime(ShipContainer shipContainer) {
         if (shipContainer == null)
             return;
         timer();
@@ -365,16 +363,16 @@ public class GameTurnsActivity extends AppCompatActivity {
         }, 5000);
     }
 
-    private void hideShip(){
+    private void hideShip() {
         if (currentCheat == null)
             return;
         final int row = currentCheat.getRowCheating();
         final int col = currentCheat.getColCheating();
         final int drawable;
         if (actualBattleArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.NO_HIT ||
-                actualBattleArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.SHIP_DESTROYED){
+                !actualBattleArea.getBattleAreaTiles()[row][col].isDestroyed()) {
             drawable = getTheRightTile(BattleAreaTile.TileType.WATER);
-        }else {
+        } else {
             drawable = getTheRightTile(actualBattleArea.getBattleAreaTiles()[row][col].getType());
         }
 
@@ -425,42 +423,14 @@ public class GameTurnsActivity extends AppCompatActivity {
                     orientation = 90;
                 }
                 if (area.getUserId() != GlobalGameSettings.getCurrent().getPlayerId()) {
-                    orientation=0;
-                    switch (tiles[i][j].getType()) {
-                        case SHIP_DESTROYED:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_destroyed, i, j, orientation);
-                            break;
-                        case NO_HIT:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.no_hitx, i, j, orientation);
-                            break;
-                        default:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.water_tiles, i, j, orientation);
-                            break;
-                    }
+                    orientation = 0;
+                    if (tiles[i][j].getType() == BattleAreaTile.TileType.NO_HIT || tiles[i][j].isDestroyed())
+                        gView[i][j] = board.addImageToGrid(grid, getTheRightTile(tiles[i][j].getType()), i, j, orientation);
+                    else
+                        gView[i][j] = board.addImageToGrid(grid, R.drawable.water_tiles, i, j, orientation);
                 } else {
-                    switch (tiles[i][j].getType()) {
-                        case WATER:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.water_tiles, i, j, orientation);
-                            break;
-                        case NO_HIT:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.no_hitx, i, j, orientation);
-                            break;
-                        case SHIP_START:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.shipbig_start, i, j, orientation);
-                            break;
-                        case SHIP_MIDDLE:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.shipbig_middle, i, j, orientation);
-                            break;
-                        case SHIP_END:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.shipbig_end, i, j, orientation);
-                            break;
-                        case SHIP_DESTROYED:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_destroyed, i, j, orientation);
-                            break;
-                        default:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.shipbig_start, i, j, orientation);
-                            break;
-                    }
+                    int id = getTheRightTile(tiles[i][j].getType());
+                    gView[i][j] = board.addImageToGrid(grid, id, i, j, orientation);
                 }
                 //sets the onClickListener for the tiles of the gridLayout
                 setOnClickListenerForGridTiles(gView, i, j);
@@ -496,8 +466,10 @@ public class GameTurnsActivity extends AppCompatActivity {
                         @Override
                         public void callback(ReturnObject param) {
                             if (param.getI() == 0) {
-                                if (param.getTile() == BattleAreaTile.TileType.SHIP_DESTROYED){
-                                    currentCheatHit(v.getBoardRow(),v.getBoardCol());
+                                if (param.getTile() == BattleAreaTile.TileType.SHIP_START_DESTROYED
+                                        || param.getTile() == BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED
+                                        || param.getTile() == BattleAreaTile.TileType.SHIP_END_DESTROYED) {
+                                    currentCheatHit(v.getBoardRow(), v.getBoardCol());
                                 }
                                 final int drawable = getTheRightTile(param.getTile());
                                 runOnUiThread(new Runnable() {
@@ -545,21 +517,27 @@ public class GameTurnsActivity extends AppCompatActivity {
             case SHIP_END:
                 drawable = R.drawable.shipbig_end;
                 break;
-            case SHIP_DESTROYED:
-                drawable = R.drawable.ship_destroyed;
+            case SHIP_START_DESTROYED:
+                drawable = R.drawable.shipbig_starthit;
+                break;
+            case SHIP_MIDDLE_DESTROYED:
+                drawable = R.drawable.shipbig_middlehit;
+                break;
+            case SHIP_END_DESTROYED:
+                drawable = R.drawable.shipbig_endhit;
                 break;
         }
         return drawable;
     }
 
-    private void currentCheatHit(int row, int col){
+    private void currentCheatHit(int row, int col) {
         if (currentCheat == null)
             return;
         if (currentCheat.getRowCheating() == row && currentCheat.getColCheating() == col)
             currentCheat = null;
     }
 
-    private void toastOnUi(final String message){
+    private void toastOnUi(final String message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -572,7 +550,7 @@ public class GameTurnsActivity extends AppCompatActivity {
      * Cheating is available after 10 seconds and only while the game is not finished.
      * If cheating was disabled during game setup, its always disabled.
      */
-    private boolean cheatingIsAvailable(){
+    private boolean cheatingIsAvailable() {
         if (!GlobalGameSettings.getCurrent().isSchummelnEnabled())
             return false;
 
@@ -580,9 +558,9 @@ public class GameTurnsActivity extends AppCompatActivity {
             return false;
 
         long timeDiff = System.currentTimeMillis() - initTimeStamp;
-        if ( timeDiff > 15000){
+        if (timeDiff > 15000) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }

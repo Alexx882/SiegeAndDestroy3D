@@ -59,10 +59,24 @@ public class BattleAreaTileTest {
     }
 
     @Test
-    public void BattleAreaTileTileTestShipDestroyed() {
+    public void BattleAreaTileTileTestShipDestroyedStart() {
         BattleAreaTile tile = new BattleAreaTile();
-        tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
-        assertEquals(BattleAreaTile.TileType.SHIP_DESTROYED, tile.getType());
+        tile.setType(BattleAreaTile.TileType.SHIP_START_DESTROYED);
+        assertEquals(BattleAreaTile.TileType.SHIP_START_DESTROYED, tile.getType());
+    }
+
+    @Test
+    public void BattleAreaTileTileTestShipDestroyedMiddle() {
+        BattleAreaTile tile = new BattleAreaTile();
+        tile.setType(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED);
+        assertEquals(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED, tile.getType());
+    }
+
+    @Test
+    public void BattleAreaTileTileTestShipDestroyedEnd() {
+        BattleAreaTile tile = new BattleAreaTile();
+        tile.setType(BattleAreaTile.TileType.SHIP_END_DESTROYED);
+        assertEquals(BattleAreaTile.TileType.SHIP_END_DESTROYED, tile.getType());
     }
 
     @Test
@@ -83,7 +97,11 @@ public class BattleAreaTileTest {
     @Test
     public void isAlive_false() {
         BattleAreaTile tile = new BattleAreaTile();
-        tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+        tile.setType(BattleAreaTile.TileType.SHIP_START_DESTROYED);
+        assertFalse(tile.isAlive());
+        tile.setType(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED);
+        assertFalse(tile.isAlive());
+        tile.setType(BattleAreaTile.TileType.SHIP_END_DESTROYED);
         assertFalse(tile.isAlive());
 
         tile.setType(BattleAreaTile.TileType.WATER);

@@ -344,7 +344,7 @@ public class BattleAreaTests {
         area.placeShip(ship, 0, 0);
 
         // set a tile to hit
-        area.getBattleAreaTiles()[0][1].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+        area.getBattleAreaTiles()[0][1].setType(BattleAreaTile.TileType.SHIP_END_DESTROYED);
 
         Assert.assertEquals(1, area.remainingFields());
     }
@@ -355,8 +355,8 @@ public class BattleAreaTests {
         area.placeShip(ship, 0, 0);
 
         // set all tiles to hit
-        area.getBattleAreaTiles()[0][0].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
-        area.getBattleAreaTiles()[0][1].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+        area.getBattleAreaTiles()[0][0].setType(BattleAreaTile.TileType.SHIP_START_DESTROYED);
+        area.getBattleAreaTiles()[0][1].setType(BattleAreaTile.TileType.SHIP_END_DESTROYED);
 
         Assert.assertEquals(0, area.remainingFields());
     }

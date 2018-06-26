@@ -23,11 +23,37 @@ public class GameControllerTest {
     }
 
     @Test
-    public void checkIfTileDestroyedTileDestroyed() {
+    public void checkIfTileDestroyedTileStartDestroyed() {
         GameController gc = new GameController();
         BattleArea area = new BattleArea(1, 9, 9);
         BattleAreaTile[][] tile = area.getBattleAreaTiles();
-        tile[1][1].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+        tile[1][1].setType(BattleAreaTile.TileType.SHIP_START_DESTROYED);
+        area.setBattleAreaTiles(tile);
+
+        String message = null;
+        message = gc.checkIfTileDestroyed(area, 1, 1);
+        assertEquals("dieses Feld ist bereits zerstört", message);
+    }
+
+    @Test
+    public void checkIfTileDestroyedTileMiddleDestroyed() {
+        GameController gc = new GameController();
+        BattleArea area = new BattleArea(1, 9, 9);
+        BattleAreaTile[][] tile = area.getBattleAreaTiles();
+        tile[1][1].setType(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED);
+        area.setBattleAreaTiles(tile);
+
+        String message = null;
+        message = gc.checkIfTileDestroyed(area, 1, 1);
+        assertEquals("dieses Feld ist bereits zerstört", message);
+    }
+
+    @Test
+    public void checkIfTileDestroyedTileEndDestroyed() {
+        GameController gc = new GameController();
+        BattleArea area = new BattleArea(1, 9, 9);
+        BattleAreaTile[][] tile = area.getBattleAreaTiles();
+        tile[1][1].setType(BattleAreaTile.TileType.SHIP_END_DESTROYED);
         area.setBattleAreaTiles(tile);
 
         String message = null;
