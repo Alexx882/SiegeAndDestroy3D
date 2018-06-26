@@ -570,8 +570,12 @@ public class GameTurnsActivity extends AppCompatActivity {
 
     /**
      * Cheating is available after 10 seconds and only while the game is not finished.
+     * If cheating was disabled during game setup, its always disabled.
      */
     private boolean cheatingIsAvailable(){
+        if (!GlobalGameSettings.getCurrent().isSchummelnEnabled())
+            return false;
+
         if (GlobalGameSettings.getCurrent().isGameFinished())
             return false;
 
