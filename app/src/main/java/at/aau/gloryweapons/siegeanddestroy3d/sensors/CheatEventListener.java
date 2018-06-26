@@ -23,10 +23,10 @@ public class CheatEventListener implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if (proximityActivated(sensorEvent, 4) || accelerometerActivated(sensorEvent, 3)) {
+        if (proximityActivated(sensorEvent, 1) || accelerometerActivated(sensorEvent, 3)) {
             callback.callback(true);
         }
-        callback.callback(false);
+        //callback.callback(false);
     }
 
     @Override
@@ -67,9 +67,8 @@ public class CheatEventListener implements SensorEventListener {
 
     private boolean proximityActivated(SensorEvent event, int sensitivity) {
         if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-            if (event.values[0] >= -sensitivity && event.values[0] <= sensitivity) {
-                return true;
-            }
+            // 0 => near, >0 => far (eg. 8 on SM-G935F)
+            return !(0 < event.values[0]);
         }
         return false;
     }
