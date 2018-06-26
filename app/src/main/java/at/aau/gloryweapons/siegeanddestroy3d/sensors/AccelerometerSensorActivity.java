@@ -24,7 +24,6 @@ public class AccelerometerSensorActivity extends AppCompatActivity implements Se
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_accelerometer_sensor);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometercheatSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -48,12 +47,6 @@ public class AccelerometerSensorActivity extends AppCompatActivity implements Se
             mAccelCurrent = (float) Math.sqrt(x * x + y * y + z * z);
             float delta = mAccelCurrent - mAccelLast;
             mAccel = mAccel * 0.9f + delta;
-
-            if (mAccel > 3) { //mAccel
-                setContentView(R.layout.activity_accelerometer_sensor);
-            } else {
-                setContentView(R.layout.activity_placement);
-            }
         }
 
     }

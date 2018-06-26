@@ -369,34 +369,34 @@ public class GameTurnsActivity extends AppCompatActivity {
                             gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_destroyed, i, j, orientation);
                             break;
                         case NO_HIT:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.no_hit, i, j, orientation);
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.no_hitx, i, j, orientation);
                             break;
                         default:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.water, i, j, orientation);
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.water_tiles, i, j, orientation);
                             break;
                     }
                 } else {
                     switch (tiles[i][j].getType()) {
                         case WATER:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.water, i, j, orientation);
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.water_tiles, i, j, orientation);
                             break;
                         case NO_HIT:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.no_hit, i, j, orientation);
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.no_hitx, i, j, orientation);
                             break;
                         case SHIP_START:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_start, i, j, orientation);
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.shipbig_start, i, j, orientation);
                             break;
                         case SHIP_MIDDLE:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_middle, i, j, orientation);
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.shipbig_middle, i, j, orientation);
                             break;
                         case SHIP_END:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_end, i, j, orientation);
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.shipbig_end, i, j, orientation);
                             break;
                         case SHIP_DESTROYED:
                             gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_destroyed, i, j, orientation);
                             break;
                         default:
-                            gView[i][j] = board.addImageToGrid(grid, R.drawable.ship_start, i, j, orientation);
+                            gView[i][j] = board.addImageToGrid(grid, R.drawable.shipbig_start, i, j, orientation);
                             break;
                     }
                 }
@@ -465,19 +465,19 @@ public class GameTurnsActivity extends AppCompatActivity {
 
         switch (tile) {
             case WATER:
-                drawable = R.drawable.water;
+                drawable = R.drawable.water_tiles;
                 break;
             case NO_HIT:
-                drawable = R.drawable.no_hit;
+                drawable = R.drawable.no_hitx;
                 break;
             case SHIP_START:
-                drawable = R.drawable.ship_start;
+                drawable = R.drawable.shipbig_start;
                 break;
             case SHIP_MIDDLE:
-                drawable = R.drawable.ship_middle;
+                drawable = R.drawable.shipbig_middle;
                 break;
             case SHIP_END:
-                drawable = R.drawable.ship_end;
+                drawable = R.drawable.shipbig_end;
                 break;
             case SHIP_DESTROYED:
                 drawable = R.drawable.ship_destroyed;

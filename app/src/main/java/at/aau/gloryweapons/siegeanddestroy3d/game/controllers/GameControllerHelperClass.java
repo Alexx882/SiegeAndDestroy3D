@@ -9,8 +9,10 @@ import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 public class GameControllerHelperClass {
 
     public static void updateBattleAreaFromShotList(BattleArea area, List<TurnDTO> shots) {
+
         if (area == null || shots == null)
             return;
+
 
         for (TurnDTO shot : shots) {
             if (area.getUserId() == shot.getUserId()) {

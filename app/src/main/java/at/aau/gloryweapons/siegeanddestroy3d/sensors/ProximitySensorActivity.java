@@ -20,7 +20,6 @@ public class ProximitySensorActivity extends AppCompatActivity implements Sensor
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_proximity_sensor);
 
         cheatSensorManager =(SensorManager) getSystemService(SENSOR_SERVICE);
         cheatSensor = cheatSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
@@ -49,14 +48,6 @@ public class ProximitySensorActivity extends AppCompatActivity implements Sensor
 
     @Override
     public void onSensorChanged (SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-            if (event.values[0] >= -SENSOR_SENSITIVITY && event.values[0] <= SENSOR_SENSITIVITY) {
-                setContentView(R.layout.activity_test_sensor);
-            } else {
-                setContentView(R.layout.activity_placement);
-            }
-
-        }
 
     }
 

@@ -34,22 +34,5 @@ public class WelcomePageActivity extends AppCompatActivity {
             }
         });
 
-        Button proximityTest = (Button) findViewById(R.id.proximityTest);
-
-        proximityTest.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(WelcomePageActivity.this, ProximitySensorActivity.class));
-            }
-        });
-
-        Button accelerometerTest = (Button) findViewById(R.id.accelerometerTest);
-
-        accelerometerTest.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(WelcomePageActivity.this, AccelerometerSensorActivity.class));
-            }
-        });
     }
 }

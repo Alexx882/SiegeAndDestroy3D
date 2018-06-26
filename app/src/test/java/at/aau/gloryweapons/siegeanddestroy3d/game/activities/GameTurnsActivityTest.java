@@ -38,31 +38,31 @@ public class GameTurnsActivityTest {
     public void TestTheReturnedTileIfNO_HIT()
     {
         GameTurnsActivity gta = new GameTurnsActivity();
-        assertEquals(R.drawable.no_hit,gta.getTheRightTile(NO_HIT));
+        assertEquals(R.drawable.no_hitx,gta.getTheRightTile(NO_HIT));
     }
     @Test
     public void TestTheReturnedTileIfWater()
     {
         GameTurnsActivity gta = new GameTurnsActivity();
-        assertEquals(R.drawable.water,gta.getTheRightTile(WATER));
+        assertEquals(R.drawable.water_tiles,gta.getTheRightTile(WATER));
     }
     @Test
     public void TestTheReturnedTileIfSHIP_START()
     {
         GameTurnsActivity gta = new GameTurnsActivity();
-        assertEquals(R.drawable.ship_start,gta.getTheRightTile(SHIP_START));
+        assertEquals(R.drawable.shipbig_start,gta.getTheRightTile(SHIP_START));
     }
     @Test
     public void TestTheReturnedTileIfSHIP_MIDDLE()
     {
         GameTurnsActivity gta = new GameTurnsActivity();
-        assertEquals(R.drawable.ship_middle,gta.getTheRightTile(SHIP_MIDDLE));
+        assertEquals(R.drawable.shipbig_middle,gta.getTheRightTile(SHIP_MIDDLE));
     }
     @Test
     public void TestTheReturnedTileIfSHIP_END()
     {
         GameTurnsActivity gta = new GameTurnsActivity();
-        assertEquals(R.drawable.ship_end,gta.getTheRightTile(SHIP_END));
+        assertEquals(R.drawable.shipbig_end,gta.getTheRightTile(SHIP_END));
     }
     @Test
     public void TestTheReturnedTileIfSHIP_DESTROYED()
