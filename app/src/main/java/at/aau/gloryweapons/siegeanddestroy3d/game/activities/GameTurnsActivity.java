@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.R;
@@ -26,8 +28,11 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.ReturnObject;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.ShipContainer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
@@ -43,7 +48,9 @@ public class GameTurnsActivity extends AppCompatActivity {
     private Button cheaterSuspectedButton;
     private Button applyShotsButton;
     private List<TextView> userLabels = new ArrayList<>(4);
+    private GameBoardImageView[][] currentBoardView;
     TextView textViewUserTurn = null;
+    private long initTimeStamp = System.currentTimeMillis();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,25 +96,7 @@ public class GameTurnsActivity extends AppCompatActivity {
             }
         });
 
-        cheaterSuspectedButton = findViewById(R.id.buttonCheaterSuspect);
-        //Sets the onClickListner for the "Cheater Suspects Button"
-        // todo make work and extract from oncreate
-//        cheaterSuspectedButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                controller.cheatingSuspicion(new CallbackObject<User>() {
-//                    @Override
-//                    public void callback(User param) {
-//                        if (param.getId() != GlobalGameSettings.getCurrent().getPlayerId()) {
-//                            Toast.makeText(GameTurnsActivity.this, param.getName() + " hat gecheatet!", Toast.LENGTH_SHORT).show();
-//
-//                        } else {
-//                            Toast.makeText(GameTurnsActivity.this, "Keiner hat geschummelt, eine Runde aussetzten!", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                });
-//            }
-//        });
+        registerCheaterSuspicion();
 
         //adding playerLabels to ConstraintLayout.
         ConstraintLayout userLayout = findViewById(R.id.UserLayout);
@@ -141,17 +130,33 @@ public class GameTurnsActivity extends AppCompatActivity {
         registerForCurrentUserUpdates();
     }
 
+    private void registerCheaterSuspicion() {
+
+        cheaterSuspectedButton = findViewById(R.id.buttonCheaterSuspect);
+        cheaterSuspectedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               controller.cheatingSuspicion(new CallbackObject<CheaterSuspicionResponseDTO>() {
+                    @Override
+                    public void callback(CheaterSuspicionResponseDTO param) {
+                        if (param.getUserWhoCheats() != null) {
+                            toastOnUi(param.getUserWhoCheats().getName() + " hat gecheatet!");
+                        } else {
+                            toastOnUi("Keiner hat geschummelt, eine Runde aussetzten!");
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
     private CallbackObject<Boolean> quitGameMessage() {
         CallbackObject<Boolean> quitGameCallback = new CallbackObject<Boolean>() {
             @Override
             public void callback(Boolean param) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(GameTurnsActivity.this, "Der Server hat die Verbindung beendet!", Toast.LENGTH_LONG).show();
-                        finish();
-                    }
-                });
+                toastOnUi("Der Server hat die Verbindung beendet!");
+                finish();
             }
         };
         return quitGameCallback;
@@ -275,8 +280,8 @@ public class GameTurnsActivity extends AppCompatActivity {
         cheatListener.registerForChanges(new CallbackObject<Boolean>() {
             @Override
             public void callback(Boolean param) {
-                if (param) {
-//                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_SHORT).show();
+                if (param == true && !schummelnAktiv) {
+
                     // to avoid exceptions
                     runOnUiThread(new Runnable() {
                         @Override
@@ -284,7 +289,7 @@ public class GameTurnsActivity extends AppCompatActivity {
                             startSchummeln();
                         }
                     });
-                } else {
+                } /*else {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -292,39 +297,96 @@ public class GameTurnsActivity extends AppCompatActivity {
                         }
                     });
 //                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_SHORT).show();
-                }
+                }*/
             }
         });
     }
 
     private boolean schummelnAktiv = false;
+    private ShipContainer currentCheat;
 
-    // TODO schummeln
     private void startSchummeln() {
-        // if active user is the user, return
-        if (actualUser == null || actualUser.getId() == GlobalGameSettings.getCurrent().getPlayerId())
+        if (!cheatingIsAvailable())
             return;
 
-        schummelnAktiv = true;
-        User aktiverUser = actualUser;
+        // if active user is the user, return
+        if (actualUser == null || actualUser.getId() == GlobalGameSettings.getCurrent().getPlayerId()) {
+            toastOnUi("Du kannst dich nicht selbst beschummeln!");
+            return;
+        }
 
-        // todo schwächstes schiff finden
+        // finds the weakest ship
+        if (currentCheat == null){
+            currentCheat = actualBattleArea.findWeakestShip();
+        }
 
-        // todo schiff anzeigen
+        //Toast.makeText(this, "schummeln aktiv", Toast.LENGTH_SHORT);
 
-        // todo senden an den server, dass thisUser geschummelt hat
+        // show ship for 5 sec
+        showShipForShortTime(currentCheat);
+
+        // sends to server that "thisUser" has cheated
+        controller.sendCheating(new CallbackObject<CheatingResponseDTO>() {
+            @Override
+            public void callback(CheatingResponseDTO param) {
+                Log.i(this.getClass().getName(), "cheating response: " + param);
+                //TODO impl. cheating callback
+                toastOnUi("Du wurdest von " + param.getCaughtByUser().getName() + " erwischt!");
+            }
+        });
     }
 
-    // todo handle schummeln
-    private void endSchummeln() {
-        if (!schummelnAktiv)
+    /**
+     *
+     * @param shipContainer
+     * gets the Rows and Cols from the Battle Area and calls the timer
+     */
+    private void showShipForShortTime(ShipContainer shipContainer){
+        if (shipContainer == null)
             return;
+        timer();
+        BattleAreaTile[][] tile = actualBattleArea.getBattleAreaTiles();
+        final int drawable = getTheRightTile(tile[shipContainer.getRowCheating()][shipContainer.getColCheating()].getType());
+        currentBoardView[shipContainer.getRowCheating()][shipContainer.getColCheating()].setImageResource(drawable);
+        int orientation = tile[shipContainer.getRowCheating()][shipContainer.getColCheating()].isHorizontal() ? 0 : 90;
+        currentBoardView[shipContainer.getRowCheating()][shipContainer.getColCheating()].setRotation(orientation);
+    }
 
-        // todo aktuell durch schummeln angezeigtes schiff finden
+    /**
+     * Hides the ship after 5 sec cheating time
+     */
+    private void timer() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //stop cheating after 5 sec
+                hideShip();
+            }
+        }, 5000);
+    }
 
-        // todo schiff wieder verstecken
+    private void hideShip(){
+        if (currentCheat == null)
+            return;
+        final int row = currentCheat.getRowCheating();
+        final int col = currentCheat.getColCheating();
+        final int drawable;
+        if (actualBattleArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.NO_HIT ||
+                actualBattleArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.SHIP_DESTROYED){
+            drawable = getTheRightTile(BattleAreaTile.TileType.WATER);
+        }else {
+            drawable = getTheRightTile(actualBattleArea.getBattleAreaTiles()[row][col].getType());
+        }
 
-        // todo server informieren dass schummeln beendet fuer timeout
+        //currentCheat = null;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                currentBoardView[row][col].setImageResource(drawable);
+                currentBoardView[row][col].setRotation(0);
+            }
+        });
+
     }
 
     @Override
@@ -404,6 +466,7 @@ public class GameTurnsActivity extends AppCompatActivity {
                 setOnClickListenerForGridTiles(gView, i, j);
             }
         }
+        currentBoardView = gView;
         return gView;
     }
 
@@ -433,6 +496,9 @@ public class GameTurnsActivity extends AppCompatActivity {
                         @Override
                         public void callback(ReturnObject param) {
                             if (param.getI() == 0) {
+                                if (param.getTile() == BattleAreaTile.TileType.SHIP_DESTROYED){
+                                    currentCheatHit(v.getBoardRow(),v.getBoardCol());
+                                }
                                 final int drawable = getTheRightTile(param.getTile());
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -484,6 +550,41 @@ public class GameTurnsActivity extends AppCompatActivity {
                 break;
         }
         return drawable;
+    }
+
+    private void currentCheatHit(int row, int col){
+        if (currentCheat == null)
+            return;
+        if (currentCheat.getRowCheating() == row && currentCheat.getColCheating() == col)
+            currentCheat = null;
+    }
+
+    private void toastOnUi(final String message){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(GameTurnsActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * Cheating is available after 10 seconds and only while the game is not finished.
+     * If cheating was disabled during game setup, its always disabled.
+     */
+    private boolean cheatingIsAvailable(){
+        if (!GlobalGameSettings.getCurrent().isSchummelnEnabled())
+            return false;
+
+        if (GlobalGameSettings.getCurrent().isGameFinished())
+            return false;
+
+        long timeDiff = System.currentTimeMillis() - initTimeStamp;
+        if ( timeDiff > 15000){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     @Override

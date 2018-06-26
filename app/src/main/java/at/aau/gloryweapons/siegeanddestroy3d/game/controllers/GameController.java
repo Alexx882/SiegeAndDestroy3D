@@ -7,6 +7,8 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.ReturnObject;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
+import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnInfoDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
@@ -170,7 +172,7 @@ public class GameController {
         }
     }
 
-    public void cheatingSuspicion(final CallbackObject<User> cheatingSuspicionCallback) {
+    public void cheatingSuspicion(final CallbackObject<CheaterSuspicionResponseDTO> cheatingSuspicionCallback) {
         communicator.sendCheatingSuspicion(cheatingSuspicionCallback);
     }
 
@@ -196,5 +198,13 @@ public class GameController {
 
     public void updateBattleAreaFromShotList(BattleArea area, List<TurnDTO> shots) {
         GameControllerHelperClass.updateBattleAreaFromShotList(area, shots);
+    }
+
+    /**
+     * sends cheating to server
+     * @param callback
+     */
+    public void sendCheating(CallbackObject<CheatingResponseDTO> callback){
+        communicator.sendCheatingToServer(callback);
     }
 }
