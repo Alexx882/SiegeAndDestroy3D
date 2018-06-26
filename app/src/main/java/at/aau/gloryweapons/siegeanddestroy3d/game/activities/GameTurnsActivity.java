@@ -517,14 +517,16 @@ public class GameTurnsActivity extends AppCompatActivity {
             case SHIP_END:
                 drawable = R.drawable.shipbig_end;
                 break;
+
+            // todo use 3 images
             case SHIP_START_DESTROYED:
-                drawable = R.drawable.shipbig_starthit;
+                drawable = R.drawable.ship_destroyed;
                 break;
             case SHIP_MIDDLE_DESTROYED:
-                drawable = R.drawable.shipbig_middlehit;
+                drawable = R.drawable.ship_destroyed;
                 break;
             case SHIP_END_DESTROYED:
-                drawable = R.drawable.shipbig_endhit;
+                drawable = R.drawable.ship_destroyed;
                 break;
         }
         return drawable;
