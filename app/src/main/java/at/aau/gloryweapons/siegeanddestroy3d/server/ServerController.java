@@ -85,7 +85,7 @@ public class ServerController {
         battleAreas.add(battleArea);
         callbacks.add(callback);
 
-        Log.i(this.getClass().toString(), "addDataToGameConfig number players: " + GlobalGameSettings.getCurrent().getNumberPlayers());
+        //Log.i(this.getClass().toString(), "addDataToGameConfig number players: " + GlobalGameSettings.getCurrent().getNumberPlayers());
 
         if (users.size() == GlobalGameSettings.getCurrent().getNumberPlayers()) {
             // all players finished placement
