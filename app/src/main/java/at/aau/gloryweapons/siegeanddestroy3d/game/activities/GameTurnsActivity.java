@@ -305,14 +305,13 @@ public class GameTurnsActivity extends AppCompatActivity {
     private boolean schummelnAktiv = false;
     private ShipContainer currentCheat;
 
-    // TODO schummeln
     private void startSchummeln() {
         if (!cheatingIsAvailable())
             return;
 
         // if active user is the user, return
         if (actualUser == null || actualUser.getId() == GlobalGameSettings.getCurrent().getPlayerId()) {
-            Toast.makeText(this, "Du kannst dich nicht selbst beschummeln!", Toast.LENGTH_SHORT);
+            toastOnUi("Du kannst dich nicht selbst beschummeln!");
             return;
         }
 
@@ -349,6 +348,8 @@ public class GameTurnsActivity extends AppCompatActivity {
         BattleAreaTile[][] tile = actualBattleArea.getBattleAreaTiles();
         final int drawable = getTheRightTile(tile[shipContainer.getRowCheating()][shipContainer.getColCheating()].getType());
         currentBoardView[shipContainer.getRowCheating()][shipContainer.getColCheating()].setImageResource(drawable);
+        int orientation = tile[shipContainer.getRowCheating()][shipContainer.getColCheating()].isHorizontal() ? 0 : 90;
+        currentBoardView[shipContainer.getRowCheating()][shipContainer.getColCheating()].setRotation(orientation);
     }
 
     /**
@@ -382,6 +383,7 @@ public class GameTurnsActivity extends AppCompatActivity {
             @Override
             public void run() {
                 currentBoardView[row][col].setImageResource(drawable);
+                currentBoardView[row][col].setRotation(0);
             }
         });
 
@@ -566,8 +568,13 @@ public class GameTurnsActivity extends AppCompatActivity {
         });
     }
 
-    /*Cheating is available after 10 seconds.*/
+    /**
+     * Cheating is available after 10 seconds and only while the game is not finished.
+     */
     private boolean cheatingIsAvailable(){
+        if (GlobalGameSettings.getCurrent().isGameFinished())
+            return false;
+
         long timeDiff = System.currentTimeMillis() - initTimeStamp;
         if ( timeDiff > 15000){
             return true;
