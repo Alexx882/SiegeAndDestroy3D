@@ -319,8 +319,8 @@ public class GameTurnsActivity extends AppCompatActivity {
         }
 
         // finds the weakest ship
-        if (currentCheat == null) {
-            currentCheat = actualBattleArea.findWeakestShip();
+        if (currentCheat == null){
+            currentCheat = controller.findWeakestShip(actualBattleArea);
         }
 
         //Toast.makeText(this, "schummeln aktiv", Toast.LENGTH_SHORT);
