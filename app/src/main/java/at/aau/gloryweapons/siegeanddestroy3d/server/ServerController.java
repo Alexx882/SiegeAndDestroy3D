@@ -133,7 +133,7 @@ public class ServerController {
         return users.get(userIdxForCurrentTurn);
     }
 
-    public void addCheating(CheatingDTO cheatingDTO){
+    public void addCheating(CheatingDTO cheatingDTO) {
         cheaterList.add(cheatingDTO);
     }
 
@@ -145,13 +145,13 @@ public class ServerController {
      */
     private boolean suspendATurn(User user) {
         for (int i = 0; i < penaltyList.size(); i++) {
-            if (user.getId() == penaltyList.get(i).getId()){
+            if (user.getId() == penaltyList.get(i).getId()) {
                 penaltyList.remove(i);
                 return true;
             }
         }
         return false;
-  }
+    }
 
 
     /**
@@ -161,10 +161,16 @@ public class ServerController {
      * @return
      */
     public TurnDTO checkShot(TurnDTO hit) {
-        // todo @patrick logik abstrahieren in 2. methode checkShot(hit, arealist=battleAreas) und die da testen.
+        TurnDTO hitNew = checkShot(hit, battleAreas);
 
+        addShotToList(hitNew);
+
+        return hit;
+    }
+
+    TurnDTO checkShot(TurnDTO hit, List<BattleArea> areas) {
         BattleAreaTile tile;
-        for (BattleArea area : battleAreas) {
+        for (BattleArea area : areas) {
             if (hit.getUserId() == area.getUserId()) {
                 tile = area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()];
                 tile = checkTile(tile);
@@ -180,8 +186,6 @@ public class ServerController {
             }
         }
 
-        addShotToList(hit);
-
         return hit;
     }
 
@@ -191,7 +195,7 @@ public class ServerController {
      * @param shot
      */
     public void addShotToList(TurnDTO shot) {
-        if(currentShots.size() == GlobalGameSettings.getCurrent().getNumberShots())
+        if (currentShots.size() == GlobalGameSettings.getCurrent().getNumberShots())
             // has to be new round
             currentShots.clear();
 
@@ -218,7 +222,7 @@ public class ServerController {
      * @param tile
      * @return
      */
-    private BattleAreaTile checkTile(BattleAreaTile tile) {
+    BattleAreaTile checkTile(BattleAreaTile tile) {
         switch (tile.getType()) {
             case WATER:
                 tile.setType(BattleAreaTile.TileType.NO_HIT);
@@ -290,6 +294,7 @@ public class ServerController {
     /**
      * blaming for cheating is available for 10 sec. Penalty List - the cheater
      * or the one who blamed someone
+     *
      * @param user
      * @param callbackObject
      */
@@ -298,8 +303,8 @@ public class ServerController {
         long currentTime = System.currentTimeMillis();
 
         //checks if a user has cheated in the last 10 seconds
-        for (CheatingDTO cheater: cheaterList) {
-            if ((currentTime - cheater.getIncomingServerTimeStamp()) < (GlobalGameSettings.getCurrent().getCheaterSuspicionTime()* 1000)){
+        for (CheatingDTO cheater : cheaterList) {
+            if ((currentTime - cheater.getIncomingServerTimeStamp()) < (GlobalGameSettings.getCurrent().getCheaterSuspicionTime() * 1000)) {
                 User userWhoCheats = getUserByID(cheater.getServerControllerId());
                 cheaterSuspicionResponseDTO.setUserWhoCheats(userWhoCheats);
                 penaltyList.add(userWhoCheats);
@@ -311,10 +316,10 @@ public class ServerController {
         cheaterList.clear();
 
         //processing the callback
-        if (cheaterSuspicionResponseDTO.getUserWhoCheats() != null){
+        if (cheaterSuspicionResponseDTO.getUserWhoCheats() != null) {
             callbackObject.callback(cheaterSuspicionResponseDTO);
-        }else {
-            if (user != null ){
+        } else {
+            if (user != null) {
                 penaltyList.add(user);
             }
             callbackObject.callback(cheaterSuspicionResponseDTO);
@@ -322,9 +327,9 @@ public class ServerController {
 
     }
 
-    private User getUserByID(int id){
-        for (User user : users ) {
-            if (user != null &&id == user.getId()){
+    private User getUserByID(int id) {
+        for (User user : users) {
+            if (user != null && id == user.getId()) {
                 return user;
             }
         }
