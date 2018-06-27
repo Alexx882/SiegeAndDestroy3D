@@ -134,22 +134,24 @@ public class GameTurnsActivity extends AppCompatActivity {
     private void registerCheaterSuspicion() {
 
         cheaterSuspectedButton = findViewById(R.id.buttonCheaterSuspect);
-        cheaterSuspectedButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controller.cheatingSuspicion(new CallbackObject<CheaterSuspicionResponseDTO>() {
-                    @Override
-                    public void callback(CheaterSuspicionResponseDTO param) {
-                        if (param.getUserWhoCheats() != null) {
-                            toastOnUi(param.getUserWhoCheats().getName() + " hat gecheatet!");
-                        } else {
-                            toastOnUi("Keiner hat geschummelt, eine Runde aussetzten!");
+        if (!GlobalGameSettings.getCurrent().isSchummelnEnabled())
+            cheaterSuspectedButton.setVisibility(View.INVISIBLE);
+        else
+            cheaterSuspectedButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    controller.cheatingSuspicion(new CallbackObject<CheaterSuspicionResponseDTO>() {
+                        @Override
+                        public void callback(CheaterSuspicionResponseDTO param) {
+                            if (param.getUserWhoCheats() != null) {
+                                toastOnUi(param.getUserWhoCheats().getName() + " hat gecheatet!");
+                            } else {
+                                toastOnUi("Keiner hat geschummelt, eine Runde aussetzten!");
+                            }
                         }
-                    }
-                });
-            }
-        });
-
+                    });
+                }
+            });
     }
 
     private CallbackObject<Boolean> quitGameMessage() {
