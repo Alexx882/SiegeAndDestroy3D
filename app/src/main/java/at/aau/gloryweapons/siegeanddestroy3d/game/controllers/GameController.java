@@ -1,6 +1,5 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.controllers;
 
-import android.service.quicksettings.Tile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

@@ -1,12 +1,8 @@
 package at.aau.gloryweapons.siegeanddestroy3d.server;
 
-import android.service.quicksettings.Tile;
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
@@ -16,12 +12,10 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheaterSuspicionResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingDTO;
-import at.aau.gloryweapons.siegeanddestroy3d.network.dto.CheatingResponseDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.dto.TurnDTO;
 import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 import at.aau.gloryweapons.siegeanddestroy3d.validation.ValidationHelperClass;
 
-// TODO more tests for creating the GameConfig etc
 public class ServerController {
 
     private AtomicInteger id = new AtomicInteger(1);
@@ -30,8 +24,6 @@ public class ServerController {
     private ArrayList<User> users = new ArrayList<>(4);
     private List<BattleArea> battleAreas = new ArrayList<>(4);
     private List<CallbackObject<GameConfiguration>> callbacks = new ArrayList<>(4);
-    private int shots = 0;
-    private CallbackObject<User> turnOfFirstUserCallback;
     private ArrayList<User> penaltyList = new ArrayList<>();
     private ArrayList<CheatingDTO> cheaterList = new ArrayList<>();
     private List<TurnDTO> currentShots = new ArrayList<>(GlobalGameSettings.getCurrent().getNumberShots());
@@ -44,9 +36,7 @@ public class ServerController {
      */
     public synchronized User checkName(String name) {
         //check name
-        if (ValidationHelperClass.isUserNameValid(name)) {
-
-        } else {
+        if (!ValidationHelperClass.isUserNameValid(name)) {
             return null;
         }
 
@@ -86,8 +76,6 @@ public class ServerController {
         battleAreas.add(battleArea);
         callbacks.add(callback);
 
-        //Log.i(this.getClass().toString(), "addDataToGameConfig number players: " + GlobalGameSettings.getCurrent().getNumberPlayers());
-
         if (users.size() == GlobalGameSettings.getCurrent().getNumberPlayers()) {
             // all players finished placement
             gameConfig = new GameConfiguration();
@@ -113,9 +101,7 @@ public class ServerController {
      * @return The user to use first
      */
     public User getUserForFirstTurn() {
-        // todo
-        // decide per random so nobody is preferred
-        userIdxForCurrentTurn = 0;//new Random().nextInt(users.size());
+        userIdxForCurrentTurn = 0;
         return users.get(userIdxForCurrentTurn);
     }
 

@@ -56,7 +56,6 @@ public class GameTurnsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enemy_turn);
-        GameBoardImageView[][] visualBoard = null;
         textViewUserTurn = (TextView) findViewById(R.id.textViewUserTurn);
 
         // receive and set parameters
@@ -81,7 +80,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         //gets the BattleArea of the Client.
         for (BattleArea area : gameSettings.getBattleAreaList()) {
             if (area.getUserId() == actualUser.getId()) {
-                visualBoard = loadBattleArea(area, nRows, nCols);
+                loadBattleArea(area, nRows, nCols);
                 actualBattleArea = area;
             }
         }
@@ -283,7 +282,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         cheatListener.registerForChanges(new CallbackObject<Boolean>() {
             @Override
             public void callback(Boolean param) {
-                if (param == true && !schummelnAktiv) {
+                if (param && !schummelnAktiv) {
 
                     // to avoid exceptions
                     runOnUiThread(new Runnable() {
@@ -292,15 +291,7 @@ public class GameTurnsActivity extends AppCompatActivity {
                             startSchummeln();
                         }
                     });
-                } /*else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            endSchummeln();
-                        }
-                    });
-//                    Toast.makeText(GameTurnsActivity.this, "Sensor active", Toast.LENGTH_SHORT).show();
-                }*/
+                }
             }
         });
     }
@@ -323,8 +314,6 @@ public class GameTurnsActivity extends AppCompatActivity {
             currentCheat = controller.findWeakestShip(actualBattleArea);
         }
 
-        //Toast.makeText(this, "schummeln aktiv", Toast.LENGTH_SHORT);
-
         // show ship for 5 sec
         showShipForShortTime(currentCheat);
 
@@ -333,7 +322,6 @@ public class GameTurnsActivity extends AppCompatActivity {
             @Override
             public void callback(CheatingResponseDTO param) {
                 Log.i(this.getClass().getName(), "cheating response: " + param);
-                //TODO impl. cheating callback
                 toastOnUi("Du wurdest von " + param.getCaughtByUser().getName() + " erwischt!");
             }
         });
@@ -379,7 +367,6 @@ public class GameTurnsActivity extends AppCompatActivity {
             drawable = getTheRightTile(actualBattleArea.getBattleAreaTiles()[row][col].getType());
         }
 
-        //currentCheat = null;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -520,8 +507,6 @@ public class GameTurnsActivity extends AppCompatActivity {
             case SHIP_END:
                 drawable = R.drawable.shipbig_end;
                 break;
-
-            // todo use 3 images
             case SHIP_START_DESTROYED:
                 drawable = R.drawable.ship_destroyed_explo;
                 break;

@@ -6,10 +6,6 @@ import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
 
-
-import at.aau.gloryweapons.siegeanddestroy3d.sensors.AccelerometerSensorActivity;
-import at.aau.gloryweapons.siegeanddestroy3d.sensors.ProximitySensorActivity;
-
 public class WelcomePageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

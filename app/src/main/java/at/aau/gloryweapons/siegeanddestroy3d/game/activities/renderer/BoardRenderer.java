@@ -1,12 +1,9 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.activities.renderer;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.widget.GridLayout;
 
-import at.aau.gloryweapons.siegeanddestroy3d.R;
-import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
 
 /**

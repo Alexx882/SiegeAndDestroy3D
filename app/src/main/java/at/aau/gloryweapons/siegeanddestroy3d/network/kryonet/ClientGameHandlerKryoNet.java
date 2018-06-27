@@ -165,6 +165,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
 
         // connect to server
         new Thread("Connection") {
+            @Override
             public void run() {
                 try {
                     // this is blocking
@@ -185,10 +186,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         kryoClient.addListener(new Listener() {
             public void received(Connection serverConnection, Object receivedObject) {
 
-                //json to object
-//                Object receivedObject = wrapperHelper.jsonToObject(receivedMessage);
-
-                System.out.println("[Client] Received Message " + receivedObject.getClass().getName());
+                Log.i("KryoNet Client", "[Client] Received Message " + receivedObject.getClass().getName());
 
                 //map object
                 if (receivedObject instanceof HandshakeDTO) {
@@ -275,6 +273,7 @@ public class ClientGameHandlerKryoNet implements NetworkCommunicatorClient {
         object.setClientId(clientId);
 
         new Thread("send") {
+            @Override
             public void run() {
                 kryoClient.sendTCP(object);
             }

@@ -53,7 +53,7 @@ public class AccelerometerSensorActivity extends AppCompatActivity implements Se
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+        // not needed
     }
 
     @Override
