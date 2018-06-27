@@ -79,13 +79,17 @@
             android:layout_marginBottom="68dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/press_start_2p"
             android:text=""
             android:textAlignment="center"
-            android:textSize="20sp"
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView7"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/textView7"
@@ -93,8 +97,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:fontFamily="@font/press_start_2p"
-            android:text="Tap on the water to place your ships"
+            android:text="Tippe auf das Wasser, um die Schiffe zu platzieren"
             android:textAlignment="center"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"

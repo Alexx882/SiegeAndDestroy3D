@@ -20,8 +20,8 @@
             android:layout_height="match_parent"
             android:layout_marginTop="70dp"
             android:layout_weight="3"
-            android:paddingTop="35dp"
-            android:fontFamily="@font/press_start_2p">
+            android:fontFamily="@font/press_start_2p"
+            android:paddingTop="35dp">
 
 
                 <Button
@@ -79,18 +79,15 @@
                     android:id="@+id/textView12"
                     android:layout_width="wrap_content"
                     android:layout_height="22dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="104dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
                     android:fontFamily="@font/press_start_2p"
-                    android:text="Spieler:"
+                    android:text="@string/usersUnderline"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintHorizontal_bias="0.55"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.032" />
+                    app:layout_constraintTop_toTopOf="parent" />
         </android.support.constraint.ConstraintLayout>
 
 </LinearLayout>

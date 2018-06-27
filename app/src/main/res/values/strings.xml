@@ -2,5 +2,6 @@
     <string name="app_name">SiegeAndDestroy3D</string>
 
     <string name="users">Spieler</string>
+    <string name="usersUnderline"><u>Spieler:</u></string>
     <string name="cheaterSuspect">Cheater vermutet</string>
 </resources>
