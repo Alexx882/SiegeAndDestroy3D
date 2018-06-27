@@ -3,8 +3,10 @@ package at.aau.gloryweapons.siegeanddestroy3d.game.controllers;
 import org.junit.Test;
 
 import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.ShipContainer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
 
 import static org.junit.Assert.*;
@@ -145,5 +147,64 @@ public class GameControllerTest {
 
         message = gc.checkIfMyTurn();
         assertEquals("Nicht deine Runde", message);
+    }
+
+    @Test
+    public void checkFindWeakestShip(){
+        GameController gc = new GameController();
+
+        BattleArea battleArea = new BattleArea(2,10);
+
+        BasicShip ship1 = new BasicShip(2,4,true);
+        BasicShip ship2 = new BasicShip(2,2,true);
+
+        int row1 = 1;
+        int row2 = 4;
+        int col1 = 3;
+        int col2 = 0;
+
+        ShipContainer ship1Container = new ShipContainer();
+        ship1Container.setRow(row1);
+        ship1Container.setCol(col1);
+        ship1Container.setShip(ship1);
+
+        ShipContainer ship2Container = new ShipContainer();
+        ship2Container.setRow(row2);
+        ship2Container.setCol(col2);
+        ship2Container.setShip(ship2);
+
+        battleArea.placeShip(ship1,row1,col1);
+        battleArea.addShipToContainerList(ship1Container);
+
+        battleArea.placeShip(ship2,row2,col2);
+        battleArea.addShipToContainerList(ship2Container);
+
+        ShipContainer testContainer = gc.findWeakestShip(battleArea);
+
+        assertEquals(2, testContainer.getShip().getLength() );
+        assertEquals(2, testContainer.getCurrentLength() );
+    }
+
+    @Test
+    public void checkCheckShip(){
+        GameController gc = new GameController();
+        int row = 2;
+        int col = 3;
+
+        BattleArea battleArea = new BattleArea(2,10);
+
+        BasicShip ship1 = new BasicShip(2,4,true);
+
+        ShipContainer ship1Container = new ShipContainer();
+        ship1Container.setRow(row);
+        ship1Container.setCol(col);
+        ship1Container.setShip(ship1);
+
+        battleArea.placeShip(ship1,row,col);
+        battleArea.addShipToContainerList(ship1Container);
+
+        gc.checkShip(ship1Container, battleArea);
+
+        assertEquals(4, ship1Container.getCurrentLength() );
     }
 }

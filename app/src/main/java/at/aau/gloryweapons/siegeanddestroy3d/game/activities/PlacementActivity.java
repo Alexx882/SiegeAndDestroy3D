@@ -17,6 +17,7 @@ import at.aau.gloryweapons.siegeanddestroy3d.game.activities.renderer.BoardRende
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.GameConfiguration;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.ShipContainer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.views.GameBoardImageView;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ClientGameHandlerKryoNet;
 import at.aau.gloryweapons.siegeanddestroy3d.network.kryonet.ServerGameHandlerKryoNet;
@@ -222,6 +223,7 @@ public class PlacementActivity extends AppCompatActivity {
         // (4) place ship logically and visually
         playerBoard.placeShip(shipToPlace, row, col);
         placeShipOnVisualBoard(shipToPlace, row, col);
+        addShipToContainerShipList(shipToPlace, row, col);
 
         // (5) prepare placing the next ship
         ++idxShipToPlace;
@@ -361,6 +363,18 @@ public class PlacementActivity extends AppCompatActivity {
             }
         };
         return quitGameCallback;
+    }
+
+    private void addShipToContainerShipList(BasicShip ship, int row, int col){
+        if (playerBoard == null)
+            return;
+
+        //add ship to list
+        ShipContainer container = new ShipContainer();
+        container.setRow(row);
+        container.setCol(col);
+        container.setShip(ship);
+        playerBoard.addShipToContainerList(container);
     }
 
 
