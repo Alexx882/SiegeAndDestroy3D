@@ -63,6 +63,7 @@ public class GameTurnsActivity extends AppCompatActivity {
         gameSettings = (GameConfiguration) getIntent().getExtras().get(GameConfiguration.INTENT_KEYWORD);
         GlobalGameSettings.setCurrent((GlobalGameSettings) getIntent().getExtras().get(GlobalGameSettings.INTENT_KEYWORD));
         GlobalGameSettings.getCurrent().setNumberShots(gameSettings.getShots());
+        GlobalGameSettings.getCurrent().setSchummelnEnabled(gameSettings.isCheatingAllowed());
 
         board = new BoardRenderer(this);
         controller = new GameController(quitGameMessage());
@@ -520,13 +521,13 @@ public class GameTurnsActivity extends AppCompatActivity {
 
             // todo use 3 images
             case SHIP_START_DESTROYED:
-                drawable = R.drawable.ship_destroyed;
+                drawable = R.drawable.ship_destroyed_explo;
                 break;
             case SHIP_MIDDLE_DESTROYED:
-                drawable = R.drawable.ship_destroyed;
+                drawable = R.drawable.ship_destroyed_explo;
                 break;
             case SHIP_END_DESTROYED:
-                drawable = R.drawable.ship_destroyed;
+                drawable = R.drawable.ship_destroyed_explo;
                 break;
         }
         return drawable;

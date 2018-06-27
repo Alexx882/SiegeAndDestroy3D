@@ -94,6 +94,7 @@ public class ServerController {
             gameConfig.setUserList(users);
             gameConfig.setBattleAreaList(battleAreas);
             gameConfig.setShots(GlobalGameSettings.getCurrent().getNumberShots());
+            gameConfig.setCheatingAllowed(GlobalGameSettings.getCurrent().isSchummelnEnabled());
 
             // inform the clients about the game config
             for (CallbackObject<GameConfiguration> cb : callbacks)

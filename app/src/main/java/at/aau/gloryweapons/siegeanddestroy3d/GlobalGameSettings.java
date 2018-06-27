@@ -124,7 +124,7 @@ public class GlobalGameSettings implements Serializable {
         this.gameFinished = gameFinished;
     }
 
-    public static final String INTENT_KEYWORD ="GLOBALGAMESETTINGS_INTENT";
+    public static final String INTENT_KEYWORD = "GLOBALGAMESETTINGS_INTENT";
     private static GlobalGameSettings instance = null;
 
     public static GlobalGameSettings getCurrent() {

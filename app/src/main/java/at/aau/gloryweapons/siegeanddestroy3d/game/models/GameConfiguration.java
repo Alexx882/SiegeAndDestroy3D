@@ -12,6 +12,8 @@ public class GameConfiguration implements Serializable {
 
     private int shots;
 
+    private boolean cheatingAllowed;
+
     public void setBattleAreaList(List<BattleArea> battleAreas) {
         this.battleAreaList = battleAreas;
     }
@@ -38,5 +40,13 @@ public class GameConfiguration implements Serializable {
 
     public void setShots(int shots) {
         this.shots = shots;
+    }
+
+    public boolean isCheatingAllowed() {
+        return cheatingAllowed;
+    }
+
+    public void setCheatingAllowed(boolean cheatingAllowed) {
+        this.cheatingAllowed = cheatingAllowed;
     }
 }
