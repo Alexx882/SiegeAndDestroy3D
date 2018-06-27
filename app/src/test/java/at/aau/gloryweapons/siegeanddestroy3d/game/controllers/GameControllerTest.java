@@ -6,8 +6,10 @@ import at.aau.gloryweapons.siegeanddestroy3d.GlobalGameSettings;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BasicShip;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleArea;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.BattleAreaTile;
+import at.aau.gloryweapons.siegeanddestroy3d.game.models.ReturnObject;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.ShipContainer;
 import at.aau.gloryweapons.siegeanddestroy3d.game.models.User;
+import at.aau.gloryweapons.siegeanddestroy3d.network.interfaces.CallbackObject;
 
 import static org.junit.Assert.*;
 
@@ -164,8 +166,8 @@ public class GameControllerTest {
         u.setName("mao");
         u.setId(1);
         User u2 = new User();
-        u.setName("mao2");
-        u.setId(2);
+        u2.setName("mao2");
+        u2.setId(2);
         GlobalGameSettings.getCurrent().setLocalUser(u);
         GlobalGameSettings.getCurrent().setUserOfCurrentTurn(u2);
         GameController gc = new GameController();
@@ -173,6 +175,97 @@ public class GameControllerTest {
 
         message = gc.checkIfMyTurn();
         assertEquals("Nicht deine Runde", message);
+    }
+
+    @Test
+    public void checkIfMyTurnNull() {
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(null);
+        GameController gc = new GameController();
+        String message = null;
+
+        message = gc.checkIfMyTurn();
+        assertEquals("Nicht deine Runde", message);
+    }
+
+    @Test
+    public void shotOnEnemyNotMyTurn() {
+        User u = new User();
+        u.setName("mao");
+        u.setId(1);
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(null);
+        GameController gc = new GameController();
+
+        gc.shotOnEnemy(new BattleArea(1, 3), u, 2, 2, new CallbackObject<ReturnObject>() {
+            @Override
+            public void callback(ReturnObject param) {
+                assertEquals(4, param.getI());
+                assertEquals("Nicht deine Runde", param.getMessage());
+            }
+        });
+    }
+
+    @Test
+    public void shotOnEnemySuicide() {
+        User u = new User();
+        u.setName("mao");
+        u.setId(1);
+        GlobalGameSettings.getCurrent().setLocalUser(u);
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(u);
+        GameController gc = new GameController();
+
+        gc.shotOnEnemy(new BattleArea(1, 3), u, 2, 2, new CallbackObject<ReturnObject>() {
+            @Override
+            public void callback(ReturnObject param) {
+                assertEquals(3, param.getI());
+                assertEquals("kein Selbstbeschuss", param.getMessage());
+            }
+        });
+    }
+
+    @Test
+    public void shotOnEnemyTileDestroyed() {
+        User u = new User();
+        u.setName("mao");
+        u.setId(1);
+        User u2 = new User();
+        u2.setName("mao2");
+        u2.setId(2);
+        GlobalGameSettings.getCurrent().setLocalUser(u);
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(u);
+        BattleArea area = new BattleArea(2, 3);
+        area.getBattleAreaTiles()[2][2].setType(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED);
+
+        GameController gc = new GameController();
+        gc.shotOnEnemy(area, u2, 2, 2, new CallbackObject<ReturnObject>() {
+            @Override
+            public void callback(ReturnObject param) {
+                assertEquals(2, param.getI());
+                assertEquals("dieses Feld ist bereits zerstört", param.getMessage());
+            }
+        });
+    }
+
+    @Test
+    public void shotOnEnemyTileDestroyedNoHit() {
+        User u = new User();
+        u.setName("mao");
+        u.setId(1);
+        User u2 = new User();
+        u2.setName("mao2");
+        u2.setId(2);
+        GlobalGameSettings.getCurrent().setLocalUser(u);
+        GlobalGameSettings.getCurrent().setUserOfCurrentTurn(u);
+        BattleArea area = new BattleArea(2, 3);
+        area.getBattleAreaTiles()[2][2].setType(BattleAreaTile.TileType.NO_HIT);
+
+        GameController gc = new GameController();
+        gc.shotOnEnemy(area, u2, 2, 2, new CallbackObject<ReturnObject>() {
+            @Override
+            public void callback(ReturnObject param) {
+                assertEquals(2, param.getI());
+                assertEquals("dieses Feld ist bereits zerstört", param.getMessage());
+            }
+        });
     }
 
     @Test
@@ -220,6 +313,29 @@ public class GameControllerTest {
         BattleArea battleArea = new BattleArea(2,10);
 
         BasicShip ship1 = new BasicShip(2,4,true);
+
+        ShipContainer ship1Container = new ShipContainer();
+        ship1Container.setRow(row);
+        ship1Container.setCol(col);
+        ship1Container.setShip(ship1);
+
+        battleArea.placeShip(ship1,row,col);
+        battleArea.addShipToContainerList(ship1Container);
+
+        gc.checkShip(ship1Container, battleArea);
+
+        assertEquals(4, ship1Container.getCurrentLength() );
+    }
+
+    @Test
+    public void checkCheckShipVertical(){
+        GameController gc = new GameController();
+        int row = 2;
+        int col = 3;
+
+        BattleArea battleArea = new BattleArea(2,10);
+
+        BasicShip ship1 = new BasicShip(2,4,false);
 
         ShipContainer ship1Container = new ShipContainer();
         ship1Container.setRow(row);
