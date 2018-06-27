@@ -39,13 +39,13 @@ public class BattleAreaTile implements Serializable {
         this.horizontal = horizontal;
     }
 
-    public boolean isAlive(){
+    public boolean isAlive() {
         return getType() == TileType.SHIP_START
                 || getType() == TileType.SHIP_MIDDLE
                 || getType() == TileType.SHIP_END;
-}
+    }
 
-    public boolean isDestroyed(){
+    public boolean isDestroyed() {
         return getType() == TileType.SHIP_START_DESTROYED
                 || getType() == TileType.SHIP_MIDDLE_DESTROYED
                 || getType() == TileType.SHIP_END_DESTROYED;
@@ -65,9 +65,9 @@ public class BattleAreaTile implements Serializable {
                 return BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED;
             case SHIP_END:
                 return BattleAreaTile.TileType.SHIP_END_DESTROYED;
+            default:
+                // failed.
+                return type;
         }
-
-        // failed.
-        return type;
     }
 }

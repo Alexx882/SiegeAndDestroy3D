@@ -43,12 +43,12 @@ public class ProximitySensorActivity extends AppCompatActivity implements Sensor
 
     @Override
     public void onAccuracyChanged (Sensor sensor, int accuracy){
-
+        // not needed
     }
 
     @Override
     public void onSensorChanged (SensorEvent event) {
-
+        // deprecated
     }
 
     private void showLongToast(String text) {

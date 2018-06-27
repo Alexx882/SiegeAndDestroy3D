@@ -23,15 +23,14 @@ public class CheatEventListener implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if (proximityActivated(sensorEvent, 1) || accelerometerActivated(sensorEvent, 3)) {
+        if (proximityActivated(sensorEvent) || accelerometerActivated(sensorEvent, 3)) {
             callback.callback(true);
         }
-        //callback.callback(false);
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-
+        // not needed
     }
 
     public CheatEventListener(Context context) {
@@ -65,10 +64,10 @@ public class CheatEventListener implements SensorEventListener {
         sensorManager.unregisterListener(this);
     }
 
-    private boolean proximityActivated(SensorEvent event, int sensitivity) {
+    private boolean proximityActivated(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
             // 0 => near, >0 => far (eg. 8 on SM-G935F)
-            return !(0 < event.values[0]);
+            return (0 == event.values[0]);
         }
         return false;
     }

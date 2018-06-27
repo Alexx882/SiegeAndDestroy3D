@@ -6,6 +6,8 @@ package at.aau.gloryweapons.siegeanddestroy3d.validation;
 
 public class ValidationHelperClass {
 
+    private ValidationHelperClass() {}
+
     public static boolean isUserNameValid(String username) {
         return !(username == null || username.trim().isEmpty());
     }

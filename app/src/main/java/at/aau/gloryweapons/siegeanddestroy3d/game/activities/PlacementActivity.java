@@ -66,9 +66,8 @@ public class PlacementActivity extends AppCompatActivity {
             communicator = ServerGameHandlerKryoNet.getInstance();
         else
             communicator = ClientGameHandlerKryoNet.getInstance();
-            communicator.registerQuitInfo(quitGameMessage());
 
-
+        communicator.registerQuitInfo(quitGameMessage());
     }
 
     /**

@@ -51,7 +51,6 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     private CallbackObject<List<String>> userCallBack;
     private CallbackObject<TurnInfoDTO> currentTurnUserCallback;
     private CallbackObject<User> winnerCallback;
-    private CallbackObject<User> cheaterSuspicionCallback;
     private CallbackObject<CheatingResponseDTO> cheatingResponseDTOCallbackObject;
 
     private Activity activity;
@@ -75,7 +74,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
         this.activity = activity;
         this.userCallBack = userCallBack;
-        this.clientDataMap = new HashMap<Integer, ClientData>();
+        this.clientDataMap = new HashMap<>();
 
         com.esotericsoftware.minlog.Log.set(com.esotericsoftware.minlog.Log.LEVEL_DEBUG);
 
@@ -127,8 +126,6 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
     }
 
     private void handleConnection(Connection clientConnection, Object receivedObject) {
-//                Object receivedObject = wrapperHelper.jsonToObject(request);
-
         // find correct handler
         if (receivedObject instanceof HandshakeDTO) {
             handleHandshakeDto((HandshakeDTO) receivedObject, clientConnection);
@@ -319,6 +316,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         Log.d(this.getClass().getName(), "send object: " + object.getClass().getName());
 
         new Thread("send") {
+            @Override
             public void run() {
                 clientData.getConnection().sendTCP(object);
             }
@@ -477,7 +475,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
 
     @Override
     public void registerQuitInfo(CallbackObject<Boolean> callback) {
-
+        // not needed on server
     }
 
     @Override

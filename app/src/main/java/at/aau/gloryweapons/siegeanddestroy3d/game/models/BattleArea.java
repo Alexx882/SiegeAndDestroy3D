@@ -75,22 +75,6 @@ public class BattleArea implements Serializable {
         this.userId = userId;
     }
 
-    public int getRows() {
-        return rows;
-    }
-
-    public void setRows(int rows) {
-        this.rows = rows;
-    }
-
-    public int getColumns() {
-        return columns;
-    }
-
-    public void setColumns(int columns) {
-        this.columns = columns;
-    }
-
     public void setBattleAreaTiles(BattleAreaTile[][] battleAreaTiles) {
         this.battleAreaTiles = battleAreaTiles;
     }
@@ -170,7 +154,7 @@ public class BattleArea implements Serializable {
      * @param rowToPlace  The row for the start of the ship.
      * @param colToPlace  The column for the start of the ship.
      */
-    public void placeShip(BasicShip shipToPlace, int rowToPlace, int colToPlace) throws IllegalArgumentException {
+    public void placeShip(BasicShip shipToPlace, int rowToPlace, int colToPlace) {
         if (!canShipBePlaced(shipToPlace, rowToPlace, colToPlace))
             throw new IllegalArgumentException("Not a valid configuration. Check BattleArea.canShipBePlaced() first.");
 
