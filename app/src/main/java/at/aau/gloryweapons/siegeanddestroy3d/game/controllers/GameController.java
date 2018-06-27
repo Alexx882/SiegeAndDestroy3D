@@ -1,5 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.game.controllers;
 
+import android.service.quicksettings.Tile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -89,8 +90,9 @@ public class GameController {
                         tile = BattleAreaTile.TileType.NO_HIT;
                         enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.NO_HIT);
                     } else {
-                        tile = BattleAreaTile.TileType.SHIP_DESTROYED;
-                        enemyArea.getBattleAreaTiles()[row][col].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                        // shot hit
+                        tile = BattleAreaTile.getDestroyedVersionOfShipTile(enemyArea.getBattleAreaTiles()[row][col].getType());
+                        enemyArea.getBattleAreaTiles()[row][col].setType(tile);
                     }
                     object.setTile(tile);
                     callback.callback(object);
@@ -124,7 +126,7 @@ public class GameController {
      * @return
      */
     public String checkIfTileDestroyed(BattleArea enemyArea, int col, int row) {
-        if (enemyArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.SHIP_DESTROYED && enemyArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.NO_HIT) {
+        if (!enemyArea.getBattleAreaTiles()[row][col].isDestroyed() && enemyArea.getBattleAreaTiles()[row][col].getType() != BattleAreaTile.TileType.NO_HIT) {
             return null;
         } else {
             return "dieses Feld ist bereits zerstört";
@@ -206,9 +208,10 @@ public class GameController {
 
     /**
      * sends cheating to server
+     *
      * @param callback
      */
-    public void sendCheating(CallbackObject<CheatingResponseDTO> callback){
+    public void sendCheating(CallbackObject<CheatingResponseDTO> callback) {
         communicator.sendCheatingToServer(callback);
     }
 

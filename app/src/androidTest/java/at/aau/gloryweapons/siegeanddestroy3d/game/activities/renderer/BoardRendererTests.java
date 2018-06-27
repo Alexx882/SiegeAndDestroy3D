@@ -48,12 +48,12 @@ public class BoardRendererTests {
         grid.setColumnCount(3);
 
         GameBoardImageView view;
-        view = renderer.addImageToGrid(grid, R.drawable.water, 0, 0, 0);
+        view = renderer.addImageToGrid(grid, R.drawable.water_tiles, 0, 0, 0);
         Assert.assertEquals(0, view.getBoardRow());
         Assert.assertEquals(0, view.getBoardCol());
         Assert.assertEquals(1, grid.getChildCount());
 
-        view = renderer.addImageToGrid(grid, R.drawable.water, 1, 2, 0);
+        view = renderer.addImageToGrid(grid, R.drawable.water_tiles, 1, 2, 0);
         Assert.assertEquals(1, view.getBoardRow());
         Assert.assertEquals(2, view.getBoardCol());
         Assert.assertEquals(2, grid.getChildCount());

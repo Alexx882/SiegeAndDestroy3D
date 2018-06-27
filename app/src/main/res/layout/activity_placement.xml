@@ -5,11 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    tools:context="at.aau.gloryweapons.siegeanddestroy3d.game.activities.GameTurnsActivity">
+    tools:context="at.aau.gloryweapons.siegeanddestroy3d.game.activities.GameTurnsActivity"
+    android:background="@drawable/water_island2">
 
     <GridLayout
         android:id="@+id/gridPlacementBoard"
-        android:layout_width="match_parent"
+        android:layout_width="456dp"
         android:layout_height="match_parent"
         android:layout_weight="2"></GridLayout>
 
@@ -24,60 +25,84 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:layout_marginEnd="8dp"
+            android:fontFamily="@font/press_start_2p"
             android:text="Drehen"
+            android:textSize="8sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <GridLayout
             android:id="@+id/gridShipPreview"
-            android:layout_width="221dp"
-            android:layout_height="227dp"
+            android:layout_width="142dp"
+            android:layout_height="141dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonRestartPlacement"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.693"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-        </GridLayout>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.738"></GridLayout>
 
         <Button
             android:id="@+id/buttonRestartPlacement"
-            android:layout_width="wrap_content"
+            android:layout_width="153dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:layout_marginStart="8dp"
+            android:fontFamily="@font/press_start_2p"
             android:text="Neu platzieren"
+            android:textSize="8sp"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/buttonReady"
-            android:layout_width="wrap_content"
+            android:layout_width="142dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:layout_marginEnd="8dp"
+            android:fontFamily="@font/press_start_2p"
             android:text="Bereit"
+            android:textSize="8sp"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
             android:id="@+id/textViewInformation"
-            android:layout_width="256dp"
+            android:layout_width="301dp"
             android:layout_height="47dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="68dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:text=""
             android:textAlignment="center"
             android:textSize="20sp"
-            android:text=""
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/press_start_2p"
+            android:text="Tap on the water to place your ships"
+            android:textAlignment="center"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.025" />
     </android.support.constraint.ConstraintLayout>
 
 </LinearLayout>

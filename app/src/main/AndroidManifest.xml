@@ -49,8 +49,6 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".sensors.ProximitySensorActivity"
             android:screenOrientation="landscape"/>
-        <activity android:name=".sensors.TestSensorActivity"
-            android:screenOrientation="landscape"/>
         <activity android:name=".sensors.AccelerometerSensorActivity"
             android:screenOrientation="landscape">
             ></activity>

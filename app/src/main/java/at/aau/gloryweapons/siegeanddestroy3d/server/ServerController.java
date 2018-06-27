@@ -1,5 +1,6 @@
 package at.aau.gloryweapons.siegeanddestroy3d.server;
 
+import android.service.quicksettings.Tile;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -93,6 +94,7 @@ public class ServerController {
             gameConfig.setUserList(users);
             gameConfig.setBattleAreaList(battleAreas);
             gameConfig.setShots(GlobalGameSettings.getCurrent().getNumberShots());
+            gameConfig.setCheatingAllowed(GlobalGameSettings.getCurrent().isSchummelnEnabled());
 
             // inform the clients about the game config
             for (CallbackObject<GameConfiguration> cb : callbacks)
@@ -171,7 +173,8 @@ public class ServerController {
                     area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()].setType(BattleAreaTile.TileType.NO_HIT);
                 } else {
                     hit.setType(TurnDTO.TurnType.HIT);
-                    area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()].setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                    BattleAreaTile.TileType newVersion = BattleAreaTile.getDestroyedVersionOfShipTile(area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()].getType());
+                    area.getBattleAreaTiles()[hit.getxCoordinates()][hit.getyCoordinates()].setType(newVersion);
                     checkBattleAreaForDefeat(area);
                 }
             }
@@ -223,15 +226,15 @@ public class ServerController {
             case NO_HIT:
                 break;
             case SHIP_START:
-                tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                tile.setType(BattleAreaTile.TileType.SHIP_START_DESTROYED);
                 break;
             case SHIP_MIDDLE:
-                tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                tile.setType(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED);
                 break;
             case SHIP_END:
-                tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+                tile.setType(BattleAreaTile.TileType.SHIP_END_DESTROYED);
                 break;
-            case SHIP_DESTROYED:
+            default:
                 break;
         }
         return tile;

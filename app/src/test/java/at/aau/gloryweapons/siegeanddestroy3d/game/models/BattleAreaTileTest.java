@@ -59,10 +59,24 @@ public class BattleAreaTileTest {
     }
 
     @Test
-    public void BattleAreaTileTileTestShipDestroyed() {
+    public void BattleAreaTileTileTestShipDestroyedStart() {
         BattleAreaTile tile = new BattleAreaTile();
-        tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
-        assertEquals(BattleAreaTile.TileType.SHIP_DESTROYED, tile.getType());
+        tile.setType(BattleAreaTile.TileType.SHIP_START_DESTROYED);
+        assertEquals(BattleAreaTile.TileType.SHIP_START_DESTROYED, tile.getType());
+    }
+
+    @Test
+    public void BattleAreaTileTileTestShipDestroyedMiddle() {
+        BattleAreaTile tile = new BattleAreaTile();
+        tile.setType(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED);
+        assertEquals(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED, tile.getType());
+    }
+
+    @Test
+    public void BattleAreaTileTileTestShipDestroyedEnd() {
+        BattleAreaTile tile = new BattleAreaTile();
+        tile.setType(BattleAreaTile.TileType.SHIP_END_DESTROYED);
+        assertEquals(BattleAreaTile.TileType.SHIP_END_DESTROYED, tile.getType());
     }
 
     @Test
@@ -83,7 +97,11 @@ public class BattleAreaTileTest {
     @Test
     public void isAlive_false() {
         BattleAreaTile tile = new BattleAreaTile();
-        tile.setType(BattleAreaTile.TileType.SHIP_DESTROYED);
+        tile.setType(BattleAreaTile.TileType.SHIP_START_DESTROYED);
+        assertFalse(tile.isAlive());
+        tile.setType(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED);
+        assertFalse(tile.isAlive());
+        tile.setType(BattleAreaTile.TileType.SHIP_END_DESTROYED);
         assertFalse(tile.isAlive());
 
         tile.setType(BattleAreaTile.TileType.WATER);
@@ -93,4 +111,62 @@ public class BattleAreaTileTest {
         assertFalse(tile.isAlive());
     }
 
+    @Test
+    public void isDestroyed_true() {
+        BattleAreaTile tile = new BattleAreaTile();
+
+        tile.setType(BattleAreaTile.TileType.SHIP_START_DESTROYED);
+        assertTrue(tile.isDestroyed());
+
+        tile.setType(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED);
+        assertTrue(tile.isDestroyed());
+
+        tile.setType(BattleAreaTile.TileType.SHIP_END_DESTROYED);
+        assertTrue(tile.isDestroyed());
+    }
+
+    @Test
+    public void isDestroyed_false() {
+        BattleAreaTile tile = new BattleAreaTile();
+        tile.setType(BattleAreaTile.TileType.SHIP_START);
+        assertFalse(tile.isDestroyed());
+        tile.setType(BattleAreaTile.TileType.SHIP_MIDDLE);
+        assertFalse(tile.isDestroyed());
+        tile.setType(BattleAreaTile.TileType.SHIP_END);
+        assertFalse(tile.isDestroyed());
+
+        tile.setType(BattleAreaTile.TileType.WATER);
+        assertFalse(tile.isDestroyed());
+
+        tile.setType(BattleAreaTile.TileType.NO_HIT);
+        assertFalse(tile.isDestroyed());
+    }
+
+    public void getDestroyedVersionOfShipTile_validInput(){
+        assertEquals(BattleAreaTile.TileType.SHIP_START_DESTROYED,
+        BattleAreaTile.getDestroyedVersionOfShipTile(BattleAreaTile.TileType.SHIP_START));
+
+        assertEquals(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED,
+                BattleAreaTile.getDestroyedVersionOfShipTile(BattleAreaTile.TileType.SHIP_MIDDLE));
+
+        assertEquals(BattleAreaTile.TileType.SHIP_END_DESTROYED,
+                BattleAreaTile.getDestroyedVersionOfShipTile(BattleAreaTile.TileType.SHIP_END));
+    }
+
+    public void getDestroyedVersionOfShipTile_invalidInput(){
+        assertEquals(BattleAreaTile.TileType.SHIP_START_DESTROYED,
+                BattleAreaTile.getDestroyedVersionOfShipTile(BattleAreaTile.TileType.SHIP_START_DESTROYED));
+
+        assertEquals(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED,
+                BattleAreaTile.getDestroyedVersionOfShipTile(BattleAreaTile.TileType.SHIP_MIDDLE_DESTROYED));
+
+        assertEquals(BattleAreaTile.TileType.SHIP_END_DESTROYED,
+                BattleAreaTile.getDestroyedVersionOfShipTile(BattleAreaTile.TileType.SHIP_END_DESTROYED));
+
+        assertEquals(BattleAreaTile.TileType.NO_HIT,
+                BattleAreaTile.getDestroyedVersionOfShipTile(BattleAreaTile.TileType.NO_HIT));
+
+        assertEquals(BattleAreaTile.TileType.WATER,
+                BattleAreaTile.getDestroyedVersionOfShipTile(BattleAreaTile.TileType.WATER));
+    }
 }

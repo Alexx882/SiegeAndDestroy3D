@@ -24,8 +24,8 @@ public class GlobalGameSettings implements Serializable {
     private int numberCols = 8;
 
     // fixed number and sizes of ships
-    private int numberShips = 2;
-    private int[] shipSizes = {3, 4}; // 2, 4};
+    private int numberShips = 4;
+    private int[] shipSizes = {3, 4, 2, 4};
 
     // network settings
     private static final String SERVICE_NAME = "sAd3D";
@@ -124,7 +124,7 @@ public class GlobalGameSettings implements Serializable {
         this.gameFinished = gameFinished;
     }
 
-    public static final String INTENT_KEYWORD ="GLOBALGAMESETTINGS_INTENT";
+    public static final String INTENT_KEYWORD = "GLOBALGAMESETTINGS_INTENT";
     private static GlobalGameSettings instance = null;
 
     public static GlobalGameSettings getCurrent() {
