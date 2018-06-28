@@ -1,5 +1,4 @@
 # Siege & Destroy [![Build Status](https://travis-ci.org/Alexx882/SiegeAndDestroy3D.svg?branch=master)](https://travis-ci.org/Alexx882/SiegeAndDestroy3D) 
-![alt text](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)
 
 Schiffeversenken im 80er Jahre Retro-Style.
 
