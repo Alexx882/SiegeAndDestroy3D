@@ -75,7 +75,7 @@ public class ServerGameHandlerKryoNet implements NetworkCommunicatorServer, Netw
         this.activity = activity;
         this.userCallBack = userCallBack;
         this.clientDataMap = new HashMap<>();
-
+        this.serverController = new ServerController();
         com.esotericsoftware.minlog.Log.set(com.esotericsoftware.minlog.Log.LEVEL_DEBUG);
 
         // init kryo

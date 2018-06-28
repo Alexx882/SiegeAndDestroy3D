@@ -114,6 +114,7 @@ public class GameTurnsActivity extends AppCompatActivity {
             constraintSet.clone(userLayout);
 
             int marginTop = 8 + i * 95;
+            if (i==0) marginTop += 20;
             constraintSet.connect(v.getId(), ConstraintSet.RIGHT, userLayout.getId(), ConstraintSet.RIGHT, 20);
             constraintSet.connect(v.getId(), ConstraintSet.LEFT, userLayout.getId(), ConstraintSet.LEFT, 20);
             constraintSet.connect(v.getId(), ConstraintSet.TOP, userLayout.getId(), ConstraintSet.TOP, marginTop);
