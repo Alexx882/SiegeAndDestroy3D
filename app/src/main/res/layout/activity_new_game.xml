@@ -134,12 +134,17 @@
         android:layout_marginBottom="40dp"
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:fontFamily="@font/press_start_2p"
         android:text="Einstellungen Speichern"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+        <!-- request initial focus so it wont focus on Schuesse -->
+        <requestFocus />
+    </Button>
 
     <ListView
         android:id="@+id/listViewUser"
@@ -147,6 +152,7 @@
         android:layout_height="253dp"
         android:layout_marginStart="344dp"
         android:layout_marginTop="52dp"
+        android:fontFamily="@font/press_start_2p"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -104,6 +104,9 @@ public class GameTurnsActivity extends AppCompatActivity {
         for (int i = 0; i < gameSettings.getUserList().size(); i++) {
             //create textview + setText with Username + ontouchlistener
             TextView v = createUserLabel(nRows, nCols, i);
+            // todo set typefont for user labels
+//            v.setTypeface(Typeface.createFromFile("res/font/press_start_2p.ttf"));
+
             //set params for view
             ConstraintLayout.LayoutParams viewParam = new ConstraintLayout.LayoutParams(
                     ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
@@ -113,10 +116,9 @@ public class GameTurnsActivity extends AppCompatActivity {
             ConstraintSet constraintSet = new ConstraintSet();
             constraintSet.clone(userLayout);
 
-            int marginTop = 8 + i * 95;
-            if (i==0) marginTop += 20;
+            int marginTop = 90 + i * 95;
             constraintSet.connect(v.getId(), ConstraintSet.RIGHT, userLayout.getId(), ConstraintSet.RIGHT, 20);
-            constraintSet.connect(v.getId(), ConstraintSet.LEFT, userLayout.getId(), ConstraintSet.LEFT, 20);
+            constraintSet.connect(v.getId(), ConstraintSet.LEFT, userLayout.getId(), ConstraintSet.LEFT, 35);
             constraintSet.connect(v.getId(), ConstraintSet.TOP, userLayout.getId(), ConstraintSet.TOP, marginTop);
 
             constraintSet.applyTo(userLayout);

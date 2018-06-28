@@ -12,8 +12,8 @@
         android:background="@drawable/water_empty1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="0dp" />
 
     <TextView
         android:id="@+id/textView2"
@@ -33,18 +33,17 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="60dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="12dp"
         android:ems="10"
         android:fontFamily="@font/press_start_2p"
-        android:hint="Host IP"
+        android:hint="192.168.0.1"
         android:inputType="textPersonName"
-        android:text="192.168.43.19"
+        android:text=""
         android:textAlignment="center"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textViewHostIP"
-        app:layout_constraintTop_toBottomOf="@+id/editTextUserName"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextUserName" />
 
     <TextView
         android:id="@+id/textViewHostIP"
@@ -69,7 +68,7 @@
         android:fontFamily="@font/press_start_2p"
         android:hint="Benutzername"
         android:inputType="textPersonName"
-        android:text="test"
+        android:text=""
         android:textAlignment="center"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -83,11 +82,16 @@
         android:layout_marginBottom="80dp"
         android:layout_marginEnd="60dp"
         android:layout_marginStart="60dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:fontFamily="@font/press_start_2p"
         android:text="Server suchen"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+        <!-- request initial focus so it wont focus on Schuesse -->
+        <requestFocus />
+    </Button>
 
     <TextView
         android:id="@+id/textViewError"
@@ -96,9 +100,9 @@
         android:layout_marginBottom="20dp"
         android:layout_marginEnd="60dp"
         android:layout_marginStart="60dp"
+        android:fontFamily="@font/press_start_2p"
         android:textColor="@android:color/holo_red_light"
         android:textSize="16sp"
-        android:fontFamily="@font/press_start_2p"
         app:layout_constraintBottom_toTopOf="@+id/buttonJoinGame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -111,8 +115,8 @@
         android:layout_marginEnd="60dp"
         android:layout_marginStart="60dp"
         android:layout_marginTop="8dp"
-        android:textSize="16sp"
         android:fontFamily="@font/press_start_2p"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/textViewError"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
